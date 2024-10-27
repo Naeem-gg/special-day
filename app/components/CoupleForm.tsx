@@ -14,7 +14,7 @@ import { format } from "date-fns"
 import { AnimatePresence, motion } from 'framer-motion'
 import { CalendarIcon, Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 export default function CoupleForm() {
@@ -25,6 +25,11 @@ export default function CoupleForm() {
   })
   const router = useRouter()
 
+  useEffect(()=>{
+    if(localStorage.getItem('name') && localStorage.getItem('partnerName') && localStorage.getItem('date')) {
+      router.push("/confetti")
+    }
+  },[router])
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true)
     // const result = await submitForm(data)
