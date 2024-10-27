@@ -1,66 +1,49 @@
-// "use client";
-// import { useCallback, useEffect, useRef } from 'react';
+'use client'
 
-// import ReactCanvasConfetti from 'react-canvas-confetti';
+import { useEffect } from 'react'
+import confetti from 'canvas-confetti'
 
-// export default function Confetti() {
-//   const refAnimationInstance = useRef(null);
+export default function Confetti({ duration = 2000, intensity = 150 }: { duration?: number; intensity?: number }) {
+  // const [hasPlayed, setHasPlayed] = useState(false)
 
-//   const getInstance = useCallback((instance:unknown) => {
-//     refAnimationInstance.current = instance;
-//   }, []);
+  useEffect(() => {
+    // const hasPlayedThisSession = sessionStorage.getItem('confettiPlayed')
 
-//   const makeShot = useCallback((particleRatio, opts) => {
-//     refAnimationInstance.current &&
-//       refAnimationInstance.current({
-//         ...opts,
-//         origin: { y: 0.7 },
-//         particleCount: Math.floor(200 * particleRatio)
-//       });
-//   }, []);
+    // if (!hasPlayedThisSession && !hasPlayed) {
+      const end = Date.now() + duration
 
-//   const fire = useCallback(() => {
-//     makeShot(0.25, {
-//       spread: 26,
-//       startVelocity: 55
-//     });
+      const frame = () => {
+        confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#bb0000', '#ffffff']
+        });
+        confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#bb0000', '#ffffff']
+        });
+      
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+        // else {
+        //   setHasPlayed(true)
+        //   sessionStorage.setItem('confettiPlayed', 'true')
+        // }
+      }
 
-//     makeShot(0.2, {
-//       spread: 60
-//     });
+      frame()
+    // }
 
-//     makeShot(0.35, {
-//       spread: 100,
-//       decay: 0.91,
-//       scalar: 0.8
-//     });
+    return () => {
+      confetti.reset()
+    }
+  }, [duration, intensity])
 
-//     makeShot(0.1, {
-//       spread: 120,
-//       startVelocity: 25,
-//       decay: 0.92,
-//       scalar: 1.2
-//     });
-
-//     makeShot(0.1, {
-//       spread: 120,
-//       startVelocity: 45
-//     });
-//   }, [makeShot]);
-//   useEffect(() => fire(), [fire]);
-
-
-//   return (
-//     <ReactCanvasConfetti
-//       refConfetti={getInstance}
-//       style={{
-//         position: 'fixed',
-//         pointerEvents: 'none',
-//         width: '100%',
-//         height: '100%',
-//         top: 0,
-//         left: 0
-//       }}
-//     />
-//   );
-// }
+  return null
+}
