@@ -57,7 +57,7 @@ export default function CoupleForm() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white p-8 rounded-lg shadow-xl w-96"
+        className="bg-white p-8 rounded-lg shadow-xl w-72"
       >
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">BIG DAY</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
