@@ -32,7 +32,7 @@ export default function FeedbackForm() {
       <DialogTrigger asChild>
         <Button variant="outline">Feedback</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px]">
+      <DialogContent className="w-[80%]">
         <DialogHeader>
           <DialogTitle>{"Send us your feedback"}</DialogTitle>
         </DialogHeader>
