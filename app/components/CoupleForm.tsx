@@ -32,15 +32,16 @@ export default function CoupleForm() {
   },[router])
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true)
+    setSubmitResult({success: true,message:`Calculation in process...`})
     const result = await submitForm(data)
     if(result.success) {
-      router.push("/confetti")
+      setIsSubmitting(false)
       localStorage.setItem('name', data.name)
       localStorage.setItem('partnerName', data.partnerName)
       localStorage.setItem('date', data.date)
-      setSubmitResult({success: true,message:`Submitted`})
-      setIsSubmitting(false)
+      setSubmitResult({success: true,message:`Redirecting...`})
       router.push("/confetti")
+
     }
   }
 
