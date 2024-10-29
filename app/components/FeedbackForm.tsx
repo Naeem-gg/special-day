@@ -6,22 +6,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { FeedbackFormData, submitFeedbackForm } from '@/components/actions'
 
 export default function FeedbackForm() {
   const [isOpen, setIsOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [message, setMessage] = useState('')
+//   const [name, setName] = useState('')
+//   const [phone, setPhone] = useState('')
+//   const [message, setMessage] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the feedback to your server
-    console.log('Feedback submitted:', { name, phone, message })
+  const {register,handleSubmit} = useForm<FeedbackFormData>({})
+  const handleFeedback:SubmitHandler<FeedbackFormData> = async(data) => {
+   
+    console.log('Feedback submitted:',data)
+    await submitFeedbackForm(data)
     setIsOpen(false)
     // Reset form fields
-    setName('')
-    setPhone('')
-    setMessage('')
+    // setName('')
+    // setPhone('')
+    // setMessage('')
   }
 
   return (
@@ -29,17 +32,18 @@ export default function FeedbackForm() {
       <DialogTrigger asChild>
         <Button variant="outline">Feedback</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>Send us your feedback</DialogTitle>
+          <DialogTitle>{"Send us your feedback"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFeedback)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+            //   value={name}
+            //   onChange={(e) => setName(e.target.value)}
+            {...register("name")}
               placeholder="Enter your name"
               required
             />
@@ -49,8 +53,9 @@ export default function FeedbackForm() {
             <Input
               id="phone"
               type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              {...register("phone")}
+            //   value={phone}
+            //   onChange={(e) => setPhone(e.target.value)}
               placeholder="Enter your phone number"
               required
             />
@@ -59,8 +64,9 @@ export default function FeedbackForm() {
             <Label htmlFor="message">Message</Label>
             <Textarea
               id="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              {...register("message")}
+            //   value={message}
+            //   onChange={(e) => setMessage(e.target.value)}
               placeholder="Enter your feedback"
               required
             />
