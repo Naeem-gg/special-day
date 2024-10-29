@@ -26,7 +26,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="absolute top-1 right-2">
-          <FeedbackForm />
+          {/* <FeedbackForm /> */}
           </div>
         {children}
       </body>

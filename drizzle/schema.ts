@@ -7,3 +7,11 @@ export const anonymousCollection = sqliteTable('users', {
     date:text('data',{length:256}).notNull(),
     createdAt:text('created_at').default(new Date().toString())
 });
+
+export const feedbacks = sqliteTable('feedbacks', {
+    id: text('id',{length:20}).notNull().primaryKey(),
+    name: text('name',{length:50}).notNull(),
+    phone: text('phone',{length:50}).notNull(),
+    message: text('message',{length:500}).notNull(),
+    createdAt:text('created_at').default(new Date().toString())
+})
