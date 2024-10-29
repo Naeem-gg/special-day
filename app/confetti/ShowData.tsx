@@ -57,7 +57,7 @@ const ShowCountdown = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.6 }}
-        className="text-2xl mb-6"
+        className="text-xl mb-6"
       >
         {remainingSeconds > 0
           ? `${days} days, ${hours} hours, ${minutes} minutes, and ${secs} seconds left until your special day, ${name} & ${partnerName}!`
