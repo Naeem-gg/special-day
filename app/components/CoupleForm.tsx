@@ -43,6 +43,10 @@ export default function CoupleForm() {
       router.push("/confetti")
 
     }
+    if(!result.success){
+      setIsSubmitting(false)
+      setSubmitResult({success:false,message:JSON.stringify(result.errors)})
+    }
   }
 
   const date = watch('date')

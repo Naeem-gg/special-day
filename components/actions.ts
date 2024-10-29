@@ -18,6 +18,7 @@ export async function submitForm(data: FormData) {
   const result = formSchema.safeParse(data)
   
   if (!result.success) {
+    console.log(result.error)
     return { success: false, errors: result.error.flatten().fieldErrors }
   }
 
