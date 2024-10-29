@@ -2,18 +2,23 @@
 import React, { useState, useEffect } from "react";
 import { differenceInDays, parseISO } from "date-fns";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import ResetButton from "./ResetButton";
 
 const ShowCountdown = () => {
   const [remainingDays, setRemainingDays] = useState(0);
 const [name,setName] = useState("")
 const [partnerName,setPartnerName] = useState("")
 const [targetDate, setTargetDate] = useState(new Date());
+const router = useRouter();
   useEffect(() => {
-
+    if (!localStorage.getItem("name") && !localStorage.getItem("partnerName") && !localStorage.getItem("date")) {
+      router.push("/")
+    }
       setName(localStorage.getItem("name") || "You");
       setPartnerName(localStorage.getItem("partnerName") || "Your Partner");
   setTargetDate(parseISO(localStorage.getItem("date") || ""));
-}, []);
+}, [router]);
   
   useEffect(() => {
     const calculateRemainingDays = () => {
@@ -47,6 +52,7 @@ const [targetDate, setTargetDate] = useState(new Date());
           ? `${remainingDays} days left until your special day, ${name} & ${partnerName}!`
           : `It's your special day, ${name} & ${partnerName}! 🎉`}
       </motion.p>
+      <ResetButton />
     </div>
   );
 };

@@ -1,6 +1,5 @@
-import React from 'react'
-import ShowData from './ShowData'
 import Confetti from '../components/Confetti'
+import ShowData from './ShowData'
 
 const page = () => {
   return (
