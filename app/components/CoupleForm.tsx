@@ -1,6 +1,6 @@
 'use client'
 
-import { FormData } from '@/components/actions'
+import { FormData, submitForm } from '@/components/actions'
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
@@ -32,17 +32,16 @@ export default function CoupleForm() {
   },[router])
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true)
-    // const result = await submitForm(data)
-    // if(result.success) {
-    //   setSubmitResult(result)
-    //   router.push("/confetti")
-    // }
-    localStorage.setItem('name', data.name)
-    localStorage.setItem('partnerName', data.partnerName)
-    localStorage.setItem('date', data.date)
-    setSubmitResult({success: true,message:`Submitted`})
-    setIsSubmitting(false)
-    router.push("/confetti")
+    const result = await submitForm(data)
+    if(result.success) {
+      router.push("/confetti")
+      localStorage.setItem('name', data.name)
+      localStorage.setItem('partnerName', data.partnerName)
+      localStorage.setItem('date', data.date)
+      setSubmitResult({success: true,message:`Submitted`})
+      setIsSubmitting(false)
+      router.push("/confetti")
+    }
   }
 
   const date = watch('date')

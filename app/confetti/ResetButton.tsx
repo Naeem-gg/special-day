@@ -12,7 +12,7 @@ const ResetButton = () => {
     }
   return (
     <div>
-      <Button onClick={handleReset} variant={"ghost"}>Reset</Button>
+      <Button onClick={handleReset} variant={"ghost"} className='m-4 p-4'>Reset?</Button>
     </div>
   )
 }

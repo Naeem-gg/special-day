@@ -1,7 +1,9 @@
 'use server'
 
+import { db } from '@/drizzle/db'
+import { anonymousCollection } from '@/drizzle/schema'
 import { z } from 'zod'
-
+import {nanoid} from "nanoid"
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   partnerName: z.string().min(2, { message: "Partner's name must be at least 2 characters." }),
@@ -20,10 +22,12 @@ export async function submitForm(data: FormData) {
   }
 
   // Here you would typically save the data to a database
-  console.log('Form submitted:', result.data)
+  await db.insert(anonymousCollection).values([{
+    date:data.date,name:data.name,partnerName:data.partnerName,id:nanoid(15)
+  }])
 
   // Simulate a delay to show loading state
-  await new Promise(resolve => setTimeout(resolve, 1000))
+  // await new Promise(resolve => setTimeout(resolve, 1000))
 
   return { success: true, message: "Form submitted successfully!" }
 }
