@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import FeedbackForm from "./components/FeedbackForm";
+import Link from "next/link";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,10 +26,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="absolute top-1 right-2">
+       
+        
+          <div className="min-h-screen flex flex-col bg-gradient-to-r from-purple-500 to-pink-500">
+      <header className="bg-white bg-opacity-10 backdrop-blur-md">
+        <div className="container mx-auto px-4 py-6 flex justify-between">
+          <Link href="/" className="text-3xl font-bold text-white hover:text-pink-200 transition-colors">
+            BIG DAY
+          </Link>
           <FeedbackForm />
-          </div>
+        </div>
+      </header>
+      <main className="flex-grow container mx-auto px-4 py-8">
         {children}
+      </main>
+      <footer className="bg-white bg-opacity-10 backdrop-blur-md text-white text-center py-4">
+        <p>&copy; 2023 BIG DAY. All rights reserved.</p>
+      </footer>
+    </div>
       </body>
     </html>
   );

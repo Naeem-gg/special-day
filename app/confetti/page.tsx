@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Confetti from '../components/Confetti'
-import ShowData from './ShowData'
+import Countdown from '../components/Countdown'
 
 export const metadata:Metadata = {
   title:"BIG DAY",
@@ -12,7 +12,8 @@ const page = () => {
   return (
     <div>
       <Confetti />
-      <ShowData />
+      {/* <ShowData /> */}
+      <Countdown />
     </div>
   )
 }
