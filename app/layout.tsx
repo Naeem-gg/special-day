@@ -1,50 +1,28 @@
-import localFont from "next/font/local";
-import "./globals.css";
-import FeedbackForm from "./components/FeedbackForm";
-import Link from "next/link";
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const inter = Inter({ subsets: ["latin"] })
 
-
+export const metadata: Metadata = {
+  title: "BIG DAY - Countdown to Your Special Moments",
+  description: "Create beautiful countdowns for your most important life events",
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-       
-        
-          <div className="min-h-screen flex flex-col bg-gradient-to-r from-purple-500 to-pink-500">
-      <header className="bg-white bg-opacity-10 backdrop-blur-md">
-        <div className="container mx-auto px-4 py-6 flex justify-between">
-          <Link href="/" className="text-3xl font-bold text-white hover:text-pink-200 transition-colors">
-            BIG DAY
-          </Link>
-          <FeedbackForm />
-        </div>
-      </header>
-      <main className="flex-grow container mx-auto px-4 py-8">
-        {children}
-      </main>
-      <footer className="bg-white bg-opacity-10 backdrop-blur-md text-white text-center py-4">
-        <p>&copy; 2023 BIG DAY. All rights reserved.</p>
-      </footer>
-    </div>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
