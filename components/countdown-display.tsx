@@ -1,16 +1,18 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { HeartIcon, ShareIcon, CalendarIcon, Clock } from "lucide-react"
-
 import { mockGetCountdown } from "@/lib/api-mock"
 import { formatDate } from "@/lib/utils"
+import { CalendarIcon, Clock, InboxIcon as EnvelopeIcon, HeartIcon, ShareIcon } from 'lucide-react'
+import Link from "next/link"
+import { useEffect, useState } from "react"
 import { Confetti } from "./coinfetti"
-import { FloatingHearts } from "./floating-hearts"
 import { CountdownTimer } from "./countdown-timer"
+import { FloatingHearts } from "./floating-hearts"
+import { InvitationForm } from "./invitation-form"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
+
 
 interface CountdownParams {
   id?: string
@@ -41,6 +43,7 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
     seconds: number
     isComplete: boolean
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0, isComplete: false })
+  const [showInviteDialog, setShowInviteDialog] = useState(false)
 
   useEffect(() => {
     const fetchCountdown = async () => {
@@ -93,34 +96,70 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
     return () => clearTimeout(timer)
   }, [initialParams])
 
-  // Handle share functionality
+  // Generate a professional share message based on the countdown details
+  const generateShareMessage = () => {
+    if (!countdown) return ""
+
+    const formattedDate = formatDate(countdown.eventDate)
+    const formattedTime = formatTime(countdown.eventDate)
+    
+    // Different messages based on time remaining
+    if (timeRemaining.isComplete) {
+      return `Today is the day! ${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title.toLowerCase()} is happening now!`
+    }
+    
+    if (timeRemaining.days === 0) {
+      return `${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title} is happening today at ${formattedTime}! Join us in the celebration!`
+    }
+    
+    if (timeRemaining.days === 1) {
+      return `${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title} is tomorrow! The excitement is building for their special day on ${formattedDate} at ${formattedTime}.`
+    }
+    
+    if (timeRemaining.days <= 7) {
+      return `Just ${timeRemaining.days} days until ${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title}! Mark your calendar for ${formattedDate} at ${formattedTime}.`
+    }
+    
+    if (timeRemaining.days <= 30) {
+      return `${countdown.yourName} and ${countdown.partnerName} are counting down to their ${countdown.title} on ${formattedDate} at ${formattedTime}. ${timeRemaining.days} days to go!`
+    }
+    
+    // Default message for longer countdowns
+    return `${countdown.yourName} and ${countdown.partnerName} invite you to celebrate their ${countdown.title} on ${formattedDate} at ${formattedTime}. Save the date!`
+  }
+
+  // Handle share functionality with enhanced message
   const handleShare = async () => {
     if (!countdown) return
 
     const url = window.location.href
+    const shareMessage = generateShareMessage()
+    const shareTitle = `Countdown to ${countdown.title}`
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Countdown to ${countdown.title}`,
-          text: `${countdown.yourName} and ${countdown.partnerName} are counting down to their big day!`,
+          title: shareTitle,
+          text: shareMessage,
           url,
         })
       } catch (error) {
         console.error("Error sharing:", error)
         // Fallback to copy to clipboard
-        copyToClipboard(url)
+        copyToClipboard(url, shareMessage)
       }
     } else {
       // Fallback for browsers that don't support navigator.share
-      copyToClipboard(url)
+      copyToClipboard(url, shareMessage)
     }
   }
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (url: string, message: string) => {
+    const textToCopy = `${message}\n\n${url}`
+    
     navigator.clipboard
-      .writeText(text)
-      .then(() => alert("Link copied to clipboard!"))
+      .writeText(textToCopy)
+      .then(() => alert("Invitation copied to clipboard!"))
       .catch((err) => console.error("Could not copy text: ", err))
   }
 
@@ -178,7 +217,10 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
 
   // Format time for display
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
   }
 
   return (
@@ -228,6 +270,28 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
                 <ShareIcon className="mr-2 h-4 w-4" />
                 Share This Countdown
               </Button>
+
+              <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="lg">
+                    <EnvelopeIcon className="mr-2 h-4 w-4" />
+                    Send Invitation
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Send a Personal Invitation</DialogTitle>
+                    <DialogDescription>
+                      Invite someone special to join your countdown celebration.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <InvitationForm 
+                    countdown={countdown} 
+                    timeRemaining={timeRemaining}
+                    onInvitationSent={() => setShowInviteDialog(false)}
+                  />
+                </DialogContent>
+              </Dialog>
 
               <Link href="/create">
                 <Button variant="outline" size="lg">
