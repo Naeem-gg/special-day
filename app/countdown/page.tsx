@@ -1,4 +1,5 @@
 import { CountdownDisplay } from "@/components/countdown-display"
+import { formatDate, formatTime } from "@/lib/utils"
 import type { Metadata } from 'next'
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
@@ -9,10 +10,21 @@ export async function generateMetadata(props: {
    const searchParams = await props.searchParams
   const { your, partner, date } = searchParams
 
+  // Convert date to a Date object if possible
+  let formattedDate = "a special day"
+  let formattedTime = "a special time"
+  if (typeof date === "string") {
+    const parsedDate = new Date(date)
+    if (!isNaN(parsedDate.getTime())) {
+      formattedDate = formatDate(parsedDate)
+      formattedTime = formatTime(parsedDate)
+    }
+  }
+
   // Construct the metadata object
   const metadata: Metadata = {
     title: `${your} & ${partner}'s Special Day`,
-    description: `Join ${your} and ${partner} on ${date} for a day filled with joy, love, and unforgettable memories.`
+    description: `Join ${your} and ${partner} on ${formattedDate} at ${formattedTime} for a day filled with joy, love, and unforgettable memories.`
   }
 
   return metadata

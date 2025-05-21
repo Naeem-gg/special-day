@@ -14,7 +14,12 @@ export function formatDate(date: Date): string {
     day: "numeric",
   })
 }
-
+  export const formatTime = (date: Date) => {
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
 // Calculate time remaining between two dates
 export function calculateTimeRemaining(targetDate: Date): {
   days: number

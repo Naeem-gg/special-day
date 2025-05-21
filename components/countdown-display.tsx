@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { mockGetCountdown } from "@/lib/api-mock"
-import { formatDate } from "@/lib/utils"
+import { formatDate, formatTime } from "@/lib/utils"
 import { CalendarIcon, Clock, InboxIcon as EnvelopeIcon, HeartIcon, ShareIcon } from 'lucide-react'
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -216,12 +216,7 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
   }
 
   // Format time for display
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white dark:from-slate-950 dark:to-slate-900 py-12">
