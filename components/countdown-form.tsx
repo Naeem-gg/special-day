@@ -1,17 +1,17 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { UserPlusIcon, GlobeIcon } from "lucide-react"
 import { mockCreateCountdown } from "@/lib/api-mock"
+import { GlobeIcon, UserPlusIcon } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import type React from "react"
+import { useState } from "react"
 import { DateTimePicker } from "./date-picker"
 
 export function CountdownForm() {
@@ -19,7 +19,6 @@ export function CountdownForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [accountType, setAccountType] = useState("anonymous")
   const [activeTab, setActiveTab] = useState("countdown")
-  const [displayText, setDisplayText] = useState(false)
   const [formData, setFormData] = useState({
     yourName: "",
     partnerName: "",
@@ -140,92 +139,89 @@ export function CountdownForm() {
         </TabsContent>
         <TabsContent value="account">
           <Card>
-            <CardHeader>
-              <CardTitle>Account Options</CardTitle>
-              <CardDescription>Choose how you want to save your countdown</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    accountType === "account"
-                      ? "border-pink-500 select-none bg-gray-50 dark:bg-slate-800 rounded-lg"
-                      : "border-gray-200 dark:border-gray-700"
-                  }`}
-                  onTouchStart={() => setDisplayText(true)}
-                  onTouchEnd={() => setDisplayText(false)}
-                  onMouseEnter={() => setDisplayText(true)}
-                  onMouseLeave={() => setDisplayText(false)}
-                >
-                  <div className={"flex flex-col items-center text-center space-y-2 p-4"}>
-                    {displayText && (
-                      <p className="text-sm text-gray-500 absolute bg-white dark:bg-slate-700 p-2 rounded shadow-md">
-                        Coming Soon...
-                      </p>
-                    )}
-                    <UserPlusIcon className="h-10 w-10 text-pink-500" />
-                    <h3 className="font-medium text-lg">Create Account</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Save your countdown and access it from any device
-                    </p>
-                    <div className="text-xs text-pink-600 dark:text-pink-400 font-medium">
-                      ✓ Never lose your countdown
-                      <br />✓ Create multiple countdowns
-                      <br />✓ Access from any device
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    accountType === "anonymous"
-                      ? "border-pink-500 bg-pink-50 dark:bg-pink-950"
-                      : "border-gray-200 dark:border-gray-700"
-                  }`}
-                  onClick={() => setAccountType("anonymous")}
-                >
-                  <div className="flex flex-col items-center text-center space-y-2 p-4">
-                    <GlobeIcon className="h-10 w-10 text-pink-500" />
-                    <h3 className="font-medium text-lg">Continue as Guest</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Quick and easy, but limited to this device only
-                    </p>
-                    <div className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                      ⚠️ Countdown saved on this device only
-                      <br />
-                      ⚠️ Cannot be recovered if lost
-                      <br />✓ Shareable link available
-                    </div>
-                  </div>
-                </div>
+      <CardHeader>
+        <CardTitle>Account Options</CardTitle>
+        <CardDescription>Choose how you want to save your countdown</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div
+            className={`p-4 border rounded-lg cursor-not-allowed transition-all relative ${
+              accountType === "account"
+                ? "border-pink-500 select-none bg-gray-50 dark:bg-slate-800 rounded-lg"
+                : "border-gray-200 dark:border-gray-700"
+            }`}
+          >
+              {/* <div className="flex flex-col items-center text-center space-y-2">
+                <LockIcon className="h-10 w-10 text-gray-500 dark:text-gray-400" />
+                <p className="text-sm text-yellow-500 dark:text-gray-400 font-medium">Coming Soon...</p>
+              </div> */}
+            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 bg-opacity-50 dark:bg-opacity-50 rounded-lg flex items-center justify-center">
+            </div>
+            <div className="flex flex-col items-center text-center space-y-2 p-4 relative z-10">
+              <UserPlusIcon className="h-10 w-10 text-pink-500" />
+              <h3 className="font-medium text-lg">Create Account</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Save your countdown and access it from any device
+              </p>
+              <div className="text-xs text-pink-600 dark:text-pink-400 font-medium">
+                ✓ Never lose your countdown
+                <br />✓ Create multiple countdowns
+                <br />✓ Access from any device
               </div>
-              {accountType === "account" && (
-                <div className="space-y-4 border border-pink-200 dark:border-pink-900 rounded-lg p-4 bg-pink-50 dark:bg-pink-950/30">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="Enter your email" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" placeholder="Create a password" />
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Already have an account?{" "}
-                    <Link href="#" className="text-pink-600 dark:text-pink-400 hover:underline">
-                      Log in
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button type="button" variant="outline" onClick={() => setActiveTab("countdown")}>
-                Back
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Creating..." : "Create Countdown"}
-              </Button>
-            </CardFooter>
-          </Card>
+            </div>
+          </div>
+          <div
+            className={`p-4 border rounded-lg cursor-pointer transition-all ${
+              accountType === "anonymous"
+                ? "border-pink-500 bg-pink-50 dark:bg-pink-950"
+                : "border-gray-200 dark:border-gray-700"
+            }`}
+            onClick={() => setAccountType("anonymous")}
+          >
+            <div className="flex flex-col items-center text-center space-y-2 p-4">
+              <GlobeIcon className="h-10 w-10 text-pink-500" />
+              <h3 className="font-medium text-lg">Continue as Guest</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Quick and easy, but limited to this device only
+              </p>
+              <div className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                ⚠️ Countdown saved on this device only
+                <br />
+                ⚠️ Cannot be recovered if lost
+                <br />✓ Shareable link available
+              </div>
+            </div>
+          </div>
+        </div>
+        {accountType === "account" && (
+          <div className="space-y-4 border border-pink-200 dark:border-pink-900 rounded-lg p-4 bg-pink-50 dark:bg-pink-950/30">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="Enter your email" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" placeholder="Create a password" />
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Already have an account?{" "}
+              <Link href="#" className="text-pink-600 dark:text-pink-400 hover:underline">
+                Log in
+              </Link>
+            </div>
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button type="button" variant="outline" onClick={() => setActiveTab("countdown")}>
+          Back
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Creating..." : "Create Countdown"}
+        </Button>
+      </CardFooter>
+    </Card>
         </TabsContent>
       </form>
     </Tabs>

@@ -1,5 +1,22 @@
 import { CountdownDisplay } from "@/components/countdown-display"
+import type { Metadata } from 'next'
 
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+export async function generateMetadata(props: {
+  searchParams: SearchParams
+}): Promise<Metadata> {
+   const searchParams = await props.searchParams
+  // const {  title, your, partner, date, message } = searchParams
+
+  // Construct the metadata object
+  const metadata: Metadata = {
+    title: searchParams.title ? `${searchParams.title} - Countdown Invitation` : 'Countdown Invitation',
+    description: searchParams.message as string ?? `Join ${searchParams.your} and ${searchParams.partner} for their special event on ${searchParams.date}.`
+  }
+
+  return metadata
+}
 
 export default async function CountdownPageShell({
   searchParams,
