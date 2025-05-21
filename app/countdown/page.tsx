@@ -7,12 +7,12 @@ export async function generateMetadata(props: {
   searchParams: SearchParams
 }): Promise<Metadata> {
    const searchParams = await props.searchParams
-  // const {  title, your, partner, date, message } = searchParams
+  const { your, partner, date } = searchParams
 
   // Construct the metadata object
   const metadata: Metadata = {
-    title: searchParams.title ? `${searchParams.title} - Countdown Invitation` : 'Countdown Invitation',
-    description: searchParams.message as string ?? `Join ${searchParams.your} and ${searchParams.partner} for their special event on ${searchParams.date}.`
+    title: `${your} & ${partner}'s Special Day`,
+    description: `Join ${your} and ${partner} on ${date} for a day filled with joy, love, and unforgettable memories.`
   }
 
   return metadata
