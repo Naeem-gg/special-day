@@ -51,14 +51,14 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
         // Try to get countdown from URL params first
         const { id, title, yourName, partnerName, date, message } = initialParams
 
-        if (id) {
-          // If we have an ID, fetch from mock API
-          const data = await mockGetCountdown(id)
-          setCountdown({
-            ...data,
-            eventDate: new Date(data.eventDate),
-          })
-        } else {
+        // if (id) {
+        //   // If we have an ID, fetch from mock API
+        //   const data = await mockGetCountdown(id)
+        //   setCountdown({
+        //     ...data,
+        //     eventDate: new Date(data.eventDate),
+        //   })
+        // } else {
           // Otherwise, try to construct from URL params
           const countdownTitle = title || "Our Wedding Day"
           const countdownYourName = yourName || ""
@@ -78,7 +78,7 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
             // No valid countdown data
             throw new Error("No valid countdown data found")
           }
-        }
+        // }
       } catch (error) {
         console.error("Error fetching countdown:", error)
       } finally {
