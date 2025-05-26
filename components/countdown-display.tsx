@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { mockGetCountdown } from "@/lib/api-mock"
 import { formatDate, formatTime } from "@/lib/utils"
 import { CalendarIcon, Clock, InboxIcon as EnvelopeIcon, HeartIcon, ShareIcon } from 'lucide-react'
 import Link from "next/link"
