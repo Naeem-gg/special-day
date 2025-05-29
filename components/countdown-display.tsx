@@ -48,7 +48,7 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
     const fetchCountdown = async () => {
       try {
         // Try to get countdown from URL params first
-        const { id, title, yourName, partnerName, date, message } = initialParams
+        const { title, yourName, partnerName, date, message } = initialParams
 
         // if (id) {
         //   // If we have an ID, fetch from mock API

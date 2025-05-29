@@ -54,3 +54,44 @@ export function calculateTimeRemaining(targetDate: Date): {
     isComplete: false,
   }
 }
+
+
+export function xorEncryptDecrypt(input: string, key: string): string {
+    let output = '';
+    for (let i = 0; i < input.length; i++) {
+        output += String.fromCharCode(input.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    }
+    return output;
+}
+
+export function base64Encode(input: string): string {
+    return btoa(String.fromCharCode(...new TextEncoder().encode(input)));
+}
+
+export function base64Decode(input: string): string {
+    return new TextDecoder().decode(Uint8Array.from(atob(input), c => c.charCodeAt(0)));
+}
+
+export function encryptURL(url: string): string {
+    const urlObj = new URL(url);
+    const searchParams = urlObj.searchParams;
+
+    searchParams.forEach((value, key) => {
+        const encryptedValue = base64Encode(xorEncryptDecrypt(value, key));
+        searchParams.set(key, encryptedValue);
+    });
+
+    return urlObj.toString();
+}
+
+export function decryptURL(url: string): string {
+    const urlObj = new URL(url);
+    const searchParams = urlObj.searchParams;
+
+    searchParams.forEach((value, key) => {
+        const decryptedValue = xorEncryptDecrypt(base64Decode(value), key);
+        searchParams.set(key, decryptedValue);
+    });
+
+    return urlObj.toString();
+}
