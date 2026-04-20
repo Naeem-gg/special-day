@@ -28,24 +28,32 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
           <div className="h-[1px] w-20 bg-gray-300 mx-auto" />
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
           {photos.map((photo, index) => (
             <motion.div
               key={photo.publicId}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="relative aspect-[4/5] overflow-hidden rounded-2xl group shadow-lg"
+              transition={{ duration: 1, delay: index * 0.1 }}
+              whileHover={{ scale: 1.02 }}
+              className="relative overflow-hidden rounded-[2rem] group shadow-xl bg-gray-100"
             >
               <Image
                 src={photo.url}
                 alt={`Wedding Gallery ${index + 1}`}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                width={800}
+                height={1000}
+                className="w-full h-auto object-cover transition-transform duration-1000 group-hover:scale-110"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
+              <motion.div 
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-8"
+              >
+                 <span className="text-white font-serif text-lg opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">Captured Forever</span>
+              </motion.div>
             </motion.div>
           ))}
         </div>

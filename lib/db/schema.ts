@@ -19,6 +19,7 @@ export const invitations = pgTable("invitations", {
   }[]>().notNull().default([]),
   musicUrl: text("music_url"),
   backgroundImage: text("background_image"),
+  tier: text("tier").notNull().default("basic"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

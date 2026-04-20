@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
       events, 
       gallery, 
       musicUrl, 
-      backgroundImage 
+      backgroundImage,
+      tier
     } = body;
 
     if (!slug || !brideName || !groomName || !date || !venue) {
@@ -30,7 +31,8 @@ export async function POST(req: NextRequest) {
       events: events || [],
       gallery: gallery || [],
       musicUrl,
-      backgroundImage
+      backgroundImage,
+      tier: tier || "basic"
     }).returning();
 
     return NextResponse.json({ success: true, data: newInvitation });

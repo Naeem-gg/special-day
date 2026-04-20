@@ -18,6 +18,7 @@ export default function Dashboard() {
     venue: "",
     slug: "",
     musicUrl: "",
+    tier: "basic",
     events: [{ name: "", time: "", location: "", description: "" }],
     gallery: [] as { url: string; publicId: string }[]
   });
@@ -147,6 +148,33 @@ export default function Dashboard() {
                   onChange={(e) => setFormData({...formData, musicUrl: e.target.value})}
                 />
               </div>
+
+              <div className="space-y-4">
+                <Label>Select Your Plan</Label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { id: "basic", name: "Bronze", price: "399", priceId: "basic" },
+                    { id: "standard", name: "Silver", price: "799", priceId: "standard" },
+                    { id: "premium", name: "Gold", price: "999", priceId: "premium" },
+                  ].map((tier) => (
+                    <div 
+                      key={tier.id}
+                      onClick={() => setFormData({ ...formData, tier: tier.id })}
+                      className={`cursor-pointer p-4 rounded-xl border-2 transition-all ${
+                        formData.tier === tier.id 
+                          ? "border-gray-900 bg-gray-50 shadow-md" 
+                          : "border-gray-100 bg-white hover:border-gray-200"
+                      }`}
+                    >
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-bold text-sm tracking-tight">{tier.name}</span>
+                        {formData.tier === tier.id && <div className="w-2 h-2 bg-gray-900 rounded-full" />}
+                      </div>
+                      <p className="text-xl font-serif">₹{tier.price}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -169,23 +197,29 @@ export default function Dashboard() {
                     <Trash2 className="w-4 h-4" />
                   </button>
                   <div className="grid gap-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1 text-xs uppercase tracking-wider text-gray-500">Event Name</div>
-                      <div className="space-y-1 text-xs uppercase tracking-wider text-gray-500">Time</div>
+                      <div className="hidden md:block space-y-1 text-xs uppercase tracking-wider text-gray-500">Time</div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Input 
-                        placeholder="e.g. Nikah" 
-                        value={event.name}
-                        onChange={(e) => updateEvent(index, "name", e.target.value)}
-                        required 
-                      />
-                      <Input 
-                        placeholder="e.g. 7:00 PM" 
-                        value={event.time}
-                        onChange={(e) => updateEvent(index, "time", e.target.value)}
-                        required 
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <div className="md:hidden space-y-1 text-xs uppercase tracking-wider text-gray-500 mb-2">Event Name</div>
+                        <Input 
+                          placeholder="e.g. Nikah" 
+                          value={event.name}
+                          onChange={(e) => updateEvent(index, "name", e.target.value)}
+                          required 
+                        />
+                      </div>
+                      <div>
+                        <div className="md:hidden space-y-1 text-xs uppercase tracking-wider text-gray-500 mb-2 mt-4">Time</div>
+                        <Input 
+                          placeholder="e.g. 7:00 PM" 
+                          value={event.time}
+                          onChange={(e) => updateEvent(index, "time", e.target.value)}
+                          required 
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs uppercase tracking-widest text-gray-400">Location</Label>

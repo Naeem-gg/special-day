@@ -30,8 +30,8 @@ async function seed() {
 
   await db.insert(schema.invitations).values({
     slug: "demo",
-    brideName: "Isabella",
-    groomName: "Oliver",
+    brideName: "Ayesha",
+    groomName: "Abdullah",
     date: demoDate,
     venue: "The Grand Rose Ballroom, New York, NY",
     events: [

@@ -8,6 +8,7 @@ import EventList from "@/components/invitation/EventList";
 import PhotoGallery from "@/components/invitation/PhotoGallery";
 import RSVPModal from "@/components/invitation/RSVPModal";
 import BackgroundMusic from "@/components/invitation/BackgroundMusic";
+import EnvelopeIntro from "@/components/invitation/EnvelopeIntro";
 import { Button } from "@/components/ui/button";
 
 interface PageProps {
@@ -28,11 +29,19 @@ export default async function InvitationPage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-white selection:bg-gray-200">
       {invitation.musicUrl && <BackgroundMusic url={invitation.musicUrl} />}
+      
+      {invitation.tier === "premium" && (
+        <EnvelopeIntro 
+          brideName={invitation.brideName} 
+          groomName={invitation.groomName} 
+        />
+      )}
 
       <InvitationHero
         brideName={invitation.brideName}
         groomName={invitation.groomName}
         date={invitation.date}
+        tier={invitation.tier}
       />
 
       <Countdown targetDate={invitation.date} />

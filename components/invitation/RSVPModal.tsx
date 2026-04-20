@@ -63,11 +63,11 @@ export default function RSVPModal({ invitationId }: RSVPModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="fixed bottom-10 right-10 z-50">
+        <div className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-50">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-gray-900 text-white px-8 py-4 rounded-full font-medium tracking-widest uppercase text-xs shadow-2xl hover:bg-gray-800 transition-colors"
+            className="bg-gray-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-medium tracking-widest uppercase text-[10px] md:text-xs shadow-2xl hover:bg-gray-800 transition-colors"
           >
             RSVP Now
           </motion.button>
