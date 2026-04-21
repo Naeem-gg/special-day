@@ -48,7 +48,13 @@ export default async function PreviewPage({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <PreviewBanner template={template} startTime={startTime} />
+      <PreviewBanner 
+        template={template} 
+        startTime={startTime} 
+        brideName={payload.brideName} 
+        groomName={payload.groomName} 
+        dateStr={payload.dateStr} 
+      />
       <WatermarkOverlay />
       <TemplateRouter template={payload.template || template} {...mockInvitation} />
     </>

@@ -393,13 +393,13 @@ export default function Home() {
                     </motion.div>
                   </motion.button>
                 </Link>
-                <Link href="/invite/demo">
+                <Link href="/preview">
                   <motion.button
                     whileHover={{ scale: 1.04, borderColor: "#F43F8F", color: "#F43F8F" }}
                     whileTap={{ scale: 0.96 }}
                     className="flex items-center gap-2 border-2 border-border rounded-full px-8 h-14 text-base font-semibold transition-all text-foreground hover:border-rose-300"
                   >
-                    👀 See a Live Example
+                    👀 Try a Live Preview
                   </motion.button>
                 </Link>
               </motion.div>

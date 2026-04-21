@@ -7,10 +7,26 @@ import { useRouter } from "next/navigation";
 
 const PREVIEW_DURATION = 5 * 60; // 5 minutes in seconds
 
-export default function PreviewBanner({ template, startTime }: { template: string; startTime: number }) {
+export default function PreviewBanner({ 
+  template, startTime, brideName, groomName, dateStr 
+}: { 
+  template: string; startTime: number; brideName?: string; groomName?: string; dateStr?: string;
+}) {
   const [secondsLeft, setSecondsLeft] = useState(PREVIEW_DURATION);
   const [expired, setExpired] = useState(false);
   const router = useRouter();
+
+  const handleBuy = () => {
+    let url = "/dashboard";
+    const params = new URLSearchParams();
+    if (template) params.append("template", template);
+    if (brideName) params.append("brideName", brideName);
+    if (groomName) params.append("groomName", groomName);
+    if (dateStr) params.append("dateStr", dateStr);
+    const qs = params.toString();
+    if (qs) url += "?" + qs;
+    router.push(url);
+  };
 
   useEffect(() => {
     const update = () => {
@@ -61,7 +77,7 @@ export default function PreviewBanner({ template, startTime }: { template: strin
           </div>
 
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={handleBuy}
             className="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-sans font-bold uppercase tracking-wider transition-all hover:scale-105"
             style={{ background: "linear-gradient(90deg, #F43F8F, #D4AF37)", color: "white" }}>
             <ShoppingBag className="w-3.5 h-3.5" />
@@ -86,7 +102,7 @@ export default function PreviewBanner({ template, startTime }: { template: strin
                 Loved what you saw? Purchase this template to unlock your full, shareable invitation with RSVP tracking, gallery, and more.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button onClick={() => router.push("/dashboard")}
+                <button onClick={handleBuy}
                   className="px-8 py-3 rounded-full font-sans font-bold text-sm uppercase tracking-wider"
                   style={{ background: "linear-gradient(90deg, #F43F8F, #D4AF37)", color: "white" }}>
                   Create My Invitation ✨

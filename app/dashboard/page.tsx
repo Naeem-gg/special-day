@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Script from "next/script";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ const shakeVariants = {
   },
 };
 
+import TemplateRouter from "@/components/templates/TemplateRouter";
+
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: (i: number) => ({
@@ -40,6 +42,10 @@ const cardVariants: Variants = {
 
 export default function Dashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdditional, setShowAdditional] = useState(false);
+  const [longPressTemplate, setLongPressTemplate] = useState<string | null>(null);
+  const pressTimer = useRef<NodeJS.Timeout | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const [tiers, setTiers] = useState<any[]>([]);
   const [couponCode, setCouponCode] = useState("");
   const [couponData, setCouponData] = useState<any>(null);
@@ -65,11 +71,72 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const brideName = params.get("brideName");
+      const groomName = params.get("groomName");
+      const dateStr = params.get("dateStr");
+      const template = params.get("template");
+
+      if (brideName || groomName || dateStr || template) {
+        setFormData((prev) => {
+          const newForm = { ...prev };
+          if (brideName) newForm.brideName = brideName;
+          if (groomName) newForm.groomName = groomName;
+          if (dateStr) newForm.date = dateStr;
+          if (template) {
+            newForm.template = template;
+            if (TIER_TEMPLATES.premium?.includes(template)) newForm.tier = "premium";
+            else if (TIER_TEMPLATES.standard?.includes(template)) newForm.tier = "standard";
+          }
+          return newForm;
+        });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     fetch("/api/tiers")
       .then((res) => res.json())
       .then(setTiers)
       .catch((err) => console.error("Failed to fetch tiers:", err));
   }, []);
+
+  useEffect(() => {
+    let animationFrame: number;
+    if (longPressTemplate) {
+      const autoScroll = () => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop += 1;
+        }
+        animationFrame = requestAnimationFrame(autoScroll);
+      };
+      animationFrame = requestAnimationFrame(autoScroll);
+    }
+    return () => cancelAnimationFrame(animationFrame);
+  }, [longPressTemplate]);
+
+  const handlePointerDown = (slug: string, e: React.PointerEvent) => {
+    // Only trigger for primary pointer (left click or touch)
+    if (e.button !== 0 && e.button !== undefined) return;
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    pressTimer.current = setTimeout(() => {
+      setLongPressTemplate(slug);
+    }, 400); // 400ms long press
+  };
+
+  const handlePointerUpOrLeave = () => {
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    setLongPressTemplate(null);
+  };
+
+  const handleTemplateSelect = (slug: string) => {
+    let targetTier = "basic";
+    if (TIER_TEMPLATES.premium?.includes(slug)) targetTier = "premium";
+    else if (TIER_TEMPLATES.standard?.includes(slug)) targetTier = "standard";
+
+    setFormData({ ...formData, template: slug, tier: targetTier });
+  };
 
   const handleAddEvent = () => {
     setFormData({
@@ -124,7 +191,7 @@ export default function Dashboard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const selectedTier = tiers.find((t) => t.slug === formData.tier);
     const originalPrice = selectedTier?.price || 0;
     const finalPrice = calculateFinalPrice(originalPrice);
@@ -134,14 +201,14 @@ export default function Dashboard() {
       const orderRes = await fetch("/api/payments/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          tierSlug: formData.tier, 
-          couponPrice: finalPrice 
+        body: JSON.stringify({
+          tierSlug: formData.tier,
+          couponPrice: finalPrice
         }),
       });
-      
+
       const orderData = await orderRes.json();
-      
+
       if (!orderRes.ok) {
         throw new Error(orderData.error || "Failed to initiate payment");
       }
@@ -311,7 +378,7 @@ export default function Dashboard() {
                         {paymentMessage}
                       </p>
                     </div>
-                    <Button 
+                    <Button
                       onClick={() => setPaymentStatus("idle")}
                       className="rounded-full bg-gray-900 text-white hover:bg-black px-8"
                     >
@@ -325,12 +392,45 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
+      {/* ── Long Press Preview Overlay ───────────────── */}
+      <AnimatePresence>
+        {longPressTemplate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-sm flex flex-col justify-center items-center select-none touch-none"
+            onPointerUp={handlePointerUpOrLeave}
+            onPointerLeave={handlePointerUpOrLeave}
+          >
+            <p className="text-white/60 text-sm font-sans mb-4 tracking-widest uppercase animate-pulse">Release to stop previewing</p>
+            <div
+              ref={scrollRef}
+              className="w-full max-w-[400px] h-[750px] max-h-[85vh] bg-white rounded-[2.5rem] overflow-x-hidden overflow-y-auto shadow-2xl pointer-events-none relative"
+            >
+              <div className="absolute inset-0 origin-top pointer-events-none" style={{ transform: "scale(1)" }}>
+                <TemplateRouter
+                  template={longPressTemplate}
+                  brideName={formData.brideName || "Ayesha"}
+                  groomName={formData.groomName || "Abdullah"}
+                  date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
+                  venue={formData.venue || "Grand Ballroom"}
+                  events={formData.events[0]?.name ? formData.events : [{ name: "Ceremony", time: "4:00 PM", location: "Main Hall", description: "Vows and Rings" }]}
+                  gallery={formData.gallery}
+                  isPreview={true}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Razorpay Script */}
       <Script
         id="razorpay-checkout-js"
         src="https://checkout.razorpay.com/v1/checkout.js"
       />
-      
+
       {/* Header */}
       <motion.header
         initial={{ y: -60, opacity: 0 }}
@@ -375,74 +475,6 @@ export default function Dashboard() {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* ── Template Picker ──────────────── */}
-          <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible">
-            <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
-              <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
-                <CardTitle className="flex items-center gap-2 font-serif text-xl">
-                  <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-                  Choose Your Invitation Design
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  All templates are available to preview free. Your chosen plan unlocks specific templates.
-                </p>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {TEMPLATES.map((tmpl) => {
-                    const availableForTier = TIER_TEMPLATES[formData.tier]?.includes(tmpl.slug);
-                    const isSelected = formData.template === tmpl.slug;
-                    return (
-                      <motion.div
-                        key={tmpl.slug}
-                        whileHover={{ scale: 1.03, y: -3 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => availableForTier && setFormData({ ...formData, template: tmpl.slug })}
-                        className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all ${isSelected ? "border-[#F43F8F] shadow-lg shadow-rose-200/50" : availableForTier ? "border-gray-100 hover:border-rose-200" : "border-gray-100 opacity-60 cursor-not-allowed"}`}
-                      >
-                        {/* Gradient thumbnail */}
-                        <div className="h-28 relative"
-                          style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-2xl">{tmpl.emoji}</span>
-                          </div>
-                          {!availableForTier && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-                              <div className="flex flex-col items-center gap-1 text-white/90 text-center px-2">
-                                <Lock className="w-4 h-4" />
-                                <span className="text-[10px] font-sans font-bold capitalize">{tmpl.tier} plan</span>
-                              </div>
-                            </div>
-                          )}
-                          {isSelected && (
-                            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#F43F8F] flex items-center justify-center">
-                              <CheckCircle2 className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-3 bg-white">
-                          <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
-                          <div className="flex items-center justify-between mt-1">
-                            <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400 capitalize">{tmpl.tier}</span>
-                            <a
-                              href={`/preview?template=${tmpl.slug}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={e => e.stopPropagation()}
-                              className="text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-0.5"
-                              style={{ color: "#F43F8F" }}>
-                              <Eye className="w-3 h-3" />Try
-                            </a>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
           {/* ── Wedding Details ─────────────── */}
           <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible">
             <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
@@ -546,67 +578,100 @@ export default function Dashboard() {
                     Your guests will hear this song when they open the invite. 🎶
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-                {/* Plan selection */}
-                <div className="space-y-4 pt-4 border-t border-rose-100">
-                  <Label className="text-base font-semibold">Choose Your Gift Package 🎀</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {tiers.length > 0 ? (
-                      tiers.map((tier) => {
-                        const originalPrice = tier.price;
-                        const finalPrice = calculateFinalPrice(originalPrice);
-                        const hasDiscount = originalPrice !== finalPrice;
-                        const isSelected = formData.tier === tier.slug;
-                        return (
-                          <motion.div
-                            key={tier.id}
-                            whileHover={{ scale: 1.03, y: -4 }}
-                            whileTap={{ scale: 0.97 }}
-                            onClick={() => setFormData({ ...formData, tier: tier.slug })}
-                            className={`cursor-pointer p-5 rounded-2xl border-2 transition-all relative overflow-hidden ${isSelected
-                              ? "border-[#F43F8F] bg-linear-to-br from-rose-50 to-amber-50 shadow-lg shadow-rose-200/50"
-                              : "border-gray-100 bg-white hover:border-rose-200"
-                              }`}
-                          >
-                            {isSelected && (
-                              <motion.div
-                                layoutId="tier-selected"
-                                className="absolute inset-0 bg-linear-to-br from-[#F43F8F]/5 to-[#D4AF37]/5 rounded-2xl"
-                              />
-                            )}
-                            <div className="flex justify-between items-start mb-3 relative z-10">
-                              <span className="font-bold text-sm text-gray-900">{tier.name}</span>
-                              <AnimatePresence>
-                                {isSelected && (
-                                  <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    exit={{ scale: 0 }}
-                                  >
-                                    <CheckCircle2 className="w-5 h-5 text-[#F43F8F]" />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
+          {/* ── Template Picker ──────────────── */}
+          <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible">
+            <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
+              <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
+                <CardTitle className="flex items-center gap-2 font-serif text-xl">
+                  <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+                  Choose Your Invitation Design
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Hold down on any template to preview it instantly with your details!
+                </p>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {TEMPLATES.map((tmpl) => {
+                    const isSelected = formData.template === tmpl.slug;
+                    return (
+                      <motion.div
+                        key={tmpl.slug}
+                        onPointerDown={(e) => handlePointerDown(tmpl.slug, e)}
+                        onPointerUp={handlePointerUpOrLeave}
+                        onPointerLeave={handlePointerUpOrLeave}
+                        onContextMenu={(e) => e.preventDefault()}
+                        whileHover={{ scale: 1.03, y: -3 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => handleTemplateSelect(tmpl.slug)}
+                        className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all select-none ${isSelected ? "border-[#F43F8F] shadow-lg shadow-rose-200/50" : "border-gray-100 hover:border-rose-200"}`}
+                      >
+                        {/* Gradient thumbnail */}
+                        <div className="h-28 relative"
+                          style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-2xl">{tmpl.emoji}</span>
+                          </div>
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#F43F8F] flex items-center justify-center">
+                              <CheckCircle2 className="w-3 h-3 text-white" />
                             </div>
-                            <div className="flex flex-col relative z-10">
-                              {hasDiscount && (
-                                <span className="text-xs text-gray-400 line-through">₹{originalPrice}</span>
-                              )}
-                              <p className="text-2xl font-serif text-gray-900">₹{finalPrice}</p>
-                              {hasDiscount && (
-                                <span className="text-xs text-green-600 font-semibold">🎉 Discount applied!</span>
-                              )}
-                            </div>
-                          </motion.div>
-                        );
-                      })
-                    ) : (
-                      <div className="col-span-3 py-10 text-center">
-                        <div className="skeleton h-6 w-48 mx-auto mb-3" />
-                        <div className="skeleton h-4 w-32 mx-auto" />
+                          )}
+                        </div>
+                        <div className="p-3 bg-white">
+                          <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400 capitalize">{tmpl.tier} plan</span>
+                            <span
+                              className="text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-0.5"
+                              style={{ color: "#F43F8F" }}>
+                              <Eye className="w-3 h-3" />Hold
+                            </span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* ── Plan & Discount ──────────────── */}
+          <motion.div custom={2} variants={cardVariants} initial="hidden" animate="visible">
+            <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
+              <CardContent className="pt-6">
+                {/* Price Summary */}
+                <div className="space-y-4">
+                  {tiers.length > 0 ? (() => {
+                    const selectedTier = tiers.find((t) => t.slug === formData.tier) || tiers[0];
+                    const originalPrice = selectedTier?.price || 0;
+                    const finalPrice = calculateFinalPrice(originalPrice);
+                    const hasDiscount = originalPrice !== finalPrice;
+                    
+                    return (
+                      <div className="p-5 bg-linear-to-br from-rose-50 to-amber-50 rounded-2xl border border-rose-200 shadow-sm flex items-center justify-between">
+                        <div>
+                          <Label className="text-base font-semibold text-gray-900">Total Price</Label>
+                          <p className="text-sm text-muted-foreground mt-0.5 capitalize">For the {formData.tier} plan ({TEMPLATES.find(t => t.slug === formData.template)?.name || "Template"})</p>
+                        </div>
+                        <div className="text-right flex flex-col items-end">
+                          {hasDiscount && (
+                            <span className="text-xs text-gray-400 line-through">₹{originalPrice}</span>
+                          )}
+                          <p className="text-3xl font-serif text-[#F43F8F]">₹{finalPrice}</p>
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    );
+                  })() : (
+                    <div className="py-4 text-center">
+                      <div className="skeleton h-20 w-full rounded-2xl mx-auto" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Discount code */}
@@ -672,109 +737,124 @@ export default function Dashboard() {
             </Card>
           </motion.div>
 
-          {/* ── Special Moments Schedule ────── */}
-          <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible">
-            <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
-              <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100 flex flex-row items-center justify-between pb-4">
-                <CardTitle className="flex items-center gap-2 font-serif text-xl">
-                  <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-                  Your Special Moments Schedule
-                </CardTitle>
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleAddEvent}
-                  className="flex items-center gap-1.5 px-4 py-2 border border-rose-200 rounded-xl text-sm font-semibold text-[#F43F8F] hover:bg-rose-50 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Event
-                </motion.button>
-              </CardHeader>
-              <CardContent className="space-y-5 pt-6">
-                <AnimatePresence>
-                  {formData.events.map((event, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -40, transition: { duration: 0.3 } }}
-                      className="p-6 bg-linear-to-br from-rose-50/40 to-amber-50/20 rounded-2xl relative border border-rose-100 group"
+          {!showAdditional ? (
+            <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible" className="flex justify-center">
+              <Button
+                onClick={() => setShowAdditional(true)}
+                type="button"
+                variant="outline"
+                className="rounded-full border-rose-200 text-[#F43F8F] hover:bg-rose-50 h-12 px-8 font-semibold shadow-sm"
+              >
+                + Add Additional Events or Photos (Optional)
+              </Button>
+            </motion.div>
+          ) : (
+            <>
+              {/* ── Special Moments Schedule ────── */}
+              <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible">
+                <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
+                  <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100 flex flex-row items-center justify-between pb-4">
+                    <CardTitle className="flex items-center gap-2 font-serif text-xl">
+                      <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+                      Your Special Moments Schedule
+                    </CardTitle>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleAddEvent}
+                      className="flex items-center gap-1.5 px-4 py-2 border border-rose-200 rounded-xl text-sm font-semibold text-[#F43F8F] hover:bg-rose-50 transition-colors"
                     >
-                      <motion.button
-                        type="button"
-                        whileHover={{ scale: 1.2, color: "#EF4444" }}
-                        onClick={() => handleRemoveEvent(index)}
-                        className="absolute top-4 right-4 text-gray-300 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </motion.button>
-                      <p className="text-xs font-bold uppercase tracking-widest text-[#F43F8F] mb-4">
-                        Event {index + 1}
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div className="space-y-2">
-                          <Label className="text-xs font-semibold text-gray-600">What's the event called?</Label>
-                          <Input
-                            placeholder="e.g. Nikah, Walima, Mehndi"
-                            value={event.name}
-                            onChange={(e) => updateEvent(index, "name", e.target.value)}
-                            required
-                            className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-xs font-semibold text-gray-600">What time does it start?</Label>
-                          <Input
-                            placeholder="e.g. 7:00 PM"
-                            value={event.time}
-                            onChange={(e) => updateEvent(index, "time", e.target.value)}
-                            required
-                            className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
-                          />
-                        </div>
-                        <div className="space-y-2 md:col-span-2">
-                          <Label className="text-xs font-semibold text-gray-600">Where is it happening?</Label>
-                          <Input
-                            placeholder="e.g. The Grand Hall, 2nd Floor"
-                            value={event.location}
-                            onChange={(e) => updateEvent(index, "location", e.target.value)}
-                            required
-                            className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
-                          />
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </CardContent>
-            </Card>
-          </motion.div>
+                      <Plus className="w-4 h-4" />
+                      Add Event
+                    </motion.button>
+                  </CardHeader>
+                  <CardContent className="space-y-5 pt-6">
+                    <AnimatePresence>
+                      {formData.events.map((event, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, x: -40, transition: { duration: 0.3 } }}
+                          className="p-6 bg-linear-to-br from-rose-50/40 to-amber-50/20 rounded-2xl relative border border-rose-100 group"
+                        >
+                          <motion.button
+                            type="button"
+                            whileHover={{ scale: 1.2, color: "#EF4444" }}
+                            onClick={() => handleRemoveEvent(index)}
+                            className="absolute top-4 right-4 text-gray-300 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </motion.button>
+                          <p className="text-xs font-bold uppercase tracking-widest text-[#F43F8F] mb-4">
+                            Event {index + 1}
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="space-y-2">
+                              <Label className="text-xs font-semibold text-gray-600">What's the event called?</Label>
+                              <Input
+                                placeholder="e.g. Nikah, Walima, Mehndi"
+                                value={event.name}
+                                onChange={(e) => updateEvent(index, "name", e.target.value)}
+                                required
+                                className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs font-semibold text-gray-600">What time does it start?</Label>
+                              <Input
+                                placeholder="e.g. 7:00 PM"
+                                value={event.time}
+                                onChange={(e) => updateEvent(index, "time", e.target.value)}
+                                required
+                                className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
+                              />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                              <Label className="text-xs font-semibold text-gray-600">Where is it happening?</Label>
+                              <Input
+                                placeholder="e.g. The Grand Hall, 2nd Floor"
+                                value={event.location}
+                                onChange={(e) => updateEvent(index, "location", e.target.value)}
+                                required
+                                className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
+                              />
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-          {/* ── Your Photo Album ─────────────── */}
-          <motion.div custom={2} variants={cardVariants} initial="hidden" animate="visible">
-            <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
-              <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
-                <CardTitle className="flex items-center gap-2 font-serif text-xl">
-                  📸 Your Photo Album
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Upload your favourite pictures — they'll show up in a beautiful gallery for your guests!
-                </p>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <CloudinaryUpload
-                  images={formData.gallery}
-                  onUpload={(url, publicId) =>
-                    setFormData({ ...formData, gallery: [...formData.gallery, { url, publicId }] })
-                  }
-                  onRemove={(publicId) =>
-                    setFormData({ ...formData, gallery: formData.gallery.filter((img) => img.publicId !== publicId) })
-                  }
-                />
-              </CardContent>
-            </Card>
-          </motion.div>
+              {/* ── Your Photo Album ─────────────── */}
+              <motion.div custom={2} variants={cardVariants} initial="hidden" animate="visible">
+                <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
+                  <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
+                    <CardTitle className="flex items-center gap-2 font-serif text-xl">
+                      📸 Your Photo Album
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Upload your favourite pictures — they'll show up in a beautiful gallery for your guests!
+                    </p>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <CloudinaryUpload
+                      images={formData.gallery}
+                      onUpload={(url, publicId) =>
+                        setFormData({ ...formData, gallery: [...formData.gallery, { url, publicId }] })
+                      }
+                      onRemove={(publicId) =>
+                        setFormData({ ...formData, gallery: formData.gallery.filter((img) => img.publicId !== publicId) })
+                      }
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </>
+          )}
 
           {/* ── Submit ───────────────────────── */}
           <motion.div custom={3} variants={cardVariants} initial="hidden" animate="visible" className="flex justify-end pt-2 pb-8">

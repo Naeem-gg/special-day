@@ -153,8 +153,8 @@ export default function PreviewLandingPage() {
               </div>
             </div>
             <div>
-              <label className="font-sans text-xs text-gray-600 font-semibold uppercase tracking-wider mb-1.5 block">Wedding Date</label>
-              <input type="date" value={weddingDate} onChange={e => setWeddingDate(e.target.value)}
+              <label className="font-sans text-xs text-gray-600 font-semibold uppercase tracking-wider mb-1.5 block">Wedding Date & Time</label>
+              <input type="datetime-local" value={weddingDate} onChange={e => setWeddingDate(e.target.value)}
                 className="w-full border border-rose-200 rounded-xl px-4 h-11 font-sans text-sm focus:border-rose-400 focus:outline-none" />
             </div>
           </div>
