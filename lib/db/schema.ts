@@ -1,5 +1,33 @@
 import { pgTable, serial, text, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 
+export const admins = pgTable("admins", {
+  id: serial("id").primaryKey(),
+  username: text("username").unique().notNull(),
+  password: text("password").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const tiers = pgTable("tiers", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").unique().notNull(),
+  name: text("name").notNull(),
+  price: integer("price").notNull(),
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const coupons = pgTable("coupons", {
+  id: serial("id").primaryKey(),
+  code: text("code").unique().notNull(),
+  discountType: text("discount_type").notNull(), // 'percentage' or 'fixed'
+  discountValue: integer("discount_value").notNull(),
+  expiresAt: timestamp("expires_at"),
+  usageLimit: integer("usage_limit"),
+  usedCount: integer("used_count").default(0).notNull(),
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const invitations = pgTable("invitations", {
   id: serial("id").primaryKey(),
   slug: text("slug").unique().notNull(),
@@ -20,6 +48,9 @@ export const invitations = pgTable("invitations", {
   musicUrl: text("music_url"),
   backgroundImage: text("background_image"),
   tier: text("tier").notNull().default("basic"),
+  couponId: integer("coupon_id").references(() => coupons.id),
+  discountApplied: integer("discount_applied").default(0),
+  paidAmount: integer("paid_amount"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

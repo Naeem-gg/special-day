@@ -29,11 +29,11 @@ export default async function InvitationPage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-white selection:bg-gray-200">
       {invitation.musicUrl && <BackgroundMusic url={invitation.musicUrl} />}
-      
+
       {invitation.tier === "premium" && (
-        <EnvelopeIntro 
-          brideName={invitation.brideName} 
-          groomName={invitation.groomName} 
+        <EnvelopeIntro
+          brideName={invitation.brideName}
+          groomName={invitation.groomName}
         />
       )}
 
@@ -59,7 +59,7 @@ export default async function InvitationPage({ params }: PageProps) {
           <p className="text-gray-600 font-light text-lg mb-4">
             {invitation.venue}
           </p>
-          <div className="h-[1px] w-20 bg-gray-300 mx-auto mt-8" />
+          <div className="h-px w-20 bg-gray-300 mx-auto mt-8" />
         </div>
       </section>
 

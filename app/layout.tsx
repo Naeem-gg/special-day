@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
 
 export const metadata: Metadata = {
-  title: "Digital Wedding Invitation | Create Your Special Day",
-  description: "A premium, animated digital wedding invitation experience.",
+  title: "DNvites – Dearest Invites | Digital Wedding Invitations",
+  description: "Create a beautiful, animated digital wedding invitation in minutes. Share with family & friends instantly via WhatsApp, Instagram or Email.",
 }
 
 export default function RootLayout({

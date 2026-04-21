@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import { invitations } from "@/lib/db/schema";
+import { invitations, coupons } from "@/lib/db/schema";
+import { eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -15,25 +16,42 @@ export async function POST(req: NextRequest) {
       gallery, 
       musicUrl, 
       backgroundImage,
-      tier
+      tier,
+      couponId,
+      discountApplied,
+      paidAmount
     } = body;
 
     if (!slug || !brideName || !groomName || !date || !venue) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const [newInvitation] = await db.insert(invitations).values({
-      slug,
-      brideName,
-      groomName,
-      date: new Date(date),
-      venue,
-      events: events || [],
-      gallery: gallery || [],
-      musicUrl,
-      backgroundImage,
-      tier: tier || "basic"
-    }).returning();
+    // Use a transaction to ensure invitation creation and coupon update are atomic
+    const newInvitation = await db.transaction(async (tx) => {
+      const [inv] = await tx.insert(invitations).values({
+        slug,
+        brideName,
+        groomName,
+        date: new Date(date),
+        venue,
+        events: events || [],
+        gallery: gallery || [],
+        musicUrl,
+        backgroundImage,
+        tier: tier || "basic",
+        couponId: couponId || null,
+        discountApplied: discountApplied || 0,
+        paidAmount: paidAmount || 0
+      }).returning();
+
+      if (couponId) {
+        await tx.update(coupons)
+          .set({ usedCount: sql`${coupons.usedCount} + 1` })
+          .where(eq(coupons.id, couponId));
+      }
+
+      return inv;
+    });
 
     return NextResponse.json({ success: true, data: newInvitation });
   } catch (error) {
