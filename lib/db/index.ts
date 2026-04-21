@@ -1,31 +1,26 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
 
 /**
- * Cache the database connection in development to prevent 
- * creating multiple pools during HMR (Hot Module Replacement).
+ * Use the 'postgres' package which handles Neon SSL correctly.
+ * Cache the client in development to prevent multiple connections during HMR.
  */
 const globalForDb = globalThis as unknown as {
-  pool: Pool | undefined;
+  sql: ReturnType<typeof postgres> | undefined;
 };
 
-const pool =
-  globalForDb.pool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-    max: 10,
-    connectionTimeoutMillis: 15000,
-    idleTimeoutMillis: 15000,
-    ssl: {
-      rejectUnauthorized: false, // Required for Neon in many local environments
-    },
+const connectionString = process.env.DATABASE_URL!;
+
+const sql =
+  globalForDb.sql ??
+  postgres(connectionString, {
+    ssl: "require",
+    max: 5,
+    idle_timeout: 20,
+    connect_timeout: 10,
   });
 
-console.log("[DB Debug] Initializing pool...");
-pool.on('error', (err) => console.error('[DB Debug] Unexpected error on idle client', err));
-pool.on('connect', () => console.log('[DB Debug] New client connected to pool'));
+if (process.env.NODE_ENV !== "production") globalForDb.sql = sql;
 
-if (process.env.NODE_ENV !== "production") globalForDb.pool = pool;
-
-export const db = drizzle(pool, { schema });
+export const db = drizzle(sql, { schema });

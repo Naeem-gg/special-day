@@ -48,6 +48,7 @@ export const invitations = pgTable("invitations", {
   musicUrl: text("music_url"),
   backgroundImage: text("background_image"),
   tier: text("tier").notNull().default("basic"),
+  template: text("template").notNull().default("rose-gold"),
   couponId: integer("coupon_id").references(() => coupons.id),
   discountApplied: integer("discount_applied").default(0),
   paidAmount: integer("paid_amount"),

@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
       musicUrl, 
       backgroundImage,
       tier,
+      template,
       couponId,
       discountApplied,
       paidAmount
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
         musicUrl,
         backgroundImage,
         tier: tier || "basic",
+        template: template || "rose-gold",
         couponId: couponId || null,
         discountApplied: discountApplied || 0,
         paidAmount: paidAmount || 0,

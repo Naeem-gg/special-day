@@ -12,7 +12,8 @@ import Link from "next/link";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
 import { Footer } from "@/components/Footer";
 import confetti from "canvas-confetti";
-import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock } from "lucide-react";
+import { TEMPLATES, TIER_TEMPLATES } from "@/components/templates/types";
 
 declare global {
   interface Window {
@@ -58,6 +59,7 @@ export default function Dashboard() {
     slug: "",
     musicUrl: "",
     tier: "basic",
+    template: "rose-gold",
     events: [{ name: "", time: "", location: "", description: "" }],
     gallery: [] as { url: string; publicId: string }[],
   });
@@ -373,6 +375,74 @@ export default function Dashboard() {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* ── Template Picker ──────────────── */}
+          <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible">
+            <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
+              <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
+                <CardTitle className="flex items-center gap-2 font-serif text-xl">
+                  <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+                  Choose Your Invitation Design
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  All templates are available to preview free. Your chosen plan unlocks specific templates.
+                </p>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {TEMPLATES.map((tmpl) => {
+                    const availableForTier = TIER_TEMPLATES[formData.tier]?.includes(tmpl.slug);
+                    const isSelected = formData.template === tmpl.slug;
+                    return (
+                      <motion.div
+                        key={tmpl.slug}
+                        whileHover={{ scale: 1.03, y: -3 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => availableForTier && setFormData({ ...formData, template: tmpl.slug })}
+                        className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all ${isSelected ? "border-[#F43F8F] shadow-lg shadow-rose-200/50" : availableForTier ? "border-gray-100 hover:border-rose-200" : "border-gray-100 opacity-60 cursor-not-allowed"}`}
+                      >
+                        {/* Gradient thumbnail */}
+                        <div className="h-28 relative"
+                          style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-2xl">{tmpl.emoji}</span>
+                          </div>
+                          {!availableForTier && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+                              <div className="flex flex-col items-center gap-1 text-white/90 text-center px-2">
+                                <Lock className="w-4 h-4" />
+                                <span className="text-[10px] font-sans font-bold capitalize">{tmpl.tier} plan</span>
+                              </div>
+                            </div>
+                          )}
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#F43F8F] flex items-center justify-center">
+                              <CheckCircle2 className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-3 bg-white">
+                          <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400 capitalize">{tmpl.tier}</span>
+                            <a
+                              href={`/preview?template=${tmpl.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={e => e.stopPropagation()}
+                              className="text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-0.5"
+                              style={{ color: "#F43F8F" }}>
+                              <Eye className="w-3 h-3" />Try
+                            </a>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {/* ── Wedding Details ─────────────── */}
           <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible">
             <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
