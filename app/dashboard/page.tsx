@@ -1,15 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Script from "next/script";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, Ticket, CheckCircle2, Heart, Sparkles } from "lucide-react";
 import CloudinaryUpload from "@/components/dashboard/CloudinaryUpload";
 import Link from "next/link";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
+import { Footer } from "@/components/Footer";
+import confetti from "canvas-confetti";
+import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket } from "lucide-react";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 /* Shake animation for coupon errors */
 const shakeVariants = {
@@ -36,6 +45,10 @@ export default function Dashboard() {
   const [couponError, setCouponError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
+
+  // ── Payment Status ──────────────────
+  const [paymentStatus, setPaymentStatus] = useState<"idle" | "verifying" | "success" | "error">("idle");
+  const [paymentMessage, setPaymentMessage] = useState("");
 
   const [formData, setFormData] = useState({
     brideName: "",
@@ -109,30 +122,108 @@ export default function Dashboard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
     const selectedTier = tiers.find((t) => t.slug === formData.tier);
     const originalPrice = selectedTier?.price || 0;
     const finalPrice = calculateFinalPrice(originalPrice);
 
     try {
-      const response = await fetch("/api/invitations", {
+      // 1. Create a Razorpay Order
+      const orderRes = await fetch("/api/payments/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          couponId: couponData?.id,
-          discountApplied: originalPrice - finalPrice,
-          paidAmount: finalPrice,
+        body: JSON.stringify({ 
+          tierSlug: formData.tier, 
+          couponPrice: finalPrice 
         }),
       });
-      const data = await response.json();
-      if (response.ok) {
-        alert("🎉 Your invitation is live! Redirecting you now...");
-        window.location.href = `/invite/${formData.slug}`;
-      } else {
-        alert(data.error || "Something went wrong. Please try again.");
+      
+      const orderData = await orderRes.json();
+      
+      if (!orderRes.ok) {
+        throw new Error(orderData.error || "Failed to initiate payment");
       }
-    } catch {
-      alert("Oops! Something went wrong. Please try again.");
+
+      console.log("Initiating Razorpay Checkout:", {
+        orderId: orderData.orderId,
+        amount: orderData.amount,
+        keyExists: !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        keyPrefix: (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "").substring(0, 8)
+      });
+
+      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+        throw new Error("Razorpay Key ID is missing on the client. Please check your .env.local and restart the server.");
+      }
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Use explicitly
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "DNvites",
+        description: `Wedding Invitation - ${selectedTier?.name} Plan`,
+        order_id: orderData.orderId,
+        handler: async function (response: any) {
+          // 3. Verify Payment and Save Invitation
+          setPaymentStatus("verifying");
+          try {
+            const verifyRes = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                invitationData: {
+                  ...formData,
+                  couponId: couponData?.id,
+                  discountApplied: originalPrice - finalPrice,
+                  paidAmount: finalPrice,
+                }
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+            if (verifyRes.ok) {
+              setPaymentStatus("success");
+              confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ["#F43F8F", "#D4AF37", "#FFFFFF"]
+              });
+              setTimeout(() => {
+                window.location.href = `/invite/${formData.slug}`;
+              }, 3000);
+            } else {
+              setPaymentStatus("error");
+              setPaymentMessage(verifyData.error || "Payment verification failed.");
+            }
+          } catch (err) {
+            console.error("Verification Error:", err);
+            setPaymentStatus("error");
+            setPaymentMessage("Something went wrong during verification.");
+          }
+        },
+        prefill: {
+          name: formData.brideName + " & " + formData.groomName,
+          email: "", // Optonal: Add user email if collected
+          contact: "",
+        },
+        theme: {
+          color: "#F43F8F",
+        },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on("payment.failed", function (response: any) {
+        setPaymentStatus("error");
+        setPaymentMessage(`Payment failed: ${response.error.description}`);
+      });
+      rzp1.open();
+    } catch (error: any) {
+      setPaymentStatus("error");
+      setPaymentMessage(error.message || "Oops! Something went wrong.");
     } finally {
       setIsSubmitting(false);
     }
@@ -140,6 +231,104 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-rose-50/50 via-white to-amber-50/30">
+      {/* ── Status Overlay ───────────────── */}
+      <AnimatePresence>
+        {paymentStatus !== "idle" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-white/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="max-w-md w-full bg-white rounded-[3rem] p-10 text-center shadow-2xl border border-rose-100"
+            >
+              <AnimatePresence mode="wait">
+                {paymentStatus === "verifying" && (
+                  <motion.div
+                    key="verifying"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="space-y-6"
+                  >
+                    <div className="relative w-24 h-24 mx-auto">
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute inset-0 bg-rose-200 rounded-full"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Loader2 className="w-10 h-10 text-[#F43F8F] animate-spin" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-serif text-gray-900">Finalising Your Invite...</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        We're just perfecting the magic. Please don't close this window! ✨
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {paymentStatus === "success" && (
+                  <motion.div
+                    key="success"
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="space-y-6"
+                  >
+                    <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-12 h-12 text-green-500" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-serif text-gray-900">Yay! It's Live! 🥂</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        Your beautiful invitation has been created successfully. Redirecting you to see it now...
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {paymentStatus === "error" && (
+                  <motion.div
+                    key="error"
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    className="space-y-6"
+                  >
+                    <div className="w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center mx-auto">
+                      <XCircle className="w-12 h-12 text-rose-500" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-serif text-gray-900">Oops, Something Went Wrong</h3>
+                      <p className="text-rose-600/80 text-sm leading-relaxed font-medium">
+                        {paymentMessage}
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={() => setPaymentStatus("idle")}
+                      className="rounded-full bg-gray-900 text-white hover:bg-black px-8"
+                    >
+                      Try Again
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Razorpay Script */}
+      <Script
+        id="razorpay-checkout-js"
+        src="https://checkout.razorpay.com/v1/checkout.js"
+      />
+      
       {/* Header */}
       <motion.header
         initial={{ y: -60, opacity: 0 }}
@@ -190,7 +379,7 @@ export default function Dashboard() {
               <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
                 <CardTitle className="flex items-center gap-2 font-serif text-xl">
                   <Heart className="w-5 h-5 text-[#F43F8F] fill-[#F43F8F]" />
-                  About Your Wedding
+                  Tell Us About Your Love
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid gap-6 pt-6">
@@ -290,7 +479,7 @@ export default function Dashboard() {
 
                 {/* Plan selection */}
                 <div className="space-y-4 pt-4 border-t border-rose-100">
-                  <Label className="text-base font-semibold">Choose Your Invitation Plan 🎀</Label>
+                  <Label className="text-base font-semibold">Choose Your Gift Package 🎀</Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {tiers.length > 0 ? (
                       tiers.map((tier) => {
@@ -413,13 +602,13 @@ export default function Dashboard() {
             </Card>
           </motion.div>
 
-          {/* ── Wedding Events ───────────────── */}
+          {/* ── Special Moments Schedule ────── */}
           <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible">
             <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
               <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100 flex flex-row items-center justify-between pb-4">
                 <CardTitle className="flex items-center gap-2 font-serif text-xl">
                   <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-                  Your Wedding Events
+                  Your Special Moments Schedule
                 </CardTitle>
                 <motion.button
                   type="button"
@@ -492,12 +681,12 @@ export default function Dashboard() {
             </Card>
           </motion.div>
 
-          {/* ── Photo Gallery ────────────────── */}
+          {/* ── Your Photo Album ─────────────── */}
           <motion.div custom={2} variants={cardVariants} initial="hidden" animate="visible">
             <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
               <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
                 <CardTitle className="flex items-center gap-2 font-serif text-xl">
-                  📸 Your Photos
+                  📸 Your Photo Album
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
                   Upload your favourite pictures — they'll show up in a beautiful gallery for your guests!
@@ -541,6 +730,7 @@ export default function Dashboard() {
           </motion.div>
         </form>
       </div>
+      <Footer />
     </div>
   );
 }

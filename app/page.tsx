@@ -20,25 +20,44 @@ import {
 } from "lucide-react";
 import { FloatingHearts } from "@/components/floating-hearts";
 import { useEffect, useRef, useState } from "react";
+import { Footer } from "@/components/Footer";
 
 /* ── Petal Rain ───────────────────────── */
 function PetalRain() {
-  const petals = ["🌸", "🌺", "🌷", "💮", "🌼"];
+  const [mounted, setMounted] = useState(false);
+  const [petalStyles, setPetalStyles] = useState<any[]>([]);
+  const petalsSymbols = ["🌸", "🌺", "🌷", "💮", "🌼"];
+
+  useEffect(() => {
+    const styles = Array.from({ length: 18 }).map((_, i) => ({
+      left: `${Math.random() * 100}%`,
+      animationDuration: `${8 + Math.random() * 10}s`,
+      animationDelay: `${Math.random() * 12}s`,
+      fontSize: `${14 + Math.random() * 14}px`,
+      opacity: 0.55 + Math.random() * 0.4,
+      symbol: petalsSymbols[i % petalsSymbols.length]
+    }));
+    setPetalStyles(styles);
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {Array.from({ length: 18 }).map((_, i) => (
+      {petalStyles.map((style, i) => (
         <span
           key={i}
           className="petal select-none"
           style={{
-            left: `${Math.random() * 100}%`,
-            animationDuration: `${8 + Math.random() * 10}s`,
-            animationDelay: `${Math.random() * 12}s`,
-            fontSize: `${14 + Math.random() * 14}px`,
-            opacity: 0.55 + Math.random() * 0.4,
+            left: style.left,
+            animationDuration: style.animationDuration,
+            animationDelay: style.animationDelay,
+            fontSize: style.fontSize,
+            opacity: style.opacity,
           }}
         >
-          {petals[i % petals.length]}
+          {style.symbol}
         </span>
       ))}
     </div>
@@ -422,7 +441,7 @@ export default function Home() {
                 transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                 className="aspect-4/5 relative rounded-[3rem] overflow-hidden shadow-2xl glow-ring"
               >
-                <Image src="/images/hero-bg.png" alt="Wedding Preview" fill sizes="" className="object-cover" />
+                <Image src="/images/hero-bg.png" alt="Wedding Preview" fill priority sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
                 <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
 
                 {/* Floating overlay card */}
@@ -608,20 +627,20 @@ export default function Home() {
             <PricingCard
               tier="Dearest Basic"
               price="399"
-              features={["Beautiful animated design", "RSVP tracking", "Event details & map", "5 wedding photos", "1 year online"]}
+              features={["Beautiful animated design", "See who's coming (Guest List)", "Event details & direction map", "Space for 5 wedding photos", "1 year of hosting included"]}
               delay={0.1}
             />
             <PricingCard
               tier="Dearest Silver"
               price="799"
-              features={["Everything in Basic", "Up to 20 photos", "Background music", "Dark & gold themes", "Download guest list", "Priority support"]}
+              features={["Everything in Basic", "Up to 20 photos", "Your favourite background music", "Exclusive 'Grand' color themes", "Download your guest names", "Helping Hand (Priority Help)"]}
               isPopular
               delay={0.2}
             />
             <PricingCard
               tier="Dearest Gold"
               price="999"
-              features={["Everything in Silver", "Unlimited photos", "Cinematic envelope opening", "Custom decorative motif", "Lifetime access", "Dedicated helper"]}
+              features={["Everything in Silver", "Unlimited photo space", "Magic Interactive Envelope opening", "Custom decorative heart motif", "Lifetime access for memories", "Your personal wedding helper"]}
               delay={0.3}
             />
           </div>
@@ -670,14 +689,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* ── Footer ────────────────────── */}
-      <footer className="py-14 border-t border-rose-100 text-center space-y-6">
-        <DNvitesLogo className="mx-auto" />
-        <p className="text-sm text-muted-foreground font-light">
-          Made with <span className="text-[#F43F8F]">❤️</span> for every couple's special day
-        </p>
-        <p className="text-xs text-muted-foreground">© 2026 DNvites — Dearest Invites. All rights reserved.</p>
-      </footer>
+      <Footer />
     </main>
   );
 }
