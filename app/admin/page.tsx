@@ -1,9 +1,9 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AdminOverview, InvitationManager, CouponManager, TierManager } from "@/components/admin/AdminDashboard";
+import { AdminOverview, InvitationManager, CouponManager, TierManager, AdminSettings } from "@/components/admin/AdminDashboard";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Ticket, Users, CreditCard } from "lucide-react";
+import { LogOut, LayoutDashboard, Ticket, Users, CreditCard, Settings } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
@@ -55,6 +55,9 @@ export default function AdminPage() {
               <TabsTrigger value="tiers" className="flex gap-2">
                 <CreditCard className="w-4 h-4" /> Invitation Plans
               </TabsTrigger>
+              <TabsTrigger value="settings" className="flex gap-2">
+                <Settings className="w-4 h-4" /> Settings
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -72,6 +75,10 @@ export default function AdminPage() {
 
           <TabsContent value="tiers" className="space-y-4">
             <TierManager />
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-4">
+            <AdminSettings />
           </TabsContent>
         </Tabs>
       </main>

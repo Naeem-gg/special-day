@@ -60,6 +60,7 @@ export default function Dashboard() {
   const [formData, setFormData] = useState({
     brideName: "",
     groomName: "",
+    userEmail: "",
     date: "",
     venue: "",
     slug: "",
@@ -131,11 +132,9 @@ export default function Dashboard() {
   };
 
   const handleTemplateSelect = (slug: string) => {
-    let targetTier = "basic";
-    if (TIER_TEMPLATES.premium?.includes(slug)) targetTier = "premium";
-    else if (TIER_TEMPLATES.standard?.includes(slug)) targetTier = "standard";
-
-    setFormData({ ...formData, template: slug, tier: targetTier });
+    const tmpl = TEMPLATES.find((t) => t.slug === slug);
+    if (!tmpl) return;
+    setFormData({ ...formData, template: slug, tier: tmpl.tier });
   };
 
   const handleAddEvent = () => {
@@ -192,7 +191,7 @@ export default function Dashboard() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const selectedTier = tiers.find((t) => t.slug === formData.tier);
+    const selectedTier = tiers.find((t) => t.slug.toLowerCase() === formData.tier.toLowerCase() || t.name.toLowerCase() === formData.tier.toLowerCase()) || tiers[0];
     const originalPrice = selectedTier?.price || 0;
     const finalPrice = calculateFinalPrice(originalPrice);
 
@@ -276,7 +275,7 @@ export default function Dashboard() {
         },
         prefill: {
           name: formData.brideName + " & " + formData.groomName,
-          email: "", // Optonal: Add user email if collected
+          email: formData.userEmail || "", // Added user email
           contact: "",
         },
         theme: {
@@ -440,11 +439,7 @@ export default function Dashboard() {
       >
         <DNvitesLogo />
         <div className="flex gap-3">
-          <Link href="/admin">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-[#F43F8F]">
-              Admin
-            </Button>
-          </Link>
+
           <Link href="/">
             <Button variant="outline" size="sm" className="border-rose-200 hover:border-[#F43F8F] hover:text-[#F43F8F]">
               ← Back Home
@@ -512,6 +507,22 @@ export default function Dashboard() {
                       className="border-rose-200 focus:border-[#F43F8F] focus:ring-[#F43F8F]/20 transition-all rounded-xl h-11"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="userEmail" className="text-sm font-semibold text-gray-700">
+                    Your Email Address ✉️
+                  </Label>
+                  <Input
+                    id="userEmail"
+                    type="email"
+                    placeholder="e.g. you@example.com"
+                    value={formData.userEmail}
+                    onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
+                    required
+                    className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11"
+                  />
+                  <p className="text-xs text-muted-foreground">We'll send your purchase receipt and updates here.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -608,21 +619,38 @@ export default function Dashboard() {
                         whileHover={{ scale: 1.03, y: -3 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => handleTemplateSelect(tmpl.slug)}
-                        className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all select-none ${isSelected ? "border-[#F43F8F] shadow-lg shadow-rose-200/50" : "border-gray-100 hover:border-rose-200"}`}
+                        className={`group relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all select-none flex flex-col ${isSelected ? "border-[#F43F8F] shadow-lg shadow-rose-200/50" : "border-gray-100 hover:border-rose-200"}`}
                       >
-                        {/* Gradient thumbnail */}
-                        <div className="h-28 relative"
-                          style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-2xl">{tmpl.emoji}</span>
+                        {/* Dynamic Template Preview Thumbnail */}
+                        <div className="h-56 relative w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
+                          <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{
+                              width: '375px', 
+                              height: '812px',
+                              transform: 'translate(-50%, -50%) scale(0.55)'
+                            }}>
+                            <TemplateRouter
+                              template={tmpl.slug}
+                              brideName={formData.brideName || "Ayesha"}
+                              groomName={formData.groomName || "Abdullah"}
+                              date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
+                              venue={formData.venue || "Grand Ballroom"}
+                              events={formData.events[0]?.name ? formData.events : [{ name: "Ceremony", time: "4:00 PM", location: "Main Hall", description: "Vows and Rings" }]}
+                              gallery={formData.gallery}
+                              isPreview={true}
+                              isThumbnail={true}
+                            />
                           </div>
+                          {/* Invisible overlay to catch clicks/holds over the iframe/component */}
+                          <div className="absolute inset-0 bg-transparent z-10" />
+                          
                           {isSelected && (
-                            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#F43F8F] flex items-center justify-center">
-                              <CheckCircle2 className="w-3 h-3 text-white" />
+                            <div className="absolute top-3 right-3 z-20 w-6 h-6 rounded-full bg-[#F43F8F] flex items-center justify-center shadow-lg ring-2 ring-white">
+                              <CheckCircle2 className="w-4 h-4 text-white" />
                             </div>
                           )}
                         </div>
-                        <div className="p-3 bg-white">
+                        
+                        <div className="p-3 bg-white border-t border-gray-100 z-20 relative">
                           <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
                           <div className="flex items-center justify-between mt-1">
                             <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400 capitalize">{tmpl.tier} plan</span>
@@ -648,7 +676,7 @@ export default function Dashboard() {
                 {/* Price Summary */}
                 <div className="space-y-4">
                   {tiers.length > 0 ? (() => {
-                    const selectedTier = tiers.find((t) => t.slug === formData.tier) || tiers[0];
+                    const selectedTier = tiers.find((t) => t.slug.toLowerCase() === formData.tier.toLowerCase() || t.name.toLowerCase() === formData.tier.toLowerCase()) || tiers[0];
                     const originalPrice = selectedTier?.price || 0;
                     const finalPrice = calculateFinalPrice(originalPrice);
                     const hasDiscount = originalPrice !== finalPrice;

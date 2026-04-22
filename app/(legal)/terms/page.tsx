@@ -67,7 +67,7 @@ export default function TermsPage() {
             </section>
 
             <div className="pt-10 mt-10 border-t border-rose-100 text-center text-sm text-muted-foreground">
-              <p>For any questions regarding these terms, contact us at naeemgg@duck.com</p>
+              <p>For any questions regarding these terms, contact us at dnvites@duck.com</p>
             </div>
           </motion.div>
         </div>

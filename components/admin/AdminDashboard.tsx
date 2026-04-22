@@ -296,3 +296,87 @@ export function TierManager() {
     </div>
   );
 }
+
+// --- AdminSettings ---
+export function AdminSettings() {
+  const [otpSent, setOtpSent] = useState(false);
+  const [formData, setFormData] = useState({ otp: "", username: "", password: "" });
+  const [message, setMessage] = useState("");
+
+  const handleSendOtp = async () => {
+    setMessage("Sending OTP...");
+    const res = await fetch("/api/admin/otp", { method: "POST" });
+    const data = await res.json();
+    if (res.ok) {
+      setOtpSent(true);
+      setMessage("OTP sent to your email!");
+    } else {
+      setMessage(data.error || "Failed to send OTP.");
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage("Updating...");
+    const res = await fetch("/api/admin/credentials", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setMessage("Credentials updated successfully!");
+      setOtpSent(false);
+      setFormData({ otp: "", username: "", password: "" });
+    } else {
+      setMessage(data.error || "Failed to update credentials.");
+    }
+  };
+
+  return (
+    <Card className="max-w-md mx-auto mt-8">
+      <CardHeader>
+        <CardTitle>Admin Settings</CardTitle>
+        <CardDescription>Update your username and password.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {!otpSent ? (
+          <Button onClick={handleSendOtp} className="w-full">Request OTP via Email</Button>
+        ) : (
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <div className="space-y-2">
+              <Label>OTP</Label>
+              <Input
+                placeholder="6-digit code"
+                value={formData.otp}
+                onChange={e => setFormData({ ...formData, otp: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>New Username</Label>
+              <Input
+                placeholder="admin"
+                value={formData.username}
+                onChange={e => setFormData({ ...formData, username: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>New Password</Label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={e => setFormData({ ...formData, password: e.target.value })}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full">Update Credentials</Button>
+          </form>
+        )}
+        {message && <p className="text-sm text-center text-gray-600 mt-2">{message}</p>}
+      </CardContent>
+    </Card>
+  );
+}

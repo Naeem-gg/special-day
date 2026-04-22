@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TEMPLATES, TIER_TEMPLATES, TemplateMeta } from "@/components/templates/types";
+import TemplateRouter from "@/components/templates/TemplateRouter";
 import { Sparkles, Eye, Lock } from "lucide-react";
 
 const TIER_LABELS: Record<string, { label: string; color: string; bg: string }> = {
@@ -12,7 +13,7 @@ const TIER_LABELS: Record<string, { label: string; color: string; bg: string }> 
   premium: { label: "Premium", color: "#C9A84C", bg: "#1A1208" },
 };
 
-function TemplateThumbnail({ template, selected, onSelect }: { template: TemplateMeta; selected: boolean; onSelect: () => void }) {
+function TemplateThumbnail({ template, selected, onSelect, brideName, groomName, weddingDate }: { template: TemplateMeta; selected: boolean; onSelect: () => void; brideName: string; groomName: string; weddingDate: string; }) {
   const tier = TIER_LABELS[template.tier];
   const [hovered, setHovered] = useState(false);
 
@@ -23,21 +24,34 @@ function TemplateThumbnail({ template, selected, onSelect }: { template: Templat
       onClick={onSelect}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      className="relative cursor-pointer rounded-3xl overflow-hidden"
+      className="relative cursor-pointer rounded-3xl overflow-hidden flex flex-col w-full mx-auto"
       style={{
         border: selected ? "2px solid #F43F8F" : "2px solid transparent",
         boxShadow: selected ? "0 0 0 4px rgba(244,63,143,0.2), 0 20px 40px rgba(0,0,0,0.15)" : "0 4px 20px rgba(0,0,0,0.08)",
+        background: `linear-gradient(135deg, ${template.palette[0]}, ${template.palette[1]})`
       }}
     >
-      {/* Gradient thumbnail */}
-      <div className="h-44 relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${template.palette[0]}, ${template.palette[1]}, ${template.palette[2]})` }}>
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <div className="text-3xl mb-2">{template.emoji}</div>
-          <p className="text-sm font-semibold" style={{ color: template.tier === "premium" ? "white" : template.palette[1] }}>
-            {template.name}
-          </p>
+      {/* Dynamic Template Preview Thumbnail */}
+      <div className="h-64 relative w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${template.palette[0]}, ${template.palette[1]})` }}>
+        <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{
+            width: '375px', 
+            height: '812px',
+            transform: 'translate(-50%, -50%) scale(0.65)'
+          }}>
+          <TemplateRouter
+            template={template.slug}
+            brideName={brideName || "Ayesha"}
+            groomName={groomName || "Ahmed"}
+            date={weddingDate ? new Date(weddingDate) : new Date(Date.now() + 86400000)}
+            venue="Grand Ballroom"
+            events={[{ name: "Ceremony", time: "4:00 PM", location: "Main Hall", description: "Vows and Rings" }]}
+            gallery={[]}
+            isPreview={true}
+            isThumbnail={true}
+          />
         </div>
+        {/* Invisible overlay */}
+        <div className="absolute inset-0 bg-transparent z-10" />
 
         {/* Animated overlay on hover */}
         <AnimatePresence>
@@ -172,13 +186,19 @@ export default function PreviewLandingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {TEMPLATES.map((t, i) => (
             <motion.div key={t.slug} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }}>
-              <TemplateThumbnail template={t} selected={selectedTemplate === t.slug} onSelect={() => setSelectedTemplate(t.slug)} />
+              <TemplateThumbnail template={t} selected={selectedTemplate === t.slug} onSelect={() => setSelectedTemplate(t.slug)} brideName={brideName} groomName={groomName} weddingDate={weddingDate} />
             </motion.div>
           ))}
         </div>
 
         {/* ── Sticky Preview CTA ── */}
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2">
+          {error && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="px-4 py-2 bg-red-100 text-red-600 rounded-full text-xs font-bold shadow-lg border border-red-200">
+              {error}
+            </motion.div>
+          )}
           <motion.button
             onClick={handlePreview}
             disabled={loading}

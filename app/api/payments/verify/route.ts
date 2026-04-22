@@ -3,6 +3,7 @@ import { invitations, coupons } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { sendPurchaseReceipt } from "@/lib/mail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,7 +39,8 @@ export async function POST(req: NextRequest) {
       template,
       couponId,
       discountApplied,
-      paidAmount
+      paidAmount,
+      userEmail
     } = invitationData;
 
     const newInvitation = await db.transaction(async (tx) => {
@@ -46,6 +48,7 @@ export async function POST(req: NextRequest) {
         slug,
         brideName,
         groomName,
+        userEmail,
         date: new Date(date),
         venue,
         events: events || [],
@@ -69,6 +72,20 @@ export async function POST(req: NextRequest) {
 
       return inv;
     });
+
+    // Send the email in the background if email is provided
+    if (userEmail) {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dnvites.com";
+      sendPurchaseReceipt({
+        to: userEmail,
+        brideName,
+        groomName,
+        planName: tier || "basic",
+        amountPaid: paidAmount || 0,
+        orderId: razorpay_order_id,
+        invitationLink: `${baseUrl}/invite/${slug}`,
+      }).catch((err) => console.error("Failed to send receipt:", err));
+    }
 
     return NextResponse.json({ success: true, data: newInvitation });
   } catch (error) {

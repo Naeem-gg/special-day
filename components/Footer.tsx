@@ -2,8 +2,22 @@
 
 import Link from "next/link";
 import { DNvitesLogo } from "./branding/DNvitesLogo";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export function Footer() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        router.push('/admin');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [router]);
   return (
     <footer className="py-14 border-t border-rose-100 bg-white/50 backdrop-blur-sm">
       <div className="container mx-auto px-6 max-w-6xl">
@@ -19,7 +33,6 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/" className="hover:text-[#F43F8F] transition-colors">Home</Link></li>
               <li><Link href="/dashboard" className="hover:text-[#F43F8F] transition-colors">Dashboard</Link></li>
-              <li><Link href="/admin" className="hover:text-[#F43F8F] transition-colors">Admin</Link></li>
             </ul>
           </div>
           <div>

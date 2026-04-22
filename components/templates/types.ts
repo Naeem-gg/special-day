@@ -19,6 +19,7 @@ export interface TemplateProps {
   gallery: TemplatePhoto[];
   musicUrl?: string;
   isPreview?: boolean;
+  isThumbnail?: boolean;
   invitationId?: number;
 }
 

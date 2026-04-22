@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { TemplateProps } from "./types";
+import { TEMPLATES, type TemplateProps } from "./types";
 
 const RoseGoldTemplate = dynamic(() => import("./RoseGoldTemplate"));
 const BotanicalTemplate = dynamic(() => import("./BotanicalTemplate"));
@@ -26,10 +26,21 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
 };
 
 import React from "react";
+import EnvelopeIntro from "../invitation/EnvelopeIntro";
 
 export default function TemplateRouter({ template, ...props }: TemplateProps & { template: string }) {
   const Component = TEMPLATE_MAP[template] ?? RoseGoldTemplate;
-  return <Component {...props} />;
+  const meta = TEMPLATES.find(t => t.slug === template);
+  const isPremium = meta?.tier === "premium";
+
+  return (
+    <>
+      {isPremium && !props.isThumbnail && (
+        <EnvelopeIntro brideName={props.brideName} groomName={props.groomName} variant={template} autoOpen={props.isPreview} />
+      )}
+      <Component {...props} />
+    </>
+  );
 }
 
 export { TEMPLATE_MAP };

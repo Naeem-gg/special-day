@@ -66,7 +66,7 @@ export default function PrivacyPage() {
             </section>
 
             <div className="pt-10 mt-10 border-t border-rose-100 text-center text-sm text-muted-foreground">
-              <p>For any privacy concerns, please email us at naeemgg@duck.com</p>
+              <p>For any privacy concerns, please email us at dnvites@duck.com</p>
             </div>
           </motion.div>
         </div>

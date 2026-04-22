@@ -4,6 +4,8 @@ export const admins = pgTable("admins", {
   id: serial("id").primaryKey(),
   username: text("username").unique().notNull(),
   password: text("password").notNull(),
+  resetOtp: text("reset_otp"),
+  resetOtpExpires: timestamp("reset_otp_expires"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -33,6 +35,7 @@ export const invitations = pgTable("invitations", {
   slug: text("slug").unique().notNull(),
   brideName: text("bride_name").notNull(),
   groomName: text("groom_name").notNull(),
+  userEmail: text("user_email"),
   date: timestamp("date").notNull(),
   venue: text("venue").notNull(),
   events: jsonb("events").$type<{
