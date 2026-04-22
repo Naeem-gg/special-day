@@ -9,6 +9,17 @@ export const admins = pgTable("admins", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").unique().notNull(),
+  password: text("password"),
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  name: text("name"),
+  loginOtp: text("login_otp"),
+  loginOtpExpires: timestamp("login_otp_expires"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const tiers = pgTable("tiers", {
   id: serial("id").primaryKey(),
   slug: text("slug").unique().notNull(),

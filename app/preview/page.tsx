@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TEMPLATES, TIER_TEMPLATES, TemplateMeta } from "@/components/templates/types";
@@ -91,7 +91,7 @@ function TemplateThumbnail({ template, selected, onSelect, brideName, groomName,
   );
 }
 
-export default function PreviewLandingPage() {
+function PreviewLandingContent() {
   const [selectedTemplate, setSelectedTemplate] = useState("rose-gold");
   const [brideName, setBrideName] = useState("");
   const [groomName, setGroomName] = useState("");
@@ -215,5 +215,13 @@ export default function PreviewLandingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PreviewLandingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FFF8F0]">Loading...</div>}>
+      <PreviewLandingContent />
+    </Suspense>
   );
 }

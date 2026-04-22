@@ -1,7 +1,7 @@
 import { render } from "@react-email/render";
 import PurchaseReceiptEmail from "@/components/emails/PurchaseReceiptEmail";
 import React from "react";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 export async function sendEmail({
   to,
@@ -12,36 +12,27 @@ export async function sendEmail({
   subject: string;
   htmlContent: string;
 }) {
-  const SMTP_USER = process.env.BREVO_SMTP_USER;
-  const SMTP_PASS = process.env.BREVO_SMTP_PASS;
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-  if (!SMTP_USER || !SMTP_PASS) {
-    console.warn("BREVO_SMTP_USER or BREVO_SMTP_PASS is not set. Email not sent.");
+  if (!RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY is not set. Email not sent.");
     return false;
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      },
-    });
+    const resend = new Resend(RESEND_API_KEY);
 
-    const info = await transporter.sendMail({
-      from: '"DNvites" <noreply@dnvites.com>', // Replace with your verified sender email
-      to: to,
+    const data = await resend.emails.send({
+      from: "DNvites <noreply@dnvites.app>", // Replace with your verified sender email
+      to: [to],
       subject: subject,
       html: htmlContent,
     });
 
-    console.log("Email sent via Brevo (Nodemailer): %s", info.messageId);
+    console.log("Email sent via Resend:", data.data?.id);
     return true;
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error sending email via Resend:", error);
     return false;
   }
 }

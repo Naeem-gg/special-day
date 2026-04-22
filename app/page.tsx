@@ -17,6 +17,8 @@ import {
   Music,
   Gift,
   ChevronDown,
+  Menu,
+  X,
 } from "lucide-react";
 import { FloatingHearts } from "@/components/floating-hearts";
 import { useEffect, useRef, useState } from "react";
@@ -132,7 +134,7 @@ function PricingCard({
             transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
             className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none"
           />
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-[#D4AF37] to-amber-500 text-white text-[10px] font-bold uppercase tracking-widest px-5 py-1.5 rounded-full shadow-lg">
+          <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 bg-linear-to-r from-[#D4AF37] to-amber-500 text-white text-[10px] font-bold uppercase tracking-widest mt-1 px-2 py-2 rounded-full shadow-lg">
             ✨ Most Loved
           </div>
         </>
@@ -272,6 +274,7 @@ function Testimonials() {
 
 /* ════════ MAIN HOME PAGE ══════════════ */
 export default function Home() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroRef,
@@ -295,6 +298,8 @@ export default function Home() {
       >
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <DNvitesLogo />
+
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             {["Features", "How it Works", "Pricing"].map((item, i) => (
               <motion.div
@@ -312,7 +317,7 @@ export default function Home() {
               </motion.div>
             ))}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
-              <Link href="/dashboard">
+              <Link href="/login">
                 <Button variant="ghost" className="text-sm hover:text-[#F43F8F]">Sign In</Button>
               </Link>
             </motion.div>
@@ -330,7 +335,51 @@ export default function Home() {
               </Link>
             </motion.div>
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-gray-600 hover:text-[#F43F8F] transition-colors"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-white/95 backdrop-blur-xl border-b border-rose-100 overflow-hidden"
+            >
+              <div className="px-6 py-6 flex flex-col gap-5">
+                {["Features", "How it Works", "Pricing"].map((item) => (
+                  <Link
+                    key={item}
+                    href={`#${item.toLowerCase().replace(/ /g, "-")}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-base font-semibold text-gray-800 hover:text-[#F43F8F] transition-colors"
+                  >
+                    {item}
+                  </Link>
+                ))}
+                <div className="h-px bg-rose-100/50 w-full my-2" />
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-[#F43F8F]">
+                  Sign In
+                </Link>
+                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                  <button className="w-full bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white rounded-xl px-6 py-3.5 text-base font-bold shadow-lg shadow-rose-300/40 active:scale-[0.98] transition-transform">
+                    Create Your Invitation ✨
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
 
       {/* ── Hero Section ──────────────── */}
@@ -680,7 +729,7 @@ export default function Home() {
               <motion.button
                 whileHover={{ scale: 1.07 }}
                 whileTap={{ scale: 0.93 }}
-                className="bg-white text-[#F43F8F] font-bold text-lg px-12 py-4 rounded-full shadow-2xl hover:shadow-white/30 transition-all"
+                className="bg-white text-[#F43F8F] font-bold text-lg px-2 py-2 rounded-full shadow-2xl hover:shadow-white/30 transition-all"
               >
                 Start Creating for Free ✨
               </motion.button>

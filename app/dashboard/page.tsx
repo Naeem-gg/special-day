@@ -871,6 +871,7 @@ export default function Dashboard() {
                   <CardContent className="pt-6">
                     <CloudinaryUpload
                       images={formData.gallery}
+                      maxUploads={formData.tier === "premium" ? 10 : formData.tier === "standard" ? 5 : 1}
                       onUpload={(url, publicId) =>
                         setFormData({ ...formData, gallery: [...formData.gallery, { url, publicId }] })
                       }

@@ -54,3 +54,19 @@ export async function updateSession(request: NextRequest) {
   );
   return res;
 }
+
+export async function userLogin(userId: number, email: string) {
+  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+  const session = await encrypt({ userId, email, role: "user", expires });
+  (await cookies()).set("user_session", session, { expires, httpOnly: true });
+}
+
+export async function userLogout() {
+  (await cookies()).set("user_session", "", { expires: new Date(0) });
+}
+
+export async function getUserSession() {
+  const session = (await cookies()).get("user_session")?.value;
+  if (!session) return null;
+  return await decrypt(session);
+}

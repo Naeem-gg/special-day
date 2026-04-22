@@ -41,7 +41,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="font-bold text-gray-900">Email Us</p>
-                    <p className="text-muted-foreground">naeemgg@duck.com</p>
+                    <p className="text-muted-foreground">dnvites@duck.com</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
