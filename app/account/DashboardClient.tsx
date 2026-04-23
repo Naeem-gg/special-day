@@ -101,10 +101,12 @@ export function DashboardClient({ email, invitations }: { email: string; invitat
                         </Button>
                       </Link>
                       
-                      <Button variant="secondary" className="w-full justify-between group bg-slate-100 hover:bg-slate-200">
-                        Manage RSVPs
-                        <Settings className="w-4 h-4 text-slate-500 group-hover:text-slate-700" />
-                      </Button>
+                      {invite.tier !== "basic" && (
+                        <Button variant="secondary" className="w-full justify-between group bg-slate-100 hover:bg-slate-200">
+                          Manage RSVPs
+                          <Settings className="w-4 h-4 text-slate-500 group-hover:text-slate-700" />
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

@@ -31,7 +31,7 @@ function BranchSVG() {
   );
 }
 
-export default function EmeraldForestTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function EmeraldForestTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [fireflies, setFireflies] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -65,10 +65,10 @@ export default function EmeraldForestTemplate({ brideName, groomName, date, venu
         }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(160deg, #0D2218 0%, #1A3C34 60%, #0A1A10 100%)" }}>
           {fireflies.map((s, i) => <Firefly key={i} style={s} />)}
           <BranchSVG />

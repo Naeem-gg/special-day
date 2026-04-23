@@ -24,7 +24,7 @@ function FilmStrip({ side }: { side: "left" | "right" }) {
   );
 }
 
-export default function CinematicFilmTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function CinematicFilmTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [countdown, setCountdown] = useState(5);
   const [showContent, setShowContent] = useState(false);
@@ -59,10 +59,10 @@ export default function CinematicFilmTemplate({ brideName, groomName, date, venu
         .film-scratch { animation: scratch 8s infinite; }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── FILM COUNTDOWN INTRO ─────────────────── */}
-        {!showContent && (
+        {!showContent && !isThumbnail && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center"
             style={{ background: "#0A0A0A" }} exit={{ opacity: 0 }}>
             <FilmStrip side="left" />
@@ -81,7 +81,7 @@ export default function CinematicFilmTemplate({ brideName, groomName, date, venu
         )}
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-10"
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-10 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "#0A0A0A" }}>
           <FilmStrip side="left" />
           <FilmStrip side="right" />
@@ -94,7 +94,7 @@ export default function CinematicFilmTemplate({ brideName, groomName, date, venu
           {/* Scratch lines */}
           <div className="film-scratch absolute top-0 bottom-0 w-px left-1/3 z-20" style={{ background: "rgba(255,255,255,0.5)" }} />
 
-          {showContent && (
+          {(showContent || isThumbnail) && (
             <div className="relative z-10 max-w-4xl film-flicker">
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
                 className="flex items-center gap-3 justify-center mb-8">

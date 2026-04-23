@@ -19,6 +19,7 @@ import {
   ChevronDown,
   Menu,
   X,
+  Ticket,
 } from "lucide-react";
 import { FloatingHearts } from "@/components/floating-hearts";
 import { useEffect, useRef, useState } from "react";
@@ -113,17 +114,21 @@ function PricingCard({
 }: {
   tier: string; price: string; features: string[]; isPopular?: boolean; delay?: number;
 }) {
+  const isBasic = tier.toLowerCase().includes("basic");
+  const isGold = tier.toLowerCase().includes("gold");
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
       whileInView={{ opacity: 1, y: 0, scale: isPopular ? 1.05 : 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6, scale: isPopular ? 1.08 : 1.03 }}
-      whileTap={{ scale: 0.98 }}
-      className={`relative p-8 rounded-4xl border overflow-hidden ${isPopular
-        ? "bg-linear-to-br from-[#F43F8F] to-[#c73272] text-white border-transparent shadow-2xl shadow-rose-400/40 z-10"
-        : "bg-white text-foreground border-rose-100 shadow-lg"
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -12, transition: { duration: 0.4 } }}
+      className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 group ${isPopular
+        ? "bg-linear-to-br from-[#F43F8F] to-[#c73272] text-white border-transparent shadow-[0_20px_50px_rgba(244,63,143,0.3)] z-10"
+        : isGold
+          ? "bg-white text-foreground border-amber-100 shadow-[0_15px_40px_rgba(212,175,55,0.1)]"
+          : "bg-white text-foreground border-rose-100 shadow-[0_15px_40px_rgba(244,63,143,0.06)]"
         }`}
     >
       {isPopular && (
@@ -131,58 +136,68 @@ function PricingCard({
           {/* Animated shine */}
           <motion.div
             animate={{ x: ["-100%", "200%"] }}
-            transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
-            className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none"
+            transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/25 to-transparent skew-x-12 pointer-events-none"
           />
-          <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 bg-linear-to-r from-[#D4AF37] to-amber-500 text-white text-[10px] font-bold uppercase tracking-widest mt-1 px-2 py-2 rounded-full shadow-lg">
-            ✨ Most Loved
+          <div className="absolute top-4 right-6 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-white/30">
+            🔥 Most Popular
           </div>
         </>
       )}
 
-      <div className="space-y-6 relative z-10">
-        <div>
-          <h4 className={`text-lg font-serif ${isPopular ? "text-white/90" : "text-muted-foreground"}`}>{tier}</h4>
-          <div className="flex items-baseline gap-1 mt-2">
-            <motion.span
-              className="text-4xl font-serif"
-              animate={isPopular ? { scale: [1, 1.05, 1] } : {}}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              ₹{price}
-            </motion.span>
-            <span className={`text-sm ${isPopular ? "text-white/60" : "text-muted-foreground"}`}>/ invite</span>
+      {isGold && !isPopular && (
+        <div className="absolute top-4 right-6 bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-amber-100">
+          ⭐ Best Value
+        </div>
+      )}
+
+      <div className="space-y-8 relative z-10">
+        <div className="space-y-2">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? "bg-white/20" : isGold ? "bg-amber-50" : "bg-rose-50"
+            }`}>
+            {isBasic ? <Heart className={isPopular ? "text-white" : "text-[#F43F8F]"} /> :
+              isGold ? <Star className={isPopular ? "text-white" : "text-amber-500"} /> :
+                <Sparkles className={isPopular ? "text-white" : "text-[#F43F8F]"} />}
+          </div>
+          <h4 className={`text-xl font-serif tracking-wide ${isPopular ? "text-white" : "text-gray-900"}`}>{tier}</h4>
+          <div className="flex items-baseline gap-1">
+            <span className={`text-4xl font-serif ${isPopular ? "text-white" : "text-gray-900"}`}>₹{price}</span>
+            <span className={`text-sm ${isPopular ? "text-white/60" : "text-muted-foreground"}`}>/ invitation</span>
           </div>
         </div>
 
-        <ul className="space-y-3">
+        <div className={`h-px w-full ${isPopular ? "bg-white/20" : "bg-rose-100/50"}`} />
+
+        <ul className="space-y-4">
           {features.map((feature, idx) => (
             <motion.li
               key={idx}
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: delay + idx * 0.06 }}
-              className="flex items-center gap-3 text-sm"
+              transition={{ delay: delay + 0.3 + idx * 0.1 }}
+              className="flex items-start gap-3 text-sm"
             >
-              <motion.div whileHover={{ scale: 1.3, rotate: 10 }}>
-                <CheckCircle2 className={`w-4 h-4 shrink-0 ${isPopular ? "text-white" : "text-[#F43F8F]"}`} />
-              </motion.div>
-              <span className={isPopular ? "text-white/90" : "text-muted-foreground"}>{feature}</span>
+              <div className={`mt-1 rounded-full p-0.5 ${isPopular ? "bg-white/20" : "bg-rose-50"}`}>
+                <CheckCircle2 className={`w-3.5 h-3.5 ${isPopular ? "text-white" : "text-[#F43F8F]"}`} />
+              </div>
+              <span className={isPopular ? "text-white/90" : "text-gray-600 leading-tight"}>{feature}</span>
             </motion.li>
           ))}
         </ul>
 
-        <Link href="/dashboard" className="block pt-2">
+        <Link href="/dashboard" className="block pt-4">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`w-full py-3 rounded-full text-base font-semibold transition-all duration-300 ${isPopular
-              ? "bg-white text-[#F43F8F] hover:bg-white/90 shadow-xl"
-              : "bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white hover:shadow-lg hover:shadow-rose-300/50"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className={`w-full py-4 rounded-2xl text-base font-bold transition-all duration-300 shadow-xl ${isPopular
+              ? "bg-white text-[#F43F8F] hover:shadow-white/20"
+              : isGold
+                ? "bg-linear-to-r from-amber-500 to-[#D4AF37] text-white hover:shadow-amber-200/50"
+                : "bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white hover:shadow-rose-200/50"
               }`}
           >
-            Choose This Plan 💌
+            {isBasic ? "Start Creating 💌" : isPopular ? "Get Started ✨" : "Choose Premium 👑"}
           </motion.button>
         </Link>
       </div>
@@ -220,7 +235,7 @@ function Testimonials() {
 
   return (
     <section className="py-20 overflow-hidden">
-      <div className="container mx-auto px-6 max-w-2xl text-center">
+      <div className="container relative mx-auto px-6 max-w-2xl text-center">
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -284,7 +299,7 @@ export default function Home() {
   const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
 
   return (
-    <main className="min-h-screen bg-background font-sans selection:bg-rose-200/60 overflow-x-hidden">
+    <main className="relative min-h-screen bg-background font-sans selection:bg-rose-200/60 overflow-x-hidden">
       <ProgressBar />
       <FloatingHearts />
       <PetalRain />
@@ -296,7 +311,7 @@ export default function Home() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-0 w-full z-50 glass border-b border-rose-100/50"
       >
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="container relative mx-auto px-6 h-20 flex items-center justify-between">
           <DNvitesLogo />
 
           {/* Desktop Menu */}
@@ -316,7 +331,27 @@ export default function Home() {
                 </Link>
               </motion.div>
             ))}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex items-center gap-4">
+              <Link
+                href="https://instagram.com/dnvites"
+                target="_blank"
+                className="text-gray-400 hover:text-[#F43F8F] transition-colors"
+                title="Follow us on Instagram"
+              >
+                <svg 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="w-5 h-5"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </Link>
               <Link href="/login">
                 <Button variant="ghost" className="text-sm hover:text-[#F43F8F]">Sign In</Button>
               </Link>
@@ -377,6 +412,28 @@ export default function Home() {
                     Create Your Invitation ✨
                   </button>
                 </Link>
+                <div className="flex items-center gap-4 pt-2">
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Follow Us</span>
+                  <Link
+                    href="https://instagram.com/dnvites"
+                    target="_blank"
+                    className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-[#F43F8F]"
+                  >
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      className="w-5 h-5"
+                    >
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                    </svg>
+                  </Link>
+                </div>
               </div>
             </motion.div>
           )}
@@ -397,7 +454,7 @@ export default function Home() {
           className="absolute bottom-0 -right-32 w-[500px] h-[500px] bg-amber-200/30 rounded-full blur-3xl pointer-events-none"
         />
 
-        <div className="container mx-auto max-w-6xl relative z-10">
+        <div className="container relative mx-auto max-w-6xl z-10">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             {/* Left text */}
             <motion.div
@@ -540,7 +597,7 @@ export default function Home() {
 
       {/* ── Features ──────────────────── */}
       <section id="features" className="py-28 bg-linear-to-b from-rose-50/40 to-amber-50/30">
-        <div className="container mx-auto px-6">
+        <div className="container relative mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -655,42 +712,71 @@ export default function Home() {
       <Testimonials />
 
       {/* ── Pricing ───────────────────── */}
-      <section id="pricing" className="py-28 bg-linear-to-b from-amber-50/30 to-rose-50/40 relative overflow-hidden">
-        <motion.div
-          animate={{ scale: [1, 1.08, 1], rotate: [0, 10, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 right-0 w-80 h-80 bg-rose-200/20 rounded-full blur-3xl pointer-events-none"
-        />
+      <section id="pricing" className="py-32 bg-linear-to-b from-rose-50/50 via-white to-amber-50/50 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+          <motion.div
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 5, 0]
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-20 left-[10%] opacity-10"
+          >
+            <Heart className="w-20 h-20 text-[#F43F8F]" />
+          </motion.div>
+          <motion.div
+            animate={{
+              y: [0, 20, 0],
+              rotate: [0, -5, 0]
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-20 right-[10%] opacity-10"
+          >
+            <Sparkles className="w-24 h-24 text-amber-400" />
+          </motion.div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-rose-100/20 rounded-full blur-[120px]" />
+        </div>
+
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto mb-20 space-y-4"
+            className="text-center max-w-3xl mx-auto mb-20 space-y-6"
           >
-            <p className="text-sm font-bold uppercase tracking-widest text-[#F43F8F]">💸 Our Plans</p>
-            <h2 className="text-4xl md:text-5xl font-serif">Pick the plan that fits your needs</h2>
-            <p className="text-muted-foreground text-lg">No hidden fees. No tech headaches. Just love.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50 border border-rose-100 text-[#F43F8F] text-xs font-bold uppercase tracking-widest">
+              <Ticket className="w-4 h-4" />
+              Transparent Pricing
+            </div>
+            <h2 className="text-4xl md:text-6xl font-serif text-gray-900 leading-tight">
+              One simple price for your <br className="hidden md:block" />
+              <span className="gradient-text italic">Perfect Day</span>
+            </h2>
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+              Choose the perfect plan to share your love story. No hidden fees,
+              no recurring subscriptions. Just a one-time payment for a lifetime of memories.
+            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto items-center">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
             <PricingCard
               tier="Dearest Basic"
               price="399"
-              features={["Beautiful animated design", "See who's coming (Guest List)", "Event details & direction map", "Space for 5 wedding photos", "1 year of hosting included"]}
+              features={["Beautiful animated design", "Event details & direction map", "Space for 1 wedding photo", "1 year of hosting included", "Shareable via WhatsApp & Social"]}
               delay={0.1}
             />
             <PricingCard
               tier="Dearest Silver"
               price="799"
-              features={["Everything in Basic", "Up to 20 photos", "Your favourite background music", "Exclusive 'Grand' color themes", "Download your guest names", "Helping Hand (Priority Help)"]}
+              features={["Everything in Basic", "See who's coming (Guest List)", "Up to 5 photos", "Your favourite background music", "Download your guest names", "Helping Hand (Priority Help)"]}
               isPopular
               delay={0.2}
             />
             <PricingCard
               tier="Dearest Gold"
               price="999"
-              features={["Everything in Silver", "Unlimited photo space", "Magic Interactive Envelope opening", "Custom decorative heart motif", "Lifetime access for memories", "Your personal wedding helper"]}
+              features={["Everything in Silver", "Up to 10 photos", "Magic Interactive Envelope opening", "Custom decorative heart motif", "Lifetime access for memories", "Your personal wedding helper"]}
               delay={0.3}
             />
           </div>
@@ -703,7 +789,7 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="container mx-auto max-w-4xl"
+          className="container relative mx-auto max-w-4xl"
         >
           <motion.div
             animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}

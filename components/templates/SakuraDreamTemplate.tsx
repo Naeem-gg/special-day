@@ -16,7 +16,7 @@ function SakuraPetal({ style }: { style: React.CSSProperties }) {
   );
 }
 
-export default function SakuraDreamTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function SakuraDreamTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -45,7 +45,7 @@ export default function SakuraDreamTemplate({ brideName, groomName, date, venue,
           0% { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
           15% { opacity: 0.8; }
           85% { opacity: 0.6; }
-          100% { transform: translateY(100vh) rotate(540deg) translateX(60px); opacity: 0; }
+          100% { transform: translateY(${isThumbnail ? '812px' : '100vh'}) rotate(540deg) translateX(60px); opacity: 0; }
         }
         @keyframes brushStroke {
           from { stroke-dashoffset: 400; }
@@ -57,49 +57,49 @@ export default function SakuraDreamTemplate({ brideName, groomName, date, venue,
         }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#FFFAFD" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#FFFAFD" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(160deg, #FFF0F8 0%, #FAF0FF 50%, #FFF5F0 100%)" }}>
           {petals.map((s, i) => <SakuraPetal key={i} style={s} />)}
 
           {/* Brushstroke SVG decoration */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <svg width="600" height="300" viewBox="0 0 600 300" fill="none" className="opacity-5">
+            <svg width="600" height="300" viewBox="0 0 600 300" fill="none" className="opacity-5" preserveAspectRatio="xMidYMid meet">
               <path d="M100 150 Q300 50, 500 150 Q300 250, 100 150Z" stroke="#D4B4FD" strokeWidth="2" fill="none" className="brush-stroke" />
             </svg>
           </div>
 
           <div className="relative z-10 max-w-3xl">
             <motion.p initial={{ opacity: 0, letterSpacing: "0.8em" }} animate={{ opacity: 1, letterSpacing: "0.5em" }}
-              transition={{ duration: 2 }} className="font-sans text-[10px] uppercase mb-12" style={{ color: "#C4A0C8" }}>
+              transition={{ duration: 2 }} className={`font-sans text-[10px] uppercase ${isThumbnail ? "mb-6" : "mb-12"}`} style={{ color: "#C4A0C8" }}>
               花嫁と花婿 · Bride &amp; Groom
             </motion.p>
 
             {/* Decorative circle */}
             <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.5, delay: 0.3 }}
-              className="w-48 h-48 md:w-64 md:h-64 rounded-full mx-auto mb-8 flex flex-col items-center justify-center"
+              className={`rounded-full mx-auto mb-6 flex flex-col items-center justify-center ${isThumbnail ? "w-32 h-32" : "w-48 h-48 md:w-64 md:h-64"}`}
               style={{ background: "radial-gradient(circle, rgba(212,180,253,0.15) 0%, rgba(255,183,197,0.08) 100%)", border: "1px solid rgba(212,180,253,0.3)" }}>
               <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-                className="font-light text-2xl md:text-3xl leading-snug text-center" style={{ color: "#4A2060" }}>
+                className={`font-light leading-snug text-center ${isThumbnail ? "text-lg" : "text-2xl md:text-3xl"}`} style={{ color: "#4A2060" }}>
                 {brideName}<br />
-                <span className="text-base font-light italic" style={{ color: "#D4B4FD" }}>&amp;</span><br />
+                <span className={`${isThumbnail ? "text-xs" : "text-base"} font-light italic`} style={{ color: "#D4B4FD" }}>&amp;</span><br />
                 {groomName}
               </motion.h1>
             </motion.div>
 
             {/* Large names outside */}
             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5, duration: 1.2 }}>
-              <h2 className="text-5xl md:text-8xl font-light tracking-tight leading-none" style={{ color: "#4A2060" }}>
+              <h2 className={`font-light tracking-tight leading-tight ${isThumbnail ? "text-2xl" : "text-5xl md:text-8xl"}`} style={{ color: "#4A2060" }}>
                 {brideName}
-                <span className="text-3xl font-light italic mx-4" style={{ color: "#FFB7C5" }}>&amp;</span>
+                <span className={`${isThumbnail ? "text-lg" : "text-3xl"} font-light italic mx-4`} style={{ color: "#FFB7C5" }}>&amp;</span>
                 {groomName}
               </h2>
             </motion.div>
 
             <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 2.5, duration: 1.5 }}
-              className="mx-auto my-8 h-px" style={{ width: 100, background: "linear-gradient(to right, transparent, #D4B4FD, transparent)" }} />
+              className={`mx-auto h-px ${isThumbnail ? "my-4" : "my-8"}`} style={{ width: 100, background: "linear-gradient(to right, transparent, #D4B4FD, transparent)" }} />
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}
               className="font-sans text-base tracking-[0.3em]" style={{ color: "#C4A0C8" }}>{fmt}</motion.p>
@@ -186,7 +186,7 @@ export default function SakuraDreamTemplate({ brideName, groomName, date, venue,
             <div className="text-4xl mb-6">🌸</div>
             <h2 className="text-3xl font-light mb-2" style={{ color: "#4A2060" }}>We Can't Wait to See You</h2>
             <p className="font-sans text-sm mb-10" style={{ color: "#C4A0C8" }}>{venue}</p>
-            {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== "basic" && <RSVPModal invitationId={invitationId} />}
           </motion.div>
         </section>
       </div>

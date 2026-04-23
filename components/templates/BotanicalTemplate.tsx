@@ -38,7 +38,7 @@ function Leaf({ style }: { style: React.CSSProperties }) {
   );
 }
 
-export default function BotanicalTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function BotanicalTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [leaves, setLeaves] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -61,10 +61,10 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
   const fmt = date.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#FAFCF8" }}>
+    <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#FAFCF8" }}>
 
       {/* ── HERO ─────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
+      <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
         style={{ background: "linear-gradient(160deg, #F2F7EE 0%, #E8F0E2 50%, #F5F8F2 100%)" }}>
         {leaves.map((s, i) => <Leaf key={i} style={s} />)}
 
@@ -90,7 +90,7 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
           </motion.p>
 
           <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: 0.7 }}
-            className="font-light leading-none mb-4" style={{ color: "#1A3A14", fontSize: "clamp(3rem, 11vw, 8rem)" }}>
+            className="font-light leading-none mb-4" style={{ color: "#1A3A14", fontSize: isThumbnail ? "3rem" : "clamp(3rem, 11vw, 8rem)" }}>
             {brideName}
           </motion.h1>
 
@@ -98,7 +98,7 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
             className="text-2xl font-light italic my-3" style={{ color: "#5A8A4A" }}>&amp;</motion.p>
 
           <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: 1 }}
-            className="font-light leading-none mb-8" style={{ color: "#1A3A14", fontSize: "clamp(3rem, 11vw, 8rem)" }}>
+            className="font-light leading-none mb-8" style={{ color: "#1A3A14", fontSize: isThumbnail ? "3rem" : "clamp(3rem, 11vw, 8rem)" }}>
             {groomName}
           </motion.h1>
 
@@ -196,7 +196,7 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
           <p className="font-sans text-sm mb-10" style={{ color: "#8FAF7E" }}>{venue}</p>
           {!isPreview && invitationId && (
             <div className="flex gap-4 justify-center flex-wrap">
-              <RSVPModal invitationId={invitationId} />
+              {tier !== "basic" && <RSVPModal invitationId={invitationId} />}
             </div>
           )}
         </motion.div>

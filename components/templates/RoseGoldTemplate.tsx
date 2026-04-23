@@ -34,7 +34,7 @@ function FlipDigit({ value, label }: { value: number; label: string }) {
   );
 }
 
-export default function RoseGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function RoseGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -69,7 +69,7 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
           0% { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
           10% { opacity: 0.7; }
           90% { opacity: 0.5; }
-          100% { transform: translateY(100vh) rotate(720deg) translateX(40px); opacity: 0; }
+          100% { transform: translateY(${isThumbnail ? '812px' : '100vh'}) rotate(720deg) translateX(40px); opacity: 0; }
         }
         @keyframes shimmer {
           0% { background-position: -200% center; }
@@ -85,10 +85,10 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
         }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center px-6"
+        <section className={`relative flex flex-col items-center justify-center overflow-hidden text-center px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(160deg, #FFF8F0 0%, #FEF0F0 60%, #FFF5E6 100%)" }}>
           {/* Petals */}
           {petals.map((s, i) => <Petal key={i} style={s} />)}
@@ -108,7 +108,7 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
 
             <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="gold-shimmer font-light leading-none" style={{ fontSize: "clamp(3.5rem, 13vw, 9rem)" }}>
+              className="gold-shimmer font-light leading-none" style={{ fontSize: isThumbnail ? "3.5rem" : "clamp(3.5rem, 13vw, 9rem)" }}>
               {brideName}
             </motion.h1>
 
@@ -120,7 +120,7 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
 
             <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="gold-shimmer font-light leading-none" style={{ fontSize: "clamp(3.5rem, 13vw, 9rem)" }}>
+              className="gold-shimmer font-light leading-none" style={{ fontSize: isThumbnail ? "3.5rem" : "clamp(3.5rem, 13vw, 9rem)" }}>
               {groomName}
             </motion.h1>
 
@@ -216,7 +216,7 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
             <p className="font-sans text-sm mb-10" style={{ color: "#B89090" }}>{venue}</p>
             {!isPreview && invitationId && (
               <div className="flex gap-4 justify-center flex-wrap">
-                <RSVPModal invitationId={invitationId} />
+                {tier !== "basic" && <RSVPModal invitationId={invitationId} />}
                 <button onClick={() => navigator.share?.({ title: `${brideName} & ${groomName}`, url: window.location.href })}
                   className="flex items-center gap-2 px-8 py-3 rounded-full font-sans text-sm border transition-colors hover:bg-rose-50"
                   style={{ borderColor: "#E0C0C0", color: "#B76E79" }}>

@@ -35,7 +35,7 @@ function Bubble({ style }: { style: React.CSSProperties }) {
   return <div className="absolute rounded-full pointer-events-none" style={{ ...style, background: "radial-gradient(circle, rgba(78,205,196,0.2), transparent)", border: "1px solid rgba(78,205,196,0.15)" }} />;
 }
 
-export default function AzureOceanTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function AzureOceanTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [bubbles, setBubbles] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -73,10 +73,10 @@ export default function AzureOceanTemplate({ brideName, groomName, date, venue, 
         }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(180deg, #0A1628 0%, #0A3F6B 50%, #1A6B8A 100%)" }}>
           {bubbles.map((s, i) => <Bubble key={i} style={s} />)}
 
@@ -200,7 +200,7 @@ export default function AzureOceanTemplate({ brideName, groomName, date, venue, 
             <div className="text-4xl mb-6">⚓</div>
             <h2 className="text-3xl font-light mb-2 text-white">Join Us Dockside</h2>
             <p className="font-sans text-sm mb-10 text-blue-300">{venue}</p>
-            {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== "basic" && <RSVPModal invitationId={invitationId} />}
           </motion.div>
         </section>
       </div>

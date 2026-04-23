@@ -49,7 +49,7 @@ function MughalDivider() {
   );
 }
 
-export default function RoyalGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function RoyalGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -84,10 +84,10 @@ export default function RoyalGoldTemplate({ brideName, groomName, date, venue, e
         }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(160deg, #1A0008 0%, #3A0A14 50%, #1A0008 100%)" }}>
           <OrnateBorder />
 

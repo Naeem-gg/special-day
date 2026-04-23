@@ -47,7 +47,7 @@ function StarField() {
   return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />;
 }
 
-export default function MidnightNoirTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function MidnightNoirTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -75,10 +75,10 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
         .spotlight { animation: spotlightSweep 4s ease-in-out forwards; }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#0D0D0D" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#0D0D0D" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, #1A1208 0%, #0D0D0D 100%)" }}>
           <StarField />
 

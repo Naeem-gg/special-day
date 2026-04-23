@@ -27,6 +27,28 @@ export function Footer() {
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
               Making your special day even more beautiful with modern, digital invitations that your guests will love.
             </p>
+            <div className="flex items-center gap-4 pt-2">
+              <Link 
+                href="https://instagram.com/dnvites" 
+                target="_blank" 
+                className="w-10 h-10 rounded-full bg-white border border-rose-100 flex items-center justify-center text-gray-600 hover:text-[#F43F8F] hover:border-[#F43F8F] hover:shadow-md transition-all group"
+                aria-label="Follow DNvites on Instagram"
+              >
+                <svg 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="w-5 h-5 group-hover:scale-110 transition-transform"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </Link>
+            </div>
           </div>
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Quick Links</h4>

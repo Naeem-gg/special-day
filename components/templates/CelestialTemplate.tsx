@@ -106,7 +106,7 @@ function ConstellationLines({ name1, name2 }: { name1: string; name2: string }) 
   );
 }
 
-export default function CelestialTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, invitationId }: TemplateProps) {
+export default function CelestialTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -141,10 +141,10 @@ export default function CelestialTemplate({ brideName, groomName, date, venue, e
         .celestial-glow { animation: celestialGlow 4s ease-in-out infinite; }
       `}</style>
 
-      <div className="min-h-screen" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-6"
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(180deg, #020412 0%, #0A0E2A 40%, #0D0620 100%)" }}>
           <CosmosCanvas />
           <ConstellationLines name1={brideName} name2={groomName} />

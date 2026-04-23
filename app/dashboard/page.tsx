@@ -12,7 +12,7 @@ import Link from "next/link";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
 import { Footer } from "@/components/Footer";
 import confetti from "canvas-confetti";
-import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock, Info } from "lucide-react";
 import { TEMPLATES, TIER_TEMPLATES } from "@/components/templates/types";
 
 declare global {
@@ -52,9 +52,10 @@ export default function Dashboard() {
   const [couponError, setCouponError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
+  const [session, setSession] = useState<{ authenticated: boolean; user?: any } | null>(null);
 
-  // ── Payment Status ──────────────────
-  const [paymentStatus, setPaymentStatus] = useState<"idle" | "verifying" | "success" | "error">("idle");
+  // ── Checkout Flow ───────────────────
+  const [checkoutStep, setCheckoutStep] = useState<"idle" | "review" | "processing" | "verifying" | "success" | "error">("idle");
   const [paymentMessage, setPaymentMessage] = useState("");
 
   const [formData, setFormData] = useState({
@@ -94,6 +95,18 @@ export default function Dashboard() {
         });
       }
     }
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        setSession(data);
+        if (data.authenticated && data.user?.email) {
+          setFormData((prev) => ({ ...prev, userEmail: data.user.email }));
+        }
+      })
+      .catch((err) => console.error("Failed to fetch session:", err));
   }, []);
 
   useEffect(() => {
@@ -189,14 +202,18 @@ export default function Dashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCheckoutStep("review");
+  };
+
+  const initiatePayment = async () => {
     setIsSubmitting(true);
+    setCheckoutStep("processing");
 
     const selectedTier = tiers.find((t) => t.slug.toLowerCase() === formData.tier.toLowerCase() || t.name.toLowerCase() === formData.tier.toLowerCase()) || tiers[0];
     const originalPrice = selectedTier?.price || 0;
     const finalPrice = calculateFinalPrice(originalPrice);
 
     try {
-      // 1. Create a Razorpay Order
       const orderRes = await fetch("/api/payments/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -233,7 +250,7 @@ export default function Dashboard() {
         order_id: orderData.orderId,
         handler: async function (response: any) {
           // 3. Verify Payment and Save Invitation
-          setPaymentStatus("verifying");
+          setCheckoutStep("verifying");
           try {
             const verifyRes = await fetch("/api/payments/verify", {
               method: "POST",
@@ -253,7 +270,7 @@ export default function Dashboard() {
 
             const verifyData = await verifyRes.json();
             if (verifyRes.ok) {
-              setPaymentStatus("success");
+              setCheckoutStep("success");
               confetti({
                 particleCount: 150,
                 spread: 70,
@@ -264,12 +281,12 @@ export default function Dashboard() {
                 window.location.href = `/invite/${formData.slug}`;
               }, 3000);
             } else {
-              setPaymentStatus("error");
+              setCheckoutStep("error");
               setPaymentMessage(verifyData.error || "Payment verification failed.");
             }
           } catch (err) {
             console.error("Verification Error:", err);
-            setPaymentStatus("error");
+            setCheckoutStep("error");
             setPaymentMessage("Something went wrong during verification.");
           }
         },
@@ -285,12 +302,12 @@ export default function Dashboard() {
 
       const rzp1 = new window.Razorpay(options);
       rzp1.on("payment.failed", function (response: any) {
-        setPaymentStatus("error");
+        setCheckoutStep("error");
         setPaymentMessage(`Payment failed: ${response.error.description}`);
       });
       rzp1.open();
     } catch (error: any) {
-      setPaymentStatus("error");
+      setCheckoutStep("error");
       setPaymentMessage(error.message || "Oops! Something went wrong.");
     } finally {
       setIsSubmitting(false);
@@ -301,88 +318,212 @@ export default function Dashboard() {
     <div className="min-h-screen bg-linear-to-br from-rose-50/50 via-white to-amber-50/30">
       {/* ── Status Overlay ───────────────── */}
       <AnimatePresence>
-        {paymentStatus !== "idle" && (
+        {checkoutStep !== "idle" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-white/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-rose-950/20 backdrop-blur-md"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="max-w-md w-full bg-white rounded-[3rem] p-10 text-center shadow-2xl border border-rose-100"
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              className="max-w-md w-full bg-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-rose-100"
             >
               <AnimatePresence mode="wait">
-                {paymentStatus === "verifying" && (
+                {checkoutStep === "review" && (
                   <motion.div
-                    key="verifying"
+                    key="review"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="p-8 space-y-6"
+                  >
+                    <div className="text-center space-y-2">
+                      <h3 className="text-2xl font-serif text-gray-900">Review Your Order</h3>
+                      <p className="text-sm text-muted-foreground">Almost there! Please check your details.</p>
+                    </div>
+
+                    <div className="bg-rose-50/50 rounded-2xl p-5 space-y-4 border border-rose-100/50">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#F43F8F]">Template</p>
+                          <p className="text-lg font-serif text-gray-900">
+                            {TEMPLATES.find(t => t.slug === formData.template)?.name}
+                          </p>
+                        </div>
+                        <div className="px-2 py-1 bg-white rounded-lg border border-rose-100 text-[10px] font-bold uppercase tracking-wider text-rose-400">
+                          {formData.tier}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 pt-2 border-t border-rose-100/30">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">Plan Price</span>
+                          <span className="text-gray-900 font-medium">₹{tiers.find(t => t.slug === formData.tier)?.price || 0}</span>
+                        </div>
+                        {couponData && (
+                          <div className="flex justify-between text-sm text-green-600 font-medium">
+                            <span>Discount ({couponCode})</span>
+                            <span>-₹{(tiers.find(t => t.slug === formData.tier)?.price || 0) - calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0)}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center pt-2 border-t border-rose-100 font-serif">
+                          <span className="text-lg text-gray-900">Total Payable</span>
+                          <span className="text-2xl text-[#F43F8F]">₹{calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Button
+                        onClick={initiatePayment}
+                        className="w-full h-14 rounded-2xl bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white font-bold text-lg shadow-xl shadow-rose-200 group"
+                      >
+                        <span className="flex items-center gap-2">
+                          Confirm & Pay Securely
+                          <Lock className="w-4 h-4 transition-transform group-hover:scale-110" />
+                        </span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setCheckoutStep("idle")}
+                        className="w-full h-12 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                      >
+                        Back to Editing
+                      </Button>
+                    </div>
+
+                    <p className="text-[10px] text-center text-gray-400">
+                      By proceeding, you agree to our Terms of Service. Payments are secured by 256-bit SSL encryption.
+                    </p>
+                  </motion.div>
+                )}
+
+                {(checkoutStep === "processing" || checkoutStep === "verifying") && (
+                  <motion.div
+                    key="processing"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="space-y-6"
+                    className="p-10 text-center space-y-8"
                   >
-                    <div className="relative w-24 h-24 mx-auto">
+                    <div className="relative w-28 h-28 mx-auto">
                       <motion.div
-                        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute inset-0 bg-rose-200 rounded-full"
+                        animate={{ 
+                          scale: [1, 1.2, 1],
+                          rotate: [0, 180, 360],
+                          borderRadius: ["30%", "50%", "30%"]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute inset-0 bg-linear-to-br from-rose-100 to-amber-100 opacity-50"
                       />
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <Loader2 className="w-10 h-10 text-[#F43F8F] animate-spin" />
+                        <Loader2 className="w-12 h-12 text-[#F43F8F] animate-spin" />
                       </div>
+                      <motion.div
+                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                        className="absolute -bottom-2 left-1/2 -translate-x-1/2"
+                      >
+                        <Sparkles className="w-6 h-6 text-amber-400" />
+                      </motion.div>
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-serif text-gray-900">Finalising Your Invite...</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        We're just perfecting the magic. Please don't close this window! ✨
+                    <div className="space-y-3">
+                      <h3 className="text-2xl font-serif text-gray-900">
+                        {checkoutStep === "processing" ? "Preparing Payment..." : "Perfecting the Magic..."}
+                      </h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed px-4">
+                        {checkoutStep === "processing" 
+                          ? "Connecting to our secure payment gateway. Please wait a moment." 
+                          : "We're almost there! Finalising your beautiful invitation with love. ✨"}
                       </p>
                     </div>
                   </motion.div>
                 )}
 
-                {paymentStatus === "success" && (
+                {checkoutStep === "success" && (
                   <motion.div
                     key="success"
-                    initial={{ scale: 0.5, opacity: 0 }}
+                    initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="space-y-6"
+                    className="p-10 text-center space-y-8"
                   >
-                    <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-12 h-12 text-green-500" />
+                    <div className="relative">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                        className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto"
+                      >
+                        <CheckCircle2 className="w-12 h-12 text-green-500" />
+                      </motion.div>
+                      <motion.div
+                        animate={{ y: [-10, 10, -10], opacity: [0, 1, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute -top-4 -right-2 text-2xl"
+                      >
+                        🥂
+                      </motion.div>
+                      <motion.div
+                        animate={{ y: [10, -10, 10], opacity: [0, 1, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                        className="absolute top-1/2 -left-6 text-2xl"
+                      >
+                        ✨
+                      </motion.div>
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-serif text-gray-900">Yay! It's Live! 🥂</h3>
+                    <div className="space-y-3">
+                      <h3 className="text-3xl font-serif text-gray-900">It's Official! 🥂</h3>
                       <p className="text-muted-foreground text-sm leading-relaxed">
-                        Your beautiful invitation has been created successfully. Redirecting you to see it now...
+                        Your beautiful invitation is ready to be shared with the world. Redirecting you to your creation...
                       </p>
+                    </div>
+                    <div className="pt-4">
+                      <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: 3 }}
+                          className="h-full bg-green-500"
+                        />
+                      </div>
                     </div>
                   </motion.div>
                 )}
 
-                {paymentStatus === "error" && (
+                {checkoutStep === "error" && (
                   <motion.div
                     key="error"
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
-                    className="space-y-6"
+                    className="p-10 text-center space-y-8"
                   >
                     <div className="w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center mx-auto">
                       <XCircle className="w-12 h-12 text-rose-500" />
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-serif text-gray-900">Oops, Something Went Wrong</h3>
-                      <p className="text-rose-600/80 text-sm leading-relaxed font-medium">
-                        {paymentMessage}
+                    <div className="space-y-3">
+                      <h3 className="text-2xl font-serif text-gray-900">Payment Failed</h3>
+                      <p className="text-rose-600/80 text-sm leading-relaxed font-medium px-4">
+                        {paymentMessage || "Something went wrong. Please check your connection and try again."}
                       </p>
                     </div>
-                    <Button
-                      onClick={() => setPaymentStatus("idle")}
-                      className="rounded-full bg-gray-900 text-white hover:bg-black px-8"
-                    >
-                      Try Again
-                    </Button>
+                    <div className="space-y-3">
+                      <Button
+                        onClick={() => setCheckoutStep("review")}
+                        className="w-full h-14 rounded-2xl bg-gray-900 text-white hover:bg-black font-bold"
+                      >
+                        Retry Payment
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setCheckoutStep("idle")}
+                        className="w-full h-12 text-gray-500"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -405,7 +546,7 @@ export default function Dashboard() {
             <p className="text-white/60 text-sm font-sans mb-4 tracking-widest uppercase animate-pulse">Release to stop previewing</p>
             <div
               ref={scrollRef}
-              className="w-full max-w-[400px] h-[750px] max-h-[85vh] bg-white rounded-[2.5rem] overflow-x-hidden overflow-y-auto shadow-2xl pointer-events-none relative"
+              className="w-[min(90vw,400px)] h-[min(85vh,750px)] bg-white rounded-[2.5rem] overflow-x-hidden overflow-y-auto shadow-2xl pointer-events-none relative"
             >
               <div className="absolute inset-0 origin-top pointer-events-none" style={{ transform: "scale(1)" }}>
                 <TemplateRouter
@@ -470,6 +611,49 @@ export default function Dashboard() {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* ── Auth Warning/Welcome ─────────── */}
+          <AnimatePresence mode="wait">
+            {session && !session.authenticated ? (
+              <motion.div
+                key="guest-warning"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex gap-4 items-start shadow-sm mb-4">
+                  <div className="bg-amber-100 p-2 rounded-full text-amber-600 shrink-0">
+                    <Info className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-amber-900 text-sm">Continue as Guest?</h4>
+                    <p className="text-amber-800/80 text-xs leading-relaxed">
+                      You can create and buy your invitation without an account. However, **you won't be able to edit it later** or track RSVPs unless you sign up with the same email address. 
+                      <Link href="/login" className="ml-1 text-[#F43F8F] font-bold hover:underline">
+                        Sign in now
+                      </Link> to save your progress!
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ) : session?.authenticated ? (
+              <motion.div
+                key="user-welcome"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="overflow-hidden"
+              >
+                <div className="bg-green-50 border border-green-200 rounded-2xl p-4 flex gap-3 items-center shadow-sm mb-4">
+                  <div className="bg-green-100 p-1.5 rounded-full text-green-600 shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <p className="text-green-800 text-xs font-medium">
+                    Logged in as <span className="font-bold">{session.user.email}</span>. Your invitation will be linked to your account.
+                  </p>
+                </div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
           {/* ── Wedding Details ─────────────── */}
           <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible">
             <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
@@ -520,7 +704,8 @@ export default function Dashboard() {
                     value={formData.userEmail}
                     onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
                     required
-                    className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11"
+                    disabled={session?.authenticated}
+                    className={`border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 ${session?.authenticated ? "bg-gray-50 text-gray-500 cursor-not-allowed" : ""}`}
                   />
                   <p className="text-xs text-muted-foreground">We'll send your purchase receipt and updates here.</p>
                 </div>
@@ -606,6 +791,15 @@ export default function Dashboard() {
                 </p>
               </CardHeader>
               <CardContent className="pt-6">
+                <style>{`
+                  :root { --preview-scale: 0.5; }
+                  @media (max-width: 640px) {
+                    :root { --preview-scale: 0.4; }
+                  }
+                  @media (min-width: 641px) and (max-width: 1024px) {
+                    :root { --preview-scale: 0.45; }
+                  }
+                `}</style>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {TEMPLATES.map((tmpl) => {
                     const isSelected = formData.template === tmpl.slug;
@@ -626,7 +820,7 @@ export default function Dashboard() {
                           <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{
                               width: '375px', 
                               height: '812px',
-                              transform: 'translate(-50%, -50%) scale(0.55)'
+                              transform: 'translate(-50%, -50%) scale(var(--preview-scale))'
                             }}>
                             <TemplateRouter
                               template={tmpl.slug}

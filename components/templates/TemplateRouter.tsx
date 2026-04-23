@@ -38,7 +38,7 @@ export default function TemplateRouter({ template, ...props }: TemplateProps & {
       {isPremium && !props.isThumbnail && (
         <EnvelopeIntro brideName={props.brideName} groomName={props.groomName} variant={template} autoOpen={props.isPreview} />
       )}
-      <Component {...props} />
+      <Component {...props} tier={meta?.tier} />
     </>
   );
 }
