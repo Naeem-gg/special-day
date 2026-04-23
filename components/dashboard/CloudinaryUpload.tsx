@@ -110,10 +110,10 @@ export default function CloudinaryUpload({ onUpload, onRemove, images, maxUpload
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className={`p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${message.type === "success"
-                ? "bg-green-50 text-green-700 border border-green-200"
-                : message.type === "warning"
-                  ? "bg-amber-50 text-amber-700 border border-amber-200"
-                  : "bg-red-50 text-red-700 border border-red-200"
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : message.type === "warning"
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "bg-red-50 text-red-700 border border-red-200"
               }`}
           >
             {message.type === "success" ? <CheckCircle2 className="shrink-0 w-4 h-4" /> : <AlertCircle className="shrink-0 w-4 h-4" />}
@@ -131,7 +131,7 @@ export default function CloudinaryUpload({ onUpload, onRemove, images, maxUpload
       {/* Mobile optimized grid (3 columns on mobile, 4 on desktop) */}
       <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4">
         {images.map((img) => (
-          <div key={img.publicId} className="relative aspect-[3/4] rounded-xl overflow-hidden border border-gray-200 shadow-xs group">
+          <div key={img.publicId} className="relative aspect-3/4 rounded-xl overflow-hidden border border-gray-200 shadow-xs group">
             <Image src={img.url} alt="Gallery" fill sizes="" className="object-cover transition-transform group-hover:scale-105" />
             <button
               onClick={() => onRemove(img.publicId)}
@@ -144,7 +144,7 @@ export default function CloudinaryUpload({ onUpload, onRemove, images, maxUpload
         ))}
 
         {images.length < maxUploads && (
-          <label className={`flex flex-col items-center justify-center aspect-[3/4] border-2 border-dashed rounded-xl cursor-pointer transition-colors border-rose-200 hover:bg-rose-50 bg-rose-50/30 active:bg-rose-100`}>
+          <label className={`flex flex-col items-center justify-center aspect-3/4 border-2 border-dashed rounded-xl cursor-pointer transition-colors border-rose-200 hover:bg-rose-50 bg-rose-50/30 active:bg-rose-100`}>
             <div className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-sm flex items-center justify-center mb-1.5 text-[#F43F8F]">
               <ImagePlus className="w-4 h-4 md:w-5 md:h-5" />
             </div>
@@ -168,9 +168,9 @@ export default function CloudinaryUpload({ onUpload, onRemove, images, maxUpload
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[100] flex flex-col bg-black md:p-6 md:bg-black/90 md:items-center md:justify-center"
+            className="fixed inset-0 z-100 flex flex-col bg-black md:p-6 md:bg-black/90 md:items-center md:justify-center"
           >
-            <div className="flex flex-col w-full h-full md:max-w-md md:h-auto md:max-h-[90vh] bg-black md:bg-white md:rounded-[2rem] overflow-hidden shadow-2xl">
+            <div className="flex flex-col w-full h-full md:max-w-md md:h-auto md:max-h-[90vh] bg-black md:bg-white md:rounded-4xl overflow-hidden shadow-2xl">
 
               {/* Header */}
               <div className="flex-none p-4 pt-safe flex justify-between items-center bg-black/50 md:bg-gray-50/50 border-b border-white/10 md:border-gray-100 z-10">

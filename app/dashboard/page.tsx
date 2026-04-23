@@ -12,7 +12,7 @@ import Link from "next/link";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
 import { Footer } from "@/components/Footer";
 import confetti from "canvas-confetti";
-import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock, Info } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock, Info, X } from "lucide-react";
 import { TEMPLATES, TIER_TEMPLATES } from "@/components/templates/types";
 
 declare global {
@@ -52,6 +52,7 @@ export default function Dashboard() {
   const [couponError, setCouponError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
+  const [isUploadingMusic, setIsUploadingMusic] = useState(false);
   const [session, setSession] = useState<{ authenticated: boolean; user?: any } | null>(null);
 
   // ── Checkout Flow ───────────────────
@@ -129,6 +130,18 @@ export default function Dashboard() {
     }
     return () => cancelAnimationFrame(animationFrame);
   }, [longPressTemplate]);
+
+  // ── Auto-generate slug for basic tier ──────────
+  useEffect(() => {
+    if (formData.tier.toLowerCase() === "basic") {
+      const bride = formData.brideName.toLowerCase().trim().replace(/\s+/g, "-");
+      const groom = formData.groomName.toLowerCase().trim().replace(/\s+/g, "-");
+      if (bride || groom) {
+        const base = [bride, groom].filter(Boolean).join("-and-");
+        setFormData((prev) => ({ ...prev, slug: base || prev.slug }));
+      }
+    }
+  }, [formData.brideName, formData.groomName, formData.tier]);
 
   const handlePointerDown = (slug: string, e: React.PointerEvent) => {
     // Only trigger for primary pointer (left click or touch)
@@ -323,7 +336,7 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-rose-950/20 backdrop-blur-md"
+            className="fixed inset-0 z-100 flex items-center justify-center p-4 md:p-6 bg-rose-950/20 backdrop-blur-md"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 30 }}
@@ -363,8 +376,60 @@ export default function Dashboard() {
                           <span className="text-gray-500">Plan Price</span>
                           <span className="text-gray-900 font-medium">₹{tiers.find(t => t.slug === formData.tier)?.price || 0}</span>
                         </div>
+
+                        {/* Review step coupon application */}
+                        {!couponData ? (
+                          <div className="pt-2">
+                            <motion.div
+                              key={`review-coupon-${shakeKey}`}
+                              variants={shakeVariants}
+                              animate={couponError ? "shake" : ""}
+                              className="flex gap-2"
+                            >
+                              <div className="relative flex-1">
+                                <Ticket className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                <Input
+                                  placeholder="DISCOUNT CODE"
+                                  className="pl-8 text-xs uppercase font-mono border-rose-200 focus:border-[#F43F8F] rounded-lg h-9"
+                                  value={couponCode}
+                                  onChange={(e) => {
+                                    setCouponCode(e.target.value.toUpperCase());
+                                    setCouponError("");
+                                  }}
+                                />
+                              </div>
+                              <Button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  validateCoupon();
+                                }}
+                                disabled={isValidatingCoupon || !couponCode}
+                                className="h-9 px-3 text-xs bg-rose-100 text-[#F43F8F] hover:bg-rose-200 rounded-lg shrink-0"
+                              >
+                                {isValidatingCoupon ? <Loader2 className="w-3 h-3 animate-spin" /> : "Apply"}
+                              </Button>
+                            </motion.div>
+                            {couponError && <p className="text-[10px] text-red-500 mt-1 ml-1">{couponError}</p>}
+                          </div>
+                        ) : (
+                          <div className="flex justify-between text-sm text-green-600 font-medium bg-green-50 p-2 rounded-lg border border-green-100">
+                            <div className="flex items-center gap-1.5">
+                              <Ticket className="w-3.5 h-3.5" />
+                              <span>Code Applied!</span>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-4 p-0 text-xs text-green-700 hover:text-green-800 hover:bg-transparent"
+                              onClick={() => { setCouponData(null); setCouponCode(""); }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        )}
+
                         {couponData && (
-                          <div className="flex justify-between text-sm text-green-600 font-medium">
+                          <div className="flex justify-between text-sm text-green-600 font-medium px-1">
                             <span>Discount ({couponCode})</span>
                             <span>-₹{(tiers.find(t => t.slug === formData.tier)?.price || 0) - calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0)}</span>
                           </div>
@@ -411,7 +476,7 @@ export default function Dashboard() {
                   >
                     <div className="relative w-28 h-28 mx-auto">
                       <motion.div
-                        animate={{ 
+                        animate={{
                           scale: [1, 1.2, 1],
                           rotate: [0, 180, 360],
                           borderRadius: ["30%", "50%", "30%"]
@@ -435,8 +500,8 @@ export default function Dashboard() {
                         {checkoutStep === "processing" ? "Preparing Payment..." : "Perfecting the Magic..."}
                       </h3>
                       <p className="text-muted-foreground text-sm leading-relaxed px-4">
-                        {checkoutStep === "processing" 
-                          ? "Connecting to our secure payment gateway. Please wait a moment." 
+                        {checkoutStep === "processing"
+                          ? "Connecting to our secure payment gateway. Please wait a moment."
                           : "We're almost there! Finalising your beautiful invitation with love. ✨"}
                       </p>
                     </div>
@@ -539,7 +604,7 @@ export default function Dashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-sm flex flex-col justify-center items-center select-none touch-none"
+            className="fixed inset-0 z-200 bg-black/90 backdrop-blur-sm flex flex-col justify-center items-center select-none touch-none"
             onPointerUp={handlePointerUpOrLeave}
             onPointerLeave={handlePointerUpOrLeave}
           >
@@ -628,7 +693,7 @@ export default function Dashboard() {
                   <div className="space-y-1">
                     <h4 className="font-bold text-amber-900 text-sm">Continue as Guest?</h4>
                     <p className="text-amber-800/80 text-xs leading-relaxed">
-                      You can create and buy your invitation without an account. However, **you won't be able to edit it later** or track RSVPs unless you sign up with the same email address. 
+                      You can create and buy your invitation without an account. However, **you won't be able to edit it later** or track RSVPs unless you sign up with the same email address.
                       <Link href="/login" className="ml-1 text-[#F43F8F] font-bold hover:underline">
                         Sign in now
                       </Link> to save your progress!
@@ -725,9 +790,21 @@ export default function Dashboard() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="slug" className="text-sm font-semibold text-gray-700">
-                      Your Invitation Link 🔗
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="slug" className="text-sm font-semibold text-gray-700">
+                        Your Invitation Link 🔗
+                      </Label>
+                      {formData.tier.toLowerCase() === "basic" && (
+                        <div className="group relative">
+                          <span className="text-[10px] bg-amber-50 text-amber-600 border border-amber-100 px-2 py-0.5 rounded-full font-bold flex items-center gap-1 cursor-help">
+                            <Lock className="w-2.5 h-2.5" /> PREMIUM
+                          </span>
+                          <div className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                            Custom links are available on Standard & Premium plans.
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-400 text-sm shrink-0">/invite/</span>
                       <Input
@@ -738,10 +815,20 @@ export default function Dashboard() {
                           setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/ /g, "-") })
                         }
                         required
-                        className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11"
+                        readOnly={formData.tier.toLowerCase() === "basic"}
+                        className={`border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 transition-all ${formData.tier.toLowerCase() === "basic"
+                          ? "bg-gray-50/50 text-gray-400 border-dashed cursor-not-allowed"
+                          : "bg-white"
+                          }`}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground">This is the link you'll share with guests.</p>
+                    {formData.tier.toLowerCase() === "basic" ? (
+                      <p className="text-[10px] text-amber-600/80 font-medium italic">
+                        Upgrade to customize your invitation link!
+                      </p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">This is the link you'll share with guests.</p>
+                    )}
                   </div>
                 </div>
 
@@ -760,18 +847,99 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="musicUrl" className="text-sm font-semibold text-gray-700">
-                    Background Music (optional) 🎵
-                  </Label>
-                  <Input
-                    id="musicUrl"
-                    placeholder="Paste a link to your favourite song"
-                    value={formData.musicUrl}
-                    onChange={(e) => setFormData({ ...formData, musicUrl: e.target.value })}
-                    className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Your guests will hear this song when they open the invite. 🎶
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="musicUrl" className="text-sm font-semibold text-gray-700">
+                      Background Music (optional) 🎵
+                    </Label>
+                    <div className="group relative">
+                      <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                      <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-900 text-white text-[10px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 leading-relaxed shadow-xl">
+                        <p className="font-bold mb-1 text-rose-400">Premium Audio Options</p>
+                        <p className="mb-2">You can either upload a file or paste a link.</p>
+                        
+                        <span className="font-bold">Upload (Recommended):</span>
+                        <br/>
+                        Upload an MP3 from your phone or PC.
+                        <br/><br/>
+                        <span className="font-bold">Direct Link:</span>
+                        <br/>
+                        ✅ <span className="font-mono opacity-80">Cloudinary URL, Dropbox (use ?dl=1)</span>
+                        <br/>
+                        ❌ <span className="text-gray-400">YouTube, Spotify, GDrive (direct link needed)</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        id="musicUrl"
+                        placeholder="Paste a link OR upload a file"
+                        value={formData.musicUrl}
+                        onChange={(e) => setFormData({ ...formData, musicUrl: e.target.value })}
+                        className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 pr-10"
+                      />
+                      {formData.musicUrl && (
+                        <button 
+                          onClick={() => setFormData({ ...formData, musicUrl: "" })}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    
+                    <label className="shrink-0">
+                      <div className={`h-11 px-4 rounded-xl border-2 border-dashed flex items-center justify-center gap-2 cursor-pointer transition-all ${isUploadingMusic ? "bg-gray-50 border-gray-200" : "border-rose-200 bg-rose-50/30 hover:bg-rose-50 hover:border-rose-300"}`}>
+                        {isUploadingMusic ? (
+                          <Loader2 className="w-4 h-4 text-[#F43F8F] animate-spin" />
+                        ) : (
+                          <Plus className="w-4 h-4 text-[#F43F8F]" />
+                        )}
+                        <span className="text-xs font-bold text-gray-700">{isUploadingMusic ? "..." : "Upload MP3"}</span>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="audio/*"
+                        disabled={isUploadingMusic}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          if (file.size > 10 * 1024 * 1024) {
+                            alert("File is too large! Please upload a song smaller than 10MB.");
+                            return;
+                          }
+
+                          setIsUploadingMusic(true);
+                          try {
+                            const data = new FormData();
+                            data.append("file", file);
+                            data.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+
+                            const res = await fetch(
+                              `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`,
+                              { method: "POST", body: data }
+                            );
+                            const result = await res.json();
+                            if (result.secure_url) {
+                              setFormData({ ...formData, musicUrl: result.secure_url });
+                            }
+                          } catch (err) {
+                            console.error("Music upload failed:", err);
+                            alert("Failed to upload music. Please try again.");
+                          } finally {
+                            setIsUploadingMusic(false);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                  
+                  <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    Tip: Upload an MP3 from your device for the best guest experience. 🎶
                   </p>
                 </div>
               </CardContent>
@@ -818,10 +986,10 @@ export default function Dashboard() {
                         {/* Dynamic Template Preview Thumbnail */}
                         <div className="h-56 relative w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
                           <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{
-                              width: '375px', 
-                              height: '812px',
-                              transform: 'translate(-50%, -50%) scale(var(--preview-scale))'
-                            }}>
+                            width: '375px',
+                            height: '812px',
+                            transform: 'translate(-50%, -50%) scale(var(--preview-scale))'
+                          }}>
                             <TemplateRouter
                               template={tmpl.slug}
                               brideName={formData.brideName || "Ayesha"}
@@ -836,18 +1004,18 @@ export default function Dashboard() {
                           </div>
                           {/* Invisible overlay to catch clicks/holds over the iframe/component */}
                           <div className="absolute inset-0 bg-transparent z-10" />
-                          
+
                           {isSelected && (
                             <div className="absolute top-3 right-3 z-20 w-6 h-6 rounded-full bg-[#F43F8F] flex items-center justify-center shadow-lg ring-2 ring-white">
                               <CheckCircle2 className="w-4 h-4 text-white" />
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="p-3 bg-white border-t border-gray-100 z-20 relative">
                           <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
                           <div className="flex items-center justify-between mt-1">
-                            <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400 capitalize">{tmpl.tier} plan</span>
+                            <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400">{tmpl.tier} plan</span>
                             <span
                               className="text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-0.5"
                               style={{ color: "#F43F8F" }}>
@@ -874,7 +1042,7 @@ export default function Dashboard() {
                     const originalPrice = selectedTier?.price || 0;
                     const finalPrice = calculateFinalPrice(originalPrice);
                     const hasDiscount = originalPrice !== finalPrice;
-                    
+
                     return (
                       <div className="p-5 bg-linear-to-br from-rose-50 to-amber-50 rounded-2xl border border-rose-200 shadow-sm flex items-center justify-between">
                         <div>

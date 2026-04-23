@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, ChevronDown } from "lucide-react";
+import { MapPin, Clock, ChevronDown, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
 
@@ -35,7 +35,7 @@ function Bubble({ style }: { style: React.CSSProperties }) {
   return <div className="absolute rounded-full pointer-events-none" style={{ ...style, background: "radial-gradient(circle, rgba(78,205,196,0.2), transparent)", border: "1px solid rgba(78,205,196,0.15)" }} />;
 }
 
-export default function AzureOceanTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
+export default function AzureOceanTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
   const [bubbles, setBubbles] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -168,6 +168,11 @@ export default function AzureOceanTemplate({ brideName, groomName, date, venue, 
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ev.time}</span>
                     <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</span>
                   </div>
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`} target="_blank" rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-teal-600 hover:text-white hover:border-teal-600"
+                    style={{ borderColor: "#B2E8E8", color: "#0A3F6B" }}>
+                    <MapIcon className="w-3 h-3" /> Open in Maps
+                  </a>
                 </motion.div>
               ))}
             </div>

@@ -656,6 +656,78 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Guest Experience (Inspired by WooowInvites) ──────────────────── */}
+      <section className="py-28 relative overflow-hidden bg-white">
+        <div className="container relative mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-100 text-amber-600 text-xs font-bold uppercase tracking-widest">
+                💎 THE GUEST EXPERIENCE
+              </div>
+              <h2 className="text-4xl md:text-5xl font-serif leading-tight">
+                Not just an invite, <br />
+                <span className="gradient-text italic">but a digital event</span>
+              </h2>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                We've obsessed over every detail to make sure your guests are wowed 
+                from the second they tap the link. It's the replacement for 
+                expensive wedding websites and paper cards.
+              </p>
+              
+              <div className="space-y-6">
+                {[
+                  { title: "Animated Envelope", desc: "A magical 'tap to open' experience that mimics a real wax-sealed envelope.", icon: "💌" },
+                  { title: "Integrated Music", desc: "Your favourite song plays automatically to set the mood.", icon: "🎵" },
+                  { title: "One-Tap Maps", desc: "No more lost guests. Every event has a direct link to Google & Apple Maps.", icon: "📍" },
+                ].map((item, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex gap-4"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-xl shrink-0 shadow-sm">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900">{item.title}</h4>
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative aspect-square md:aspect-4/5 rounded-[3rem] overflow-hidden shadow-2xl"
+            >
+              <Image 
+                src="/images/hero-bg.png" 
+                alt="Guest Experience Preview" 
+                fill 
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute bottom-10 left-10 right-10 text-white space-y-2">
+                <p className="text-xs font-bold uppercase tracking-widest opacity-80">Live Guest View</p>
+                <p className="text-2xl font-serif">"The most beautiful invite I've ever received!"</p>
+                <p className="text-sm italic opacity-70">— Sarah, Wedding Guest</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ── How it Works ──────────────── */}
       <section id="how-it-works" className="py-28 relative overflow-hidden">
         <motion.div

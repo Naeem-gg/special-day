@@ -68,6 +68,8 @@ export const invitations = pgTable("invitations", {
   paidAmount: integer("paid_amount"),
   razorpayOrderId: text("razorpay_order_id"),
   razorpayPaymentId: text("razorpay_payment_id"),
+  views: integer("views").default(0).notNull(),
+  language: text("language").default("en").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

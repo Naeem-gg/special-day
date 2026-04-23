@@ -44,6 +44,17 @@ const VARIANT_MAP = {
     sealInner: "bg-purple-600/50",
     text: "text-indigo-100",
   },
+  "sacred-ivory": {
+    bg: "#1a1408",
+    ambient: "rgba(212,175,55,0.25)",
+    envelopeMain: "#FFFDF5",
+    envelopeFlap: "#FFF8E7",
+    envelopeFlapInner: "#FAF0DC",
+    sealGlow: "rgba(212,175,55,1)",
+    sealBg: "from-amber-500 to-amber-800",
+    sealInner: "bg-amber-600/50",
+    text: "text-amber-100",
+  },
   "default": {
     bg: "#0a0a0a",
     ambient: "rgba(120,90,40,0.3)",
@@ -68,11 +79,11 @@ export default function EnvelopeIntro({ brideName, groomName, variant = "default
     // 1. Seal glows layer by layer
     setTimeout(() => {
       setStep("opening");
-      
+
       // 2. Flap opens, card slides up
       setTimeout(() => {
         setStep("flash");
-        
+
         // 3. Screen flashes with white light
         setTimeout(() => {
           setStep("finished");
@@ -97,7 +108,7 @@ export default function EnvelopeIntro({ brideName, groomName, variant = "default
           key="envelope-container"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 1.5, ease: "easeOut" } }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0a] overflow-hidden cursor-pointer"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-[#0a0a0a] overflow-hidden cursor-pointer"
           onClick={!autoOpen ? handleOpen : undefined}
         >
           {/* Background Ambient Glow */}
@@ -108,19 +119,19 @@ export default function EnvelopeIntro({ brideName, groomName, variant = "default
             initial={{ opacity: 0, scale: 0.8 }}
             animate={step === "flash" ? { opacity: 1, scale: 2.5 } : { opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.8, ease: "easeIn" }}
-            className="absolute inset-0 z-[110] bg-[radial-gradient(circle_at_center,_#ffffff_0%,_#fffbeb_40%,_transparent_100%)] pointer-events-none mix-blend-screen"
+            className="absolute inset-0 z-110 bg-[radial-gradient(circle_at_center,#ffffff_0%,#fffbeb_40%,transparent_100%)] pointer-events-none mix-blend-screen"
           />
           <motion.div
             initial={{ opacity: 0 }}
             animate={step === "flash" ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 1.2, ease: "easeIn" }}
-            className="absolute inset-0 z-[111] bg-white pointer-events-none"
+            className="absolute inset-0 z-111 bg-white pointer-events-none"
           />
 
-          <div className="relative w-full max-w-lg aspect-[4/3] flex items-center justify-center z-10" style={{ perspective: "2000px" }}>
-            
+          <div className="relative w-full max-w-lg aspect-4/3 flex items-center justify-center z-10" style={{ perspective: "2000px" }}>
+
             {/* Main Envelope Body */}
-            <motion.div 
+            <motion.div
               animate={isOpeningOrLater ? { scale: 0.85, y: 80, rotateX: 15 } : { scale: 1, y: 0, rotateX: 0 }}
               transition={{ duration: 1.5, ease: "easeOut" }}
               className="absolute inset-0 shadow-[0_30px_60px_rgba(0,0,0,0.6)] rounded-sm"
@@ -133,7 +144,7 @@ export default function EnvelopeIntro({ brideName, groomName, variant = "default
                 transition={{ delay: 0.4, duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute inset-x-4 md:inset-x-8 top-12 bottom-4 bg-white shadow-2xl flex flex-col items-center justify-center p-6 md:p-8 border border-gray-100 z-10"
               >
-                <div className="absolute inset-0 border-[1px] border-amber-200/60 m-3 rounded-sm pointer-events-none" />
+                <div className="absolute inset-0 border border-amber-200/60 m-3 rounded-sm pointer-events-none" />
                 <div className="text-center space-y-3 md:space-y-4">
                   <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-amber-600/80 font-medium">You are invited</span>
                   <div className="space-y-2 py-2">
@@ -157,7 +168,7 @@ export default function EnvelopeIntro({ brideName, groomName, variant = "default
               <motion.div
                 initial={{ rotateX: 0, zIndex: 30 }}
                 animate={isOpeningOrLater ? { rotateX: 180, zIndex: 5 } : { rotateX: 0, zIndex: 30 }}
-                transition={{ 
+                transition={{
                   rotateX: { duration: 0.9, ease: "easeInOut" },
                   zIndex: { delay: 0.45, duration: 0 }
                 }}
@@ -172,14 +183,14 @@ export default function EnvelopeIntro({ brideName, groomName, variant = "default
                 <motion.div
                   animate={
                     step === "seal_glow" ? { scale: 1.1, filter: `brightness(1.5) drop-shadow(0 0 30px ${theme.sealGlow})` } :
-                    isOpeningOrLater ? { opacity: 0, scale: 0, filter: "brightness(3)" } : 
-                    { scale: 1, filter: "brightness(1) drop-shadow(0 4px 10px rgba(0,0,0,0.4))" }
+                      isOpeningOrLater ? { opacity: 0, scale: 0, filter: "brightness(3)" } :
+                        { scale: 1, filter: "brightness(1) drop-shadow(0 4px 10px rgba(0,0,0,0.4))" }
                   }
                   transition={{ duration: 0.6 }}
-                  className={`absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br ${theme.sealBg} rounded-full flex items-center justify-center border-[2px] border-white/10`}
+                  className={`absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-linear-to-br ${theme.sealBg} rounded-full flex items-center justify-center border-2 border-white/10`}
                 >
                   <div className={`w-12 h-12 rounded-full border border-white/20 flex items-center justify-center relative ${theme.sealInner} shadow-inner`}>
-                     <span className={`font-serif ${theme.text} text-xl font-bold italic`}>{brideName?.[0] || 'B'}&{groomName?.[0] || 'G'}</span>
+                    <span className={`font-serif ${theme.text} text-xl font-bold italic`}>{brideName?.[0] || 'B'}&{groomName?.[0] || 'G'}</span>
                   </div>
                 </motion.div>
               </motion.div>

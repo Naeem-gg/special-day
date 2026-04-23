@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, ChevronDown } from "lucide-react";
+import { MapPin, Clock, ChevronDown, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
 
@@ -31,7 +31,7 @@ function BranchSVG() {
   );
 }
 
-export default function EmeraldForestTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
+export default function EmeraldForestTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
   const [fireflies, setFireflies] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -147,7 +147,7 @@ export default function EmeraldForestTemplate({ brideName, groomName, date, venu
                 <motion.div key={i} initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }} transition={{ delay: i * 0.15 }}
                   className="flex gap-5 p-8 rounded-3xl" style={{ background: "linear-gradient(135deg, #F5F0E8, #EDE6D8)", border: "1px solid #D4C8A8" }}>
-                  <div className="w-1 rounded-full flex-shrink-0" style={{ background: "linear-gradient(to bottom, #1A3C34, #B87333)" }} />
+                  <div className="w-1 rounded-full shrink-0" style={{ background: "linear-gradient(to bottom, #1A3C34, #B87333)" }} />
                   <div>
                     <p className="font-sans text-xs uppercase tracking-widest mb-2" style={{ color: "#B87333" }}>Event {i + 1}</p>
                     <h3 className="text-2xl font-light mb-2" style={{ color: "#1A3C34" }}>{ev.name}</h3>
@@ -156,6 +156,11 @@ export default function EmeraldForestTemplate({ brideName, groomName, date, venu
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ev.time}</span>
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</span>
                     </div>
+                    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`} target="_blank" rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#1A3C34] hover:text-[#B87333] hover:border-[#1A3C34]"
+                      style={{ borderColor: "#D4C8A8", color: "#B87333" }}>
+                      <MapIcon className="w-3 h-3" /> Open in Maps
+                    </a>
                   </div>
                 </motion.div>
               ))}

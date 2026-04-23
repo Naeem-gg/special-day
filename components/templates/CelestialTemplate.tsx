@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, ChevronDown, Sparkles } from "lucide-react";
+import { MapPin, Clock, ChevronDown, Sparkles, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
 
@@ -106,7 +106,7 @@ function ConstellationLines({ name1, name2 }: { name1: string; name2: string }) 
   );
 }
 
-export default function CelestialTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
+export default function CelestialTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -242,6 +242,11 @@ export default function CelestialTemplate({ brideName, groomName, date, venue, e
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ev.time}</span>
                     <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</span>
                   </div>
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`} target="_blank" rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#FFD700] hover:text-[#0A0E2A] hover:border-[#FFD700]"
+                    style={{ borderColor: "rgba(184,160,255,0.3)", color: "#B8A0FF" }}>
+                    <MapIcon className="w-3 h-3" /> Open in Maps
+                  </a>
                 </motion.div>
               ))}
             </div>

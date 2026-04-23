@@ -1,11 +1,14 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Inter, Playfair_Display, Cormorant_Garamond, Montserrat } from "next/font/google"
 import "./globals.css"
+import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
+const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "600"], variable: "--font-cormorant" })
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-montserrat" })
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://dnvites.com"
 
@@ -90,8 +93,24 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
+              `}
+            </Script>
+          </>
+        )}
       </head>
-      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${montserrat.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
           {/* Temporary script to clear zombie service workers from previous projects on localhost */}

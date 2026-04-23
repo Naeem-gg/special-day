@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Clock, ChevronDown } from "lucide-react";
+import { MapPin, Clock, ChevronDown, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
 
@@ -16,7 +16,7 @@ function SakuraPetal({ style }: { style: React.CSSProperties }) {
   );
 }
 
-export default function SakuraDreamTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
+export default function SakuraDreamTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -154,6 +154,11 @@ export default function SakuraDreamTemplate({ brideName, groomName, date, venue,
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ev.time}</span>
                     <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</span>
                   </div>
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`} target="_blank" rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#4A2060] hover:text-white hover:border-[#4A2060]"
+                    style={{ borderColor: "#F0D8FF", color: "#9B7BB0" }}>
+                    <MapIcon className="w-3 h-3" /> Open in Maps
+                  </a>
                 </motion.div>
               ))}
             </div>

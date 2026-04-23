@@ -34,10 +34,10 @@ function TemplateThumbnail({ template, selected, onSelect, brideName, groomName,
       {/* Dynamic Template Preview Thumbnail */}
       <div className="h-64 relative w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${template.palette[0]}, ${template.palette[1]})` }}>
         <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{
-            width: '375px', 
-            height: '812px',
-            transform: 'translate(-50%, -50%) scale(0.65)'
-          }}>
+          width: '375px',
+          height: '812px',
+          transform: 'translate(-50%, -50%) scale(0.65)'
+        }}>
           <TemplateRouter
             template={template.slug}
             brideName={brideName || "Ayesha"}
@@ -210,7 +210,7 @@ function PreviewLandingContent() {
             {loading ? "Generating Preview..." : `Preview: ${TEMPLATES.find(t => t.slug === selectedTemplate)?.name}`}
             {/* Shine */}
             <motion.div animate={{ x: ["-100%", "200%"] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none" />
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none" />
           </motion.button>
         </div>
       </div>

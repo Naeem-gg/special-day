@@ -12,6 +12,7 @@ const CinematicFilmTemplate = dynamic(() => import("./CinematicFilmTemplate"));
 const MidnightNoirTemplate = dynamic(() => import("./MidnightNoirTemplate"));
 const RoyalGoldTemplate = dynamic(() => import("./RoyalGoldTemplate"));
 const CelestialTemplate = dynamic(() => import("./CelestialTemplate"));
+const SacredIvoryTemplate = dynamic(() => import("./SacredIvoryTemplate"));
 
 const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
   "rose-gold": RoseGoldTemplate,
@@ -23,6 +24,7 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
   "midnight-noir": MidnightNoirTemplate,
   "royal-gold": RoyalGoldTemplate,
   "celestial": CelestialTemplate,
+  "sacred-ivory": SacredIvoryTemplate,
 };
 
 import React from "react";

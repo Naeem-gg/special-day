@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { MapPin, Clock, Film, ChevronDown } from "lucide-react";
+import { MapPin, Clock, Film, ChevronDown, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
 
@@ -24,7 +24,7 @@ function FilmStrip({ side }: { side: "left" | "right" }) {
   );
 }
 
-export default function CinematicFilmTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
+export default function CinematicFilmTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [countdown, setCountdown] = useState(5);
   const [showContent, setShowContent] = useState(false);
@@ -174,6 +174,11 @@ export default function CinematicFilmTemplate({ brideName, groomName, date, venu
                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ev.time}</span>
                         <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</span>
                       </div>
+                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`} target="_blank" rel="noopener noreferrer"
+                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#C0A060] hover:text-[#0A0A0A] hover:border-[#C0A060]"
+                        style={{ borderColor: "#C0A060", color: "#C0A060" }}>
+                        <MapIcon className="w-3 h-3" /> Open in Maps
+                      </a>
                     </div>
                   </div>
                 </motion.div>

@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, ExternalLink, Share2, ChevronDown } from "lucide-react";
+import { MapPin, Clock, ExternalLink, Share2, ChevronDown, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
+import BackgroundMusic from "@/components/invitation/BackgroundMusic";
 
 /* ── SVG Vine drawing ──────────────────────────────────── */
 function VineDivider() {
@@ -38,7 +39,7 @@ function Leaf({ style }: { style: React.CSSProperties }) {
   );
 }
 
-export default function BotanicalTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
+export default function BotanicalTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
   const [leaves, setLeaves] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -62,6 +63,7 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
 
   return (
     <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#FAFCF8" }}>
+      {musicUrl && !isThumbnail && <BackgroundMusic url={musicUrl} />}
 
       {/* ── HERO ─────────────────────────────────── */}
       <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
@@ -150,7 +152,7 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
                 viewport={{ once: true }} transition={{ delay: i * 0.15 }}
                 className="p-8 rounded-3xl border" style={{ background: "white", borderColor: "#C5DEB8" }}>
                 <div className="flex items-start gap-5">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
                     style={{ background: "linear-gradient(135deg, #2D5A27, #5A8A4A)", color: "white" }}>
                     <span className="font-sans text-sm font-bold">{i + 1}</span>
                   </div>
@@ -160,6 +162,20 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
                     <div className="flex flex-wrap gap-4 font-sans text-xs" style={{ color: "#8FAF7E" }}>
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ev.time}</span>
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</span>
+                    </div>
+
+                    {/* Map Link */}
+                    <div className="mt-4">
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#2D5A27] hover:text-white"
+                        style={{ borderColor: "#C5DEB8", color: "#2D5A27" }}
+                      >
+                        <MapIcon className="w-3 h-3" />
+                        Open in Maps
+                      </a>
                     </div>
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { invitations } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import TemplateRouter from "@/components/templates/TemplateRouter";
 import BackgroundMusic from "@/components/invitation/BackgroundMusic";
 
@@ -53,6 +53,13 @@ export default async function InvitationPage({ params }: PageProps) {
   if (!invitation) {
     notFound();
   }
+
+  // Track view (fire-and-forget, non-blocking)
+  db.update(invitations)
+    .set({ views: sql`${invitations.views} + 1` })
+    .where(eq(invitations.id, invitation.id))
+    .execute()
+    .catch(() => {});
 
   return (
     <main>

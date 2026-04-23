@@ -34,7 +34,7 @@ function FlipDigit({ value, label }: { value: number; label: string }) {
   );
 }
 
-export default function RoseGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier }: TemplateProps) {
+export default function RoseGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -164,7 +164,7 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
                 <motion.div key={i} initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40 }}
                   whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: i * 0.1 }}
                   className="flex gap-5 p-7 rounded-3xl" style={{ background: "linear-gradient(135deg, #FFF8F2, #FFF0F0)", border: "1px solid #F0D0D0" }}>
-                  <div className="w-1 rounded-full flex-shrink-0" style={{ background: "linear-gradient(to bottom, #B76E79, #D4AF37)" }} />
+                  <div className="w-1 rounded-full shrink-0" style={{ background: "linear-gradient(to bottom, #B76E79, #D4AF37)" }} />
                   <div className="flex-1">
                     <p className="font-sans text-xs uppercase tracking-widest mb-2" style={{ color: "#B76E79" }}>Event {i + 1}</p>
                     <h3 className="text-2xl font-light mb-2" style={{ color: "#2C1810" }}>{ev.name}</h3>

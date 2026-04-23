@@ -106,10 +106,18 @@ export const TEMPLATES: TemplateMeta[] = [
     palette: ["#0A0E2A", "#6C3BA6", "#FFD700"],
     emoji: "✨",
   },
+  {
+    slug: "sacred-ivory",
+    name: "Sacred Ivory",
+    description: "Cream elegance, gold leaf accents & timeless sacred beauty.",
+    tier: "premium",
+    palette: ["#FFFDF5", "#D4AF37", "#8B4513"],
+    emoji: "🕊️",
+  },
 ];
 
 export const TIER_TEMPLATES: Record<string, string[]> = {
   basic: ["rose-gold", "botanical", "sakura"],
   standard: ["rose-gold", "botanical", "sakura", "azure-ocean", "emerald-forest", "cinematic"],
-  premium: ["rose-gold", "botanical", "sakura", "azure-ocean", "emerald-forest", "cinematic", "midnight-noir", "royal-gold", "celestial"],
+  premium: ["rose-gold", "botanical", "sakura", "azure-ocean", "emerald-forest", "cinematic", "midnight-noir", "royal-gold", "celestial", "sacred-ivory"],
 };
