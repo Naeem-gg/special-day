@@ -7,10 +7,76 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://dnvites.com"
+
 export const metadata: Metadata = {
-  title: "DNvites – Dearest Invites | Digital Wedding Invitations",
-  description: "Create a beautiful, animated digital wedding invitation in minutes. Share with family & friends instantly via WhatsApp, Instagram or Email.",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "DNvites – Dearest Invites | Digital Wedding Invitations",
+    template: "%s | DNvites",
+  },
+  description: "Create beautiful, animated digital wedding invitations in minutes. Share instantly via WhatsApp, Instagram or Email with RSVP tracking and photo galleries.",
+  keywords: ["digital wedding invitation", "online wedding card", "animated wedding invite", "whatsapp wedding invitation", "RSVP tracking", "wedding photo gallery", "e-invites", "paperless invitations"],
+  authors: [{ name: "DNvites Team" }],
+  creator: "DNvites",
+  publisher: "DNvites",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: baseUrl,
+    siteName: "DNvites",
+    title: "DNvites – Dearest Invites | Digital Wedding Invitations",
+    description: "Create beautiful, animated digital wedding invitations in minutes. Share instantly via WhatsApp, Instagram or Email.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "DNvites - Digital Wedding Invitations",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DNvites – Dearest Invites | Digital Wedding Invitations",
+    description: "Create beautiful, animated digital wedding invitations in minutes.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 }
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "DNvites",
+  "url": baseUrl,
+  "logo": `${baseUrl}/icon.ico`,
+  "sameAs": [
+    "https://instagram.com/dnvites",
+    "https://facebook.com/dnvites",
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+91-XXXXXXXXXX",
+    "contactType": "customer service",
+  },
+}
+
 
 export default function RootLayout({
   children,
@@ -19,6 +85,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
