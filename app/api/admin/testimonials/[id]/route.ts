@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 // PATCH update testimonial (isPublic)
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getSession();
   if (!session) {
@@ -39,7 +39,7 @@ export async function PATCH(
 // DELETE testimonial
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getSession();
   if (!session) {
