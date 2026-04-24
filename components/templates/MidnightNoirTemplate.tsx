@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Clock, ChevronDown, Star, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
@@ -80,6 +80,18 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
         {/* ── HERO ─────────────────────────────────── */}
         <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, #1A1208 0%, #0D0D0D 100%)" }}>
+
+          {/* Video backdrop */}
+          {!isThumbnail && (
+            <video
+              autoPlay muted loop playsInline
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              style={{ opacity: 0.15, mixBlendMode: "lighten" }}
+            >
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4" type="video/mp4" />
+            </video>
+          )}
+
           <StarField />
 
           {/* Spotlight sweep */}

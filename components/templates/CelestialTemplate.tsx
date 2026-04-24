@@ -146,6 +146,18 @@ export default function CelestialTemplate({ brideName, groomName, date, venue, e
         {/* ── HERO ─────────────────────────────────── */}
         <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(180deg, #020412 0%, #0A0E2A 40%, #0D0620 100%)" }}>
+
+          {/* Video backdrop */}
+          {!isThumbnail && (
+            <video
+              autoPlay muted loop playsInline
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              style={{ opacity: 0.18, mixBlendMode: "screen" }}
+            >
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4" type="video/mp4" />
+            </video>
+          )}
+
           <CosmosCanvas />
           <ConstellationLines name1={brideName} name2={groomName} />
 

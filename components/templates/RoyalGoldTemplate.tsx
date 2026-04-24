@@ -91,6 +91,17 @@ export default function RoyalGoldTemplate({ brideName, groomName, date, venue, e
           style={{ background: "linear-gradient(160deg, #1A0008 0%, #3A0A14 50%, #1A0008 100%)" }}>
           <OrnateBorder />
 
+          {/* Video backdrop */}
+          {!isThumbnail && (
+            <video
+              autoPlay muted loop playsInline
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              style={{ opacity: 0.12, mixBlendMode: "screen" }}
+            >
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-red-fleshy-waves-1080-large.mp4" type="video/mp4" />
+            </video>
+          )}
+
           {/* Velvet texture overlay */}
           <div className="absolute inset-0 pointer-events-none opacity-10"
             style={{ backgroundImage: "repeating-linear-gradient(45deg, rgba(212,175,55,0.1) 0px, transparent 1px, transparent 4px, rgba(212,175,55,0.05) 5px)" }} />

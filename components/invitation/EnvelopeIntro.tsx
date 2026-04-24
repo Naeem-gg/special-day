@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface EnvelopeIntroProps {
@@ -10,96 +10,280 @@ interface EnvelopeIntroProps {
   autoOpen?: boolean;
 }
 
+/* ─── Theme map ────────────────────────────────────────────────────────── */
 const VARIANT_MAP = {
   "midnight-noir": {
     bg: "#0a0a0a",
-    ambient: "rgba(120,90,40,0.3)",
+    videoSrc: "https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4",
+    ambient: "rgba(120,90,40,0.35)",
     envelopeMain: "#1A1A1A",
     envelopeFlap: "#262626",
     envelopeFlapInner: "#111111",
-    sealGlow: "rgba(212,175,55,1)",
-    sealBg: "from-amber-600 to-amber-900",
-    sealInner: "bg-amber-700/50",
+    sealTop: "#C8860A",
+    sealMid: "#E8A020",
+    sealBase: "#7A4A00",
+    sealGlow: "#FFD700",
+    sealShadow: "rgba(212,175,55,0.9)",
     text: "text-amber-200",
+    initials: "#FFF8E1",
   },
   "royal-gold": {
     bg: "#1a050a",
-    ambient: "rgba(255,100,100,0.2)",
+    videoSrc: "https://assets.mixkit.co/videos/preview/mixkit-red-fleshy-waves-1080-large.mp4",
+    ambient: "rgba(255,80,80,0.25)",
     envelopeMain: "#6B1A2B",
     envelopeFlap: "#8A253A",
     envelopeFlapInner: "#4A101C",
-    sealGlow: "rgba(255,215,0,1)",
-    sealBg: "from-yellow-500 to-yellow-800",
-    sealInner: "bg-yellow-600/50",
+    sealTop: "#C8A800",
+    sealMid: "#FFD700",
+    sealBase: "#7A6400",
+    sealGlow: "#FFE044",
+    sealShadow: "rgba(255,215,0,0.9)",
     text: "text-yellow-200",
+    initials: "#FFFDE7",
   },
   "celestial": {
     bg: "#02030a",
-    ambient: "rgba(100,100,255,0.2)",
+    videoSrc: "https://assets.mixkit.co/videos/preview/mixkit-galaxy-spinning-1610-large.mp4",
+    ambient: "rgba(80,80,255,0.25)",
     envelopeMain: "#0A0E2A",
     envelopeFlap: "#141A4A",
     envelopeFlapInner: "#05081A",
-    sealGlow: "rgba(192,192,255,1)",
-    sealBg: "from-indigo-400 to-purple-800",
-    sealInner: "bg-purple-600/50",
+    sealTop: "#6C3BA6",
+    sealMid: "#9B6DDB",
+    sealBase: "#3A1A70",
+    sealGlow: "#C0B0FF",
+    sealShadow: "rgba(160,140,255,0.9)",
     text: "text-indigo-100",
+    initials: "#EEE8FF",
   },
   "sacred-ivory": {
     bg: "#1a1408",
-    ambient: "rgba(212,175,55,0.25)",
+    videoSrc: "https://assets.mixkit.co/videos/preview/mixkit-autumn-leaves-on-a-golden-background-4075-large.mp4",
+    ambient: "rgba(212,175,55,0.3)",
     envelopeMain: "#FFFDF5",
     envelopeFlap: "#FFF8E7",
     envelopeFlapInner: "#FAF0DC",
-    sealGlow: "rgba(212,175,55,1)",
-    sealBg: "from-amber-500 to-amber-800",
-    sealInner: "bg-amber-600/50",
+    sealTop: "#B8750A",
+    sealMid: "#D4AF37",
+    sealBase: "#6B4200",
+    sealGlow: "#FFD84D",
+    sealShadow: "rgba(212,175,55,0.9)",
     text: "text-amber-100",
+    initials: "#FFF8E1",
   },
   "default": {
     bg: "#0a0a0a",
+    videoSrc: "https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4",
     ambient: "rgba(120,90,40,0.3)",
     envelopeMain: "#f4f1ea",
     envelopeFlap: "#fcfbf9",
     envelopeFlapInner: "#ede9e0",
-    sealGlow: "rgba(212,175,55,1)",
-    sealBg: "from-red-700 to-red-950",
-    sealInner: "bg-red-800/50",
+    sealTop: "#8B0000",
+    sealMid: "#CC2200",
+    sealBase: "#4A0000",
+    sealGlow: "#FF6040",
+    sealShadow: "rgba(180,50,20,0.9)",
     text: "text-amber-200",
-  }
+    initials: "#FFF0E0",
+  },
 };
 
-export default function EnvelopeIntro({ brideName, groomName, variant = "default", autoOpen = false }: EnvelopeIntroProps) {
-  const [step, setStep] = useState<"idle" | "seal_glow" | "opening" | "flash" | "finished">("idle");
-  const theme = VARIANT_MAP[variant as keyof typeof VARIANT_MAP] || VARIANT_MAP.default;
+/* ─── Sparkle particle ─────────────────────────────────────────────────── */
+interface Sparkle { id: number; x: number; y: number; size: number; angle: number; dist: number; color: string; }
+
+function SparkleParticles({ active, color }: { active: boolean; color: string }) {
+  const particles: Sparkle[] = Array.from({ length: 28 }, (_, i) => ({
+    id: i,
+    x: 50, y: 50,
+    size: 3 + Math.random() * 5,
+    angle: (i / 28) * 360 + Math.random() * 13,
+    dist: 80 + Math.random() * 180,
+    color: i % 3 === 0 ? "#ffffff" : i % 3 === 1 ? color : "#fff8d0",
+  }));
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          initial={{ opacity: 0, x: "50vw", y: "50vh", scale: 0 }}
+          animate={active ? {
+            opacity: [0, 1, 1, 0],
+            x: `calc(50vw + ${Math.cos(p.angle * Math.PI / 180) * p.dist}px)`,
+            y: `calc(50vh + ${Math.sin(p.angle * Math.PI / 180) * p.dist}px)`,
+            scale: [0, 1.4, 1, 0],
+          } : { opacity: 0 }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: Math.random() * 0.3 }}
+          style={{ position: "absolute", top: 0, left: 0, width: p.size, height: p.size, borderRadius: "50%", background: p.color, boxShadow: `0 0 ${p.size * 3}px ${p.color}` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ─── Ornate wax seal SVG ──────────────────────────────────────────────── */
+function WaxSeal({ theme, initials, glowing, cracking }: {
+  theme: (typeof VARIANT_MAP)["default"];
+  initials: string;
+  glowing: boolean;
+  cracking: boolean;
+}) {
+  return (
+    <div className="relative w-full h-full">
+      {/* Glow rings — animate outward on tap */}
+      {[0, 1, 2].map(i => (
+        <motion.div
+          key={i}
+          initial={{ scale: 1, opacity: 0 }}
+          animate={glowing ? {
+            scale: [1, 2.5 + i * 0.8],
+            opacity: [0.7, 0],
+          } : { scale: 1, opacity: 0 }}
+          transition={{ duration: 1, delay: i * 0.18, ease: "easeOut" }}
+          style={{
+            position: "absolute", inset: 0, borderRadius: "50%",
+            background: `radial-gradient(circle, ${theme.sealGlow}55 0%, transparent 70%)`,
+            pointerEvents: "none",
+          }}
+        />
+      ))}
+
+      {/* The seal itself */}
+      <motion.svg
+        viewBox="0 0 120 120"
+        className="w-full h-full drop-shadow-2xl"
+        animate={glowing ? { filter: `drop-shadow(0 0 24px ${theme.sealGlow}) drop-shadow(0 0 48px ${theme.sealGlow})` } : {}}
+        transition={{ duration: 0.5 }}
+      >
+        <defs>
+          <radialGradient id={`sealGrad-${initials}`} cx="40%" cy="35%" r="65%">
+            <stop offset="0%" stopColor={theme.sealMid} />
+            <stop offset="55%" stopColor={theme.sealTop} />
+            <stop offset="100%" stopColor={theme.sealBase} />
+          </radialGradient>
+          <filter id="sealEmboss">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.5)" />
+          </filter>
+        </defs>
+
+        {/* Outer scalloped edge — 16-point starburst */}
+        {Array.from({ length: 16 }, (_, i) => {
+          const a = (i / 16) * Math.PI * 2;
+          const aH = ((i + 0.5) / 16) * Math.PI * 2;
+          const r1 = 58, r2 = 51;
+          return (
+            <g key={i}>
+              <line
+                x1={60 + Math.cos(a) * r1} y1={60 + Math.sin(a) * r1}
+                x2={60 + Math.cos(aH) * r2} y2={60 + Math.sin(aH) * r2}
+                stroke={theme.sealTop} strokeWidth="0" />
+            </g>
+          );
+        })}
+        <circle cx="60" cy="60" r="57" fill={`url(#sealGrad-${initials})`} filter="url(#sealEmboss)" />
+
+        {/* Scalloped outer ring */}
+        {Array.from({ length: 24 }, (_, i) => {
+          const a = (i / 24) * Math.PI * 2;
+          const r = 56;
+          return (
+            <circle key={i}
+              cx={60 + Math.cos(a) * r} cy={60 + Math.sin(a) * r}
+              r="4.5" fill={theme.sealTop} opacity="0.9" />
+          );
+        })}
+
+        {/* Inner ring band */}
+        <circle cx="60" cy="60" r="44" fill="none" stroke={theme.sealMid} strokeWidth="1.5" opacity="0.6" />
+        <circle cx="60" cy="60" r="38" fill="none" stroke={theme.sealMid} strokeWidth="0.8" opacity="0.4" />
+
+        {/* Inner circle background */}
+        <circle cx="60" cy="60" r="36" fill={theme.sealBase} opacity="0.5" />
+
+        {/* Decorative inner flourishes */}
+        {Array.from({ length: 8 }, (_, i) => {
+          const a = (i / 8) * Math.PI * 2;
+          return (
+            <line key={i}
+              x1={60 + Math.cos(a) * 20} y1={60 + Math.sin(a) * 20}
+              x2={60 + Math.cos(a) * 34} y2={60 + Math.sin(a) * 34}
+              stroke={theme.sealMid} strokeWidth="1" opacity="0.5" strokeLinecap="round" />
+          );
+        })}
+
+        {/* Initials */}
+        <text
+          x="60" y="67"
+          textAnchor="middle"
+          fontFamily="'Playfair Display', Georgia, serif"
+          fontSize="22"
+          fontWeight="bold"
+          fontStyle="italic"
+          fill={theme.initials}
+          filter="url(#sealEmboss)"
+          opacity="0.95"
+        >
+          {initials}
+        </text>
+
+        {/* Crack lines on opening */}
+        {cracking && (
+          <g opacity="0.8">
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.3 }}
+              x1="60" y1="20" x2="55" y2="50" stroke={theme.sealMid} strokeWidth="1.5" strokeLinecap="round" />
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.3, delay: 0.05 }}
+              x1="85" y1="35" x2="68" y2="55" stroke={theme.sealMid} strokeWidth="1" strokeLinecap="round" />
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.3, delay: 0.1 }}
+              x1="35" y1="40" x2="52" y2="58" stroke={theme.sealMid} strokeWidth="1" strokeLinecap="round" />
+          </g>
+        )}
+      </motion.svg>
+    </div>
+  );
+}
+
+/* ─── Main component ───────────────────────────────────────────────────── */
+export default function EnvelopeIntro({
+  brideName, groomName, variant = "default", autoOpen = false,
+}: EnvelopeIntroProps) {
+  const [step, setStep] = useState<"idle" | "seal_glow" | "cracking" | "opening" | "flash" | "finished">("idle");
+  const theme = VARIANT_MAP[variant as keyof typeof VARIANT_MAP] ?? VARIANT_MAP.default;
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const initials = `${brideName?.[0] ?? "B"}&${groomName?.[0] ?? "G"}`;
 
   const handleOpen = () => {
     if (step !== "idle") return;
     setStep("seal_glow");
-
-    // 1. Seal glows layer by layer
     setTimeout(() => {
-      setStep("opening");
-
-      // 2. Flap opens, card slides up
+      setStep("cracking");
       setTimeout(() => {
-        setStep("flash");
-
-        // 3. Screen flashes with white light
+        setStep("opening");
         setTimeout(() => {
-          setStep("finished");
-        }, 1200);
-      }, 1600);
-    }, 800);
+          setStep("flash");
+          setTimeout(() => setStep("finished"), 1400);
+        }, 1700);
+      }, 500);
+    }, 900);
   };
 
   useEffect(() => {
     if (autoOpen && step === "idle") {
-      const t = setTimeout(handleOpen, 400);
+      const t = setTimeout(handleOpen, 500);
       return () => clearTimeout(t);
     }
   }, [autoOpen, step]);
 
-  const isOpeningOrLater = step === "opening" || step === "flash" || step === "finished";
+  // Mute & play video
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
+
+  const isOpeningOrLater = step === "opening" || step === "flash" || step === "finished" || step === "cracking";
 
   return (
     <AnimatePresence>
@@ -107,107 +291,159 @@ export default function EnvelopeIntro({ brideName, groomName, variant = "default
         <motion.div
           key="envelope-container"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 1.5, ease: "easeOut" } }}
-          className="fixed inset-0 z-100 flex items-center justify-center bg-[#0a0a0a] overflow-hidden cursor-pointer"
+          exit={{ opacity: 0, transition: { duration: 1.8, ease: "easeOut" } }}
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden cursor-pointer select-none"
+          style={{ background: theme.bg }}
           onClick={!autoOpen ? handleOpen : undefined}
         >
-          {/* Background Ambient Glow */}
-          <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at center, ${theme.ambient} 0%, ${theme.bg} 100%)` }} />
-
-          {/* The Light Burst (Flash) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={step === "flash" ? { opacity: 1, scale: 2.5 } : { opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.8, ease: "easeIn" }}
-            className="absolute inset-0 z-110 bg-[radial-gradient(circle_at_center,#ffffff_0%,#fffbeb_40%,transparent_100%)] pointer-events-none mix-blend-screen"
+          {/* ── Video background ────────────────────────────── */}
+          <video
+            ref={videoRef}
+            src={theme.videoSrc}
+            autoPlay muted loop playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-20"
+            style={{ pointerEvents: "none" }}
           />
+
+          {/* ── Radial ambient glow ──────────────────────────── */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: `radial-gradient(ellipse 70% 60% at 50% 50%, ${theme.ambient} 0%, transparent 70%)` }} />
+
+          {/* ── Sparkle particles on flash ───────────────────── */}
+          <SparkleParticles active={step === "flash"} color={theme.sealGlow} />
+
+          {/* ── Full screen light burst ──────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={step === "flash"
+              ? { opacity: [0, 1, 0.7, 0], scale: [0.2, 3, 5] }
+              : { opacity: 0, scale: 0 }}
+            transition={{ duration: 1.2, ease: [0.2, 0, 0.4, 1] }}
+            className="absolute inset-0 z-[110] pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at center, #ffffff 0%, ${theme.sealGlow}CC 30%, ${theme.ambient} 60%, transparent 80%)`,
+              mixBlendMode: "screen",
+            }}
+          />
+          {/* Pure white overlay */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={step === "flash" ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 1.2, ease: "easeIn" }}
-            className="absolute inset-0 z-111 bg-white pointer-events-none"
+            animate={step === "flash" ? { opacity: [0, 0.95, 0] } : { opacity: 0 }}
+            transition={{ duration: 1.4, ease: "easeInOut" }}
+            className="absolute inset-0 z-[111] bg-white pointer-events-none"
           />
 
-          <div className="relative w-full max-w-lg aspect-4/3 flex items-center justify-center z-10" style={{ perspective: "2000px" }}>
-
-            {/* Main Envelope Body */}
+          {/* ── The Envelope ─────────────────────────────────── */}
+          <div className="relative w-full max-w-xl px-4" style={{ perspective: "2000px" }}>
             <motion.div
-              animate={isOpeningOrLater ? { scale: 0.85, y: 80, rotateX: 15 } : { scale: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className="absolute inset-0 shadow-[0_30px_60px_rgba(0,0,0,0.6)] rounded-sm"
-              style={{ transformStyle: "preserve-3d", backgroundColor: theme.envelopeMain }}
+              animate={isOpeningOrLater
+                ? { scale: 0.82, y: 90, rotateX: 18 }
+                : { scale: 1, y: 0, rotateX: 0 }}
+              transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+              className="relative rounded-sm shadow-[0_40px_80px_rgba(0,0,0,0.7)]"
+              style={{ aspectRatio: "4/3", transformStyle: "preserve-3d", backgroundColor: theme.envelopeMain }}
             >
-              {/* Inner Content (The Card) */}
+              {/* Inner card that slides up */}
               <motion.div
-                initial={{ y: 0 }}
-                animate={isOpeningOrLater ? { y: -200, scale: 1.1 } : { y: 0, scale: 0.9 }}
-                transition={{ delay: 0.4, duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-x-4 md:inset-x-8 top-12 bottom-4 bg-white shadow-2xl flex flex-col items-center justify-center p-6 md:p-8 border border-gray-100 z-10"
+                initial={{ y: 0, scale: 0.88 }}
+                animate={isOpeningOrLater ? { y: -220, scale: 1.08 } : { y: 0, scale: 0.88 }}
+                transition={{ delay: 0.5, duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-x-6 md:inset-x-10 top-14 bottom-6 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.25)] flex flex-col items-center justify-center p-6 md:p-10 z-10"
+                style={{ border: "1px solid rgba(212,175,55,0.2)" }}
               >
-                <div className="absolute inset-0 border border-amber-200/60 m-3 rounded-sm pointer-events-none" />
-                <div className="text-center space-y-3 md:space-y-4">
-                  <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-amber-600/80 font-medium">You are invited</span>
-                  <div className="space-y-2 py-2">
+                <div className="absolute inset-3 border border-amber-200/50 pointer-events-none" />
+                <div className="absolute inset-5 border border-amber-100/30 pointer-events-none" />
+                <div className="text-center space-y-2 md:space-y-4">
+                  <span className="text-[9px] md:text-[11px] uppercase tracking-[0.5em] text-amber-600/70 font-medium"
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                    You are cordially invited
+                  </span>
+                  <div className="py-3 space-y-1">
                     <h2 className="text-3xl md:text-5xl font-serif text-gray-900 leading-tight">{brideName}</h2>
-                    <span className="text-lg md:text-2xl font-serif text-amber-500 italic block">&amp;</span>
+                    <span className="text-xl md:text-3xl font-serif text-amber-500 italic block">&</span>
                     <h2 className="text-3xl md:text-5xl font-serif text-gray-900 leading-tight">{groomName}</h2>
                   </div>
+                  <p className="text-[9px] uppercase tracking-[0.4em] text-gray-400"
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                    Wedding Celebration
+                  </p>
                 </div>
               </motion.div>
 
-              {/* Front Flaps (Static) */}
-              <div className="absolute inset-0 z-20 pointer-events-none shadow-[inset_0_-10px_20px_rgba(0,0,0,0.05)]">
-                <svg viewBox="0 0 400 300" className="w-full h-full drop-shadow-2xl">
+              {/* Static bottom & side flaps */}
+              <div className="absolute inset-0 z-20 pointer-events-none">
+                <svg viewBox="0 0 400 300" className="w-full h-full">
                   <path d="M0 300 L200 150 L400 300" fill={theme.envelopeFlapInner} />
                   <path d="M0 0 L200 150 L0 300" fill={theme.envelopeMain} />
                   <path d="M400 0 L200 150 L400 300" fill={theme.envelopeMain} />
                 </svg>
               </div>
 
-              {/* Top Flap (Animated) */}
+              {/* Top flap (animates open) */}
               <motion.div
                 initial={{ rotateX: 0, zIndex: 30 }}
-                animate={isOpeningOrLater ? { rotateX: 180, zIndex: 5 } : { rotateX: 0, zIndex: 30 }}
+                animate={isOpeningOrLater
+                  ? { rotateX: 180, zIndex: 5 }
+                  : { rotateX: 0, zIndex: 30 }}
                 transition={{
-                  rotateX: { duration: 0.9, ease: "easeInOut" },
-                  zIndex: { delay: 0.45, duration: 0 }
+                  rotateX: { duration: 1, ease: [0.4, 0, 0.2, 1] },
+                  zIndex: { delay: 0.5, duration: 0 },
                 }}
                 style={{ transformOrigin: "top", transformStyle: "preserve-3d" }}
                 className="absolute inset-x-0 top-0 h-1/2"
               >
-                <svg viewBox="0 0 400 150" className="w-full h-full drop-shadow-[0_10px_15px_rgba(0,0,0,0.3)]">
+                <svg viewBox="0 0 400 150" className="w-full h-full drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)]">
                   <path d="M0 0 L200 150 L400 0 Z" fill={theme.envelopeFlap} stroke={theme.envelopeFlapInner} strokeWidth="1" />
                 </svg>
 
-                {/* Wax Seal */}
+                {/* ── WAX SEAL ── big, centered on flap crease ── */}
                 <motion.div
                   animate={
-                    step === "seal_glow" ? { scale: 1.1, filter: `brightness(1.5) drop-shadow(0 0 30px ${theme.sealGlow})` } :
-                      isOpeningOrLater ? { opacity: 0, scale: 0, filter: "brightness(3)" } :
-                        { scale: 1, filter: "brightness(1) drop-shadow(0 4px 10px rgba(0,0,0,0.4))" }
+                    step === "seal_glow"
+                      ? { scale: 1.08, y: -4 }
+                      : (step === "cracking" || isOpeningOrLater)
+                        ? { opacity: 0, scale: 0.1, filter: `brightness(8) drop-shadow(0 0 40px ${theme.sealGlow})` }
+                        : { scale: 1, y: 0 }
                   }
-                  transition={{ duration: 0.6 }}
-                  className={`absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-linear-to-br ${theme.sealBg} rounded-full flex items-center justify-center border-2 border-white/10`}
+                  transition={{ duration: 0.55, ease: "easeOut" }}
+                  className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2"
+                  style={{ width: "7rem", height: "7rem" }}
                 >
-                  <div className={`w-12 h-12 rounded-full border border-white/20 flex items-center justify-center relative ${theme.sealInner} shadow-inner`}>
-                    <span className={`font-serif ${theme.text} text-xl font-bold italic`}>{brideName?.[0] || 'B'}&{groomName?.[0] || 'G'}</span>
-                  </div>
+                  <WaxSeal
+                    theme={theme}
+                    initials={initials}
+                    glowing={step === "seal_glow" || step === "cracking"}
+                    cracking={step === "cracking"}
+                  />
                 </motion.div>
               </motion.div>
             </motion.div>
 
-            {!isOpeningOrLater && step !== "seal_glow" && !autoOpen && (
+            {/* ── "Tap to unlock" hint ─────────────────────── */}
+            {step === "idle" && !autoOpen && (
               <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-24 left-1/2 -translate-x-1/2 text-center w-full"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="mt-14 flex flex-col items-center gap-3"
               >
-                <p className="font-serif italic text-white/70 tracking-widest uppercase text-sm mb-3">Tap to unlock</p>
                 <motion.div
-                  animate={{ scale: [1, 2, 1], opacity: [0.3, 0.8, 0.3] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-1.5 h-1.5 bg-white/80 rounded-full mx-auto shadow-[0_0_15px_rgba(255,255,255,0.8)]"
-                />
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <p className="font-serif italic tracking-[0.25em] uppercase text-sm"
+                    style={{ color: "rgba(255,255,255,0.65)" }}>
+                    Tap the seal to open
+                  </p>
+                  {/* Animated pulse dot */}
+                  <motion.div
+                    animate={{ scale: [1, 2.2, 1], opacity: [0.4, 0.9, 0.4] }}
+                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: theme.sealGlow, boxShadow: `0 0 12px ${theme.sealGlow}` }}
+                  />
+                </motion.div>
               </motion.div>
             )}
           </div>

@@ -109,6 +109,17 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
         <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(160deg, #FFFDF5 0%, #FFF8E7 30%, #FAF0DC 70%, #FFFDF5 100%)" }}>
           
+          {/* Video backdrop */}
+          {!isThumbnail && (
+            <video
+              autoPlay muted loop playsInline
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              style={{ opacity: 0.08, mixBlendMode: "multiply" }}
+            >
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-autumn-leaves-on-a-golden-background-4075-large.mp4" type="video/mp4" />
+            </video>
+          )}
+          
           {goldLeaves.map((s, i) => <GoldLeaf key={i} style={s} />)}
 
           {/* Ornamental corner SVGs */}
