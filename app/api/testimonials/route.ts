@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { testimonials, invitations } from "@/lib/db/schema";
-import { eq, desc, and, isNotNull } from "drizzle-orm";
+import { eq, desc, and, isNotNull, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 // GET public testimonials
@@ -28,19 +28,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // Check if the user has a paid invitation
-    const paidInvitation = await db
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check if the user has at least one invitation (case-insensitive)
+    const userInvitation = await db
       .select()
       .from(invitations)
-      .where(
-        and(
-          eq(invitations.userEmail, email),
-          isNotNull(invitations.razorpayPaymentId)
-        )
-      )
+      .where(sql`lower(${invitations.userEmail}) = ${normalizedEmail}`)
       .limit(1);
-
-    if (paidInvitation.length === 0) {
+    
+    if (userInvitation.length === 0) {
       return NextResponse.json({ 
         error: "Verified purchase required. Please use the email you used for your order." 
       }, { status: 403 });
