@@ -30,13 +30,26 @@ export async function POST(req: NextRequest) {
     }
 
     if (!existingUser.emailVerified) {
+      const today = new Date().toDateString();
+      const lastOtpDate = existingUser.lastOtpAt ? new Date(existingUser.lastOtpAt).toDateString() : null;
+      let count = (today === lastOtpDate) ? existingUser.otpCountToday : 0;
+
+      if (count >= 2) {
+        return NextResponse.json({ error: "Daily limit reached. You can only receive 2 verification emails per day." }, { status: 429 });
+      }
+
       // Send OTP via email
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
       
-      await db.update(users).set({ loginOtp: otp, loginOtpExpires: expires }).where(eq(users.id, existingUser.id));
+      await db.update(users).set({ 
+        loginOtp: otp, 
+        loginOtpExpires: expires,
+        otpCountToday: count + 1,
+        lastOtpAt: new Date(),
+      }).where(eq(users.id, existingUser.id));
 
-      await sendEmail({
+      const emailSent = await sendEmail({
         to: email,
         subject: "Verify Your Email - DNvites",
         htmlContent: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; text-align: center;">
@@ -46,6 +59,10 @@ export async function POST(req: NextRequest) {
           <p>This code will expire in 10 minutes.</p>
         </div>`,
       });
+
+      if (!emailSent) {
+        return NextResponse.json({ error: "Failed to send verification email. Please try again later." }, { status: 500 });
+      }
 
       return NextResponse.json({ success: true, needsVerification: true, message: "Verification OTP sent" });
     }

@@ -27,31 +27,27 @@ export async function POST(req: NextRequest) {
     }
 
     // Use a transaction to ensure invitation creation and coupon update are atomic
-    const newInvitation = await db.transaction(async (tx) => {
-      const [inv] = await tx.insert(invitations).values({
-        slug,
-        brideName,
-        groomName,
-        date: new Date(date),
-        venue,
-        events: events || [],
-        gallery: gallery || [],
-        musicUrl,
-        backgroundImage,
-        tier: tier || "basic",
-        couponId: couponId || null,
-        discountApplied: discountApplied || 0,
-        paidAmount: paidAmount || 0
-      }).returning();
+    const [newInvitation] = await db.insert(invitations).values({
+      slug,
+      brideName,
+      groomName,
+      date: new Date(date),
+      venue,
+      events: events || [],
+      gallery: gallery || [],
+      musicUrl,
+      backgroundImage,
+      tier: tier || "basic",
+      couponId: couponId || null,
+      discountApplied: discountApplied || 0,
+      paidAmount: paidAmount || 0
+    }).returning();
 
-      if (couponId) {
-        await tx.update(coupons)
-          .set({ usedCount: sql`${coupons.usedCount} + 1` })
-          .where(eq(coupons.id, couponId));
-      }
-
-      return inv;
-    });
+    if (couponId) {
+      await db.update(coupons)
+        .set({ usedCount: sql`${coupons.usedCount} + 1` })
+        .where(eq(coupons.id, couponId));
+    }
 
     return NextResponse.json({ success: true, data: newInvitation });
   } catch (error) {

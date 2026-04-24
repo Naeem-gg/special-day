@@ -12,7 +12,7 @@ export function Footer() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
         e.preventDefault();
-        router.push('/admin');
+        router.push('/adminn');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -60,6 +60,7 @@ export function Footer() {
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Legal</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/faq" className="hover:text-[#F43F8F] transition-colors">FAQ</Link></li>
               <li><Link href="/terms" className="hover:text-[#F43F8F] transition-colors">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-[#F43F8F] transition-colors">Privacy Policy</Link></li>
               <li><Link href="/refund" className="hover:text-[#F43F8F] transition-colors">Refund Policy</Link></li>

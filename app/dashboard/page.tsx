@@ -6,7 +6,7 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import CloudinaryUpload from "@/components/dashboard/CloudinaryUpload";
 import Link from "next/link";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
@@ -41,7 +41,10 @@ const cardVariants: Variants = {
 };
 
 export default function Dashboard() {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editSlug, setEditSlug] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
   const [showAdditional, setShowAdditional] = useState(false);
   const [longPressTemplate, setLongPressTemplate] = useState<string | null>(null);
   const pressTimer = useRef<NodeJS.Timeout | null>(null);
@@ -94,6 +97,31 @@ export default function Dashboard() {
           }
           return newForm;
         });
+      }
+
+      const editSlugParam = params.get("edit");
+      if (editSlugParam) {
+        setIsEditMode(true);
+        setEditSlug(editSlugParam);
+        fetch(`/api/invitations/${editSlugParam}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && !data.error) {
+              setFormData({
+                brideName: data.brideName,
+                groomName: data.groomName,
+                userEmail: data.userEmail,
+                date: data.date ? new Date(data.date).toISOString().split('T')[0] : "",
+                venue: data.venue,
+                slug: data.slug,
+                musicUrl: data.musicUrl || "",
+                tier: data.tier,
+                template: data.template,
+                events: data.events || [{ name: "", time: "", location: "", description: "" }],
+                gallery: data.gallery || [],
+              });
+            }
+          });
       }
     }
   }, []);
@@ -193,6 +221,11 @@ export default function Dashboard() {
       });
       const data = await res.json();
       if (res.ok) {
+        if (data.coupon.tierRestriction && data.coupon.tierRestriction !== formData.tier.toLowerCase()) {
+          setCouponError(`This coupon is only valid for the ${data.coupon.tierRestriction} plan.`);
+          setShakeKey((k) => k + 1);
+          return;
+        }
         setCouponData(data.coupon);
       } else {
         setCouponError(data.error || "Hmm, that code doesn't seem right. Try again!");
@@ -215,7 +248,33 @@ export default function Dashboard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isEditMode) {
+      handleEditSubmit();
+      return;
+    }
     setCheckoutStep("review");
+  };
+
+  const handleEditSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`/api/invitations/${editSlug}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCheckoutStep("success");
+      } else {
+        alert(data.error || "Failed to update invitation");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const initiatePayment = async () => {
@@ -225,6 +284,40 @@ export default function Dashboard() {
     const selectedTier = tiers.find((t) => t.slug.toLowerCase() === formData.tier.toLowerCase() || t.name.toLowerCase() === formData.tier.toLowerCase()) || tiers[0];
     const originalPrice = selectedTier?.price || 0;
     const finalPrice = calculateFinalPrice(originalPrice);
+
+    if (finalPrice === 0) {
+      // Free invite! Bypass Razorpay entirely.
+      setCheckoutStep("verifying");
+      try {
+        const verifyRes = await fetch("/api/payments/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bypassPayment: true,
+            invitationData: {
+              ...formData,
+              couponId: couponData?.id,
+              discountApplied: originalPrice,
+              paidAmount: 0,
+            }
+          }),
+        });
+
+        const verifyData = await verifyRes.json();
+        if (verifyRes.ok) {
+          setCheckoutStep("success");
+          confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ["#F43F8F", "#D4AF37", "#FFFFFF"] });
+          setTimeout(() => { window.location.href = `/invite/${formData.slug}`; }, 3000);
+        } else {
+          setCheckoutStep("error");
+          setPaymentMessage(verifyData.error || "Payment verification failed.");
+        }
+      } catch (err) {
+        setCheckoutStep("error");
+        setPaymentMessage("Something went wrong during verification. Please try again.");
+      }
+      return;
+    }
 
     try {
       const orderRes = await fetch("/api/payments/order", {
@@ -417,9 +510,9 @@ export default function Dashboard() {
                               <Ticket className="w-3.5 h-3.5" />
                               <span>Code Applied!</span>
                             </div>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="h-4 p-0 text-xs text-green-700 hover:text-green-800 hover:bg-transparent"
                               onClick={() => { setCouponData(null); setCouponCode(""); }}
                             >
@@ -440,6 +533,31 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
+
+                    {session && !session.authenticated && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-amber-50 border border-amber-200 rounded-2xl p-4"
+                      >
+                        <div className="flex justify-between items-center gap-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-amber-800 font-bold text-xs">
+                              <Lock className="w-3.5 h-3.5" />
+                              <span>Ordering as Guest</span>
+                            </div>
+                            <p className="text-[10px] text-amber-700/80 leading-tight">
+                              Sign up to edit this later and track RSVPs.
+                            </p>
+                          </div>
+                          <Link href="/login">
+                            <Button size="sm" className="h-8 px-3 text-[10px] bg-[#F43F8F] hover:bg-[#d82a75] rounded-lg shadow-sm">
+                              Login / Sign Up
+                            </Button>
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
 
                     <div className="space-y-3">
                       <Button
@@ -630,6 +748,56 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
+      {/* Auth Barrier */}
+      {session && !session.authenticated && !isGuest && (
+        <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="max-w-md w-full"
+          >
+            <Card className="border-0 shadow-2xl rounded-3xl overflow-hidden bg-white">
+              <CardHeader className="text-center space-y-4 pb-2 pt-8">
+                <div className="mx-auto w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-10 h-10 text-[#F43F8F]" />
+                </div>
+                <div className="space-y-1">
+                  <CardTitle className="text-3xl font-serif">Welcome to DNvites</CardTitle>
+                  <CardDescription className="text-base px-2">
+                    Log in to save your invitations, edit them later, and manage your RSVPs from a single dashboard.
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-4 pb-8 px-8">
+                <Link href="/login" className="block">
+                  <Button className="w-full bg-[#F43F8F] hover:bg-[#d82a75] h-12 text-lg rounded-xl shadow-lg shadow-rose-200 transition-all active:scale-95">
+                    Sign In / Sign Up
+                  </Button>
+                </Link>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-100" />
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+                    <span className="bg-white px-3 text-gray-400">or stay as a guest</span>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => setIsGuest(true)}
+                  className="w-full h-12 text-gray-500 hover:text-[#F43F8F] hover:bg-rose-50 rounded-xl transition-all"
+                >
+                  Create Without Account →
+                </Button>
+                <p className="text-[10px] text-center text-gray-400 px-4 leading-tight">
+                  Note: Guest invitations cannot be edited after purchase and do not include the RSVP management dashboard.
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      )}
+
       {/* Razorpay Script */}
       <Script
         id="razorpay-checkout-js"
@@ -670,9 +838,29 @@ export default function Dashboard() {
             💍
           </motion.div>
           <h1 className="text-3xl md:text-4xl font-serif text-gray-900">
-            Build Your <span className="gradient-text">Dream Invitation</span>
+            {isEditMode ? (
+              <>Update Your <span className="gradient-text">Invitation</span></>
+            ) : (
+              <>Build Your <span className="gradient-text">Dream Invitation</span></>
+            )}
           </h1>
-          <p className="text-muted-foreground">Fill in a few details below and your invite will be ready to share!</p>
+          <p className="text-muted-foreground">
+            {isEditMode 
+              ? `Correcting details for ${formData.brideName} & ${formData.groomName}`
+              : "Fill in a few details below and your invite will be ready to share!"
+            }
+          </p>
+          {isEditMode && (
+            <Button 
+              variant="link" 
+              className="text-[#F43F8F] p-0 h-auto font-bold text-xs"
+              onClick={() => {
+                window.location.href = "/dashboard";
+              }}
+            >
+              ← Cancel Edit & Create New
+            </Button>
+          )}
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -856,20 +1044,20 @@ export default function Dashboard() {
                       <div className="absolute bottom-full right-0 mb-2 w-64 p-3 bg-gray-900 text-white text-[10px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 leading-relaxed shadow-xl">
                         <p className="font-bold mb-1 text-rose-400">Premium Audio Options</p>
                         <p className="mb-2">You can either upload a file or paste a link.</p>
-                        
+
                         <span className="font-bold">Upload (Recommended):</span>
-                        <br/>
+                        <br />
                         Upload an MP3 from your phone or PC.
-                        <br/><br/>
+                        <br /><br />
                         <span className="font-bold">Direct Link:</span>
-                        <br/>
+                        <br />
                         ✅ <span className="font-mono opacity-80">Cloudinary URL, Dropbox (use ?dl=1)</span>
-                        <br/>
+                        <br />
                         ❌ <span className="text-gray-400">YouTube, Spotify, GDrive (direct link needed)</span>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <Input
@@ -880,7 +1068,7 @@ export default function Dashboard() {
                         className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 pr-10"
                       />
                       {formData.musicUrl && (
-                        <button 
+                        <button
                           onClick={() => setFormData({ ...formData, musicUrl: "" })}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500"
                         >
@@ -888,7 +1076,7 @@ export default function Dashboard() {
                         </button>
                       )}
                     </div>
-                    
+
                     <label className="shrink-0">
                       <div className={`h-11 px-4 rounded-xl border-2 border-dashed flex items-center justify-center gap-2 cursor-pointer transition-all ${isUploadingMusic ? "bg-gray-50 border-gray-200" : "border-rose-200 bg-rose-50/30 hover:bg-rose-50 hover:border-rose-300"}`}>
                         {isUploadingMusic ? (
@@ -906,7 +1094,7 @@ export default function Dashboard() {
                         onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (!file) return;
-                          
+
                           if (file.size > 10 * 1024 * 1024) {
                             alert("File is too large! Please upload a song smaller than 10MB.");
                             return;
@@ -936,7 +1124,7 @@ export default function Dashboard() {
                       />
                     </label>
                   </div>
-                  
+
                   <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-amber-500" />
                     Tip: Upload an MP3 from your device for the best guest experience. 🎶

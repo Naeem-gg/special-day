@@ -110,9 +110,9 @@ function FeatureCard({
 
 /* ── Pricing Card ─────────────────────── */
 function PricingCard({
-  tier, price, features, isPopular = false, delay = 0,
+  tier, price, originalPrice, features, isPopular = false, delay = 0,
 }: {
-  tier: string; price: string; features: string[]; isPopular?: boolean; delay?: number;
+  tier: string; price: string; originalPrice?: string; features: string[]; isPopular?: boolean; delay?: number;
 }) {
   const isBasic = tier.toLowerCase().includes("basic");
   const isGold = tier.toLowerCase().includes("gold");
@@ -160,8 +160,11 @@ function PricingCard({
                 <Sparkles className={isPopular ? "text-white" : "text-[#F43F8F]"} />}
           </div>
           <h4 className={`text-xl font-serif tracking-wide ${isPopular ? "text-white" : "text-gray-900"}`}>{tier}</h4>
-          <div className="flex items-baseline gap-1">
+          <div className="flex items-baseline gap-2">
             <span className={`text-4xl font-serif ${isPopular ? "text-white" : "text-gray-900"}`}>₹{price}</span>
+            {originalPrice && (
+              <span className={`text-xl font-serif line-through ${isPopular ? "text-white/60" : "text-gray-400"}`}>₹{originalPrice}</span>
+            )}
             <span className={`text-sm ${isPopular ? "text-white/60" : "text-muted-foreground"}`}>/ invitation</span>
           </div>
         </div>
@@ -352,6 +355,11 @@ export default function Home() {
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                 </svg>
               </Link>
+              <Link href="/gift">
+                <Button variant="ghost" className="text-sm text-[#F43F8F] hover:text-[#d82a75] hover:bg-rose-50 flex items-center gap-1.5 font-bold">
+                  <Gift className="w-4 h-4" /> Gift an Invite
+                </Button>
+              </Link>
               <Link href="/login">
                 <Button variant="ghost" className="text-sm hover:text-[#F43F8F]">Sign In</Button>
               </Link>
@@ -403,6 +411,13 @@ export default function Home() {
                     {item}
                   </Link>
                 ))}
+                <Link
+                  href="/gift"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-base font-semibold text-[#F43F8F] flex items-center gap-2"
+                >
+                  <Gift className="w-5 h-5" /> Gift an Invite
+                </Link>
                 <div className="h-px bg-rose-100/50 w-full my-2" />
                 <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-[#F43F8F]">
                   Sign In
@@ -783,6 +798,102 @@ export default function Home() {
       {/* ── Testimonials ──────────────── */}
       <Testimonials />
 
+      {/* ── Paper vs Digital ──────────── */}
+      <section className="py-28 bg-white overflow-hidden relative">
+        {/* Subtle grid bg */}
+        <div className="absolute inset-0 bg-[radial-gradient(#f43f8f0a_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
+
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-2xl mx-auto mb-16 space-y-4"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50 border border-rose-100 text-[#F43F8F] text-xs font-bold uppercase tracking-widest">
+              📄 Paper vs ✨ Digital
+            </div>
+            <h2 className="text-4xl md:text-5xl font-serif text-gray-900">
+              Why choose digital?
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Traditional paper invites are expensive, slow, and wasteful. Here's how DNvites stacks up.
+            </p>
+          </motion.div>
+
+          {/* Table */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-4xl mx-auto rounded-[2.5rem] overflow-hidden shadow-2xl shadow-rose-100/60 border border-rose-100"
+          >
+            {/* Header Row */}
+            <div className="grid grid-cols-3 bg-slate-900 text-white">
+              <div className="p-5 text-sm font-bold uppercase tracking-widest text-slate-400">Feature</div>
+              <div className="p-5 text-center border-l border-white/10">
+                <span className="text-sm font-bold text-slate-300">📄 Paper Invitation</span>
+              </div>
+              <div className="p-5 text-center border-l border-white/10 bg-linear-to-br from-[#F43F8F]/20 to-transparent">
+                <span className="text-sm font-bold text-[#F43F8F]">✨ DNvites Digital</span>
+              </div>
+            </div>
+
+            {/* Data Rows */}
+            {[
+              { feature: "💰 Cost", paper: "₹8,000 – ₹40,000+", digital: "From ₹399 one-time", highlight: true },
+              { feature: "⏱️ Time to Create", paper: "3 – 8 weeks", digital: "Ready in minutes", highlight: false },
+              { feature: "📋 Guest Tracking", paper: "Manual spreadsheets", digital: "Automatic dashboard", highlight: true },
+              { feature: "🌍 Languages", paper: "One per print run", digital: "Multiple languages", highlight: false },
+              { feature: "✏️ Updates & Changes", paper: "Reprint everything", digital: "Edit in real-time", highlight: true },
+              { feature: "📬 Delivery", paper: "Postal service (days)", digital: "Instant via link", highlight: false },
+              { feature: "📱 Mobile Friendly", paper: "N/A", digital: "Perfect on any device", highlight: true },
+              { feature: "🌿 Eco-Friendly", paper: "Paper & ink waste", digital: "100% digital & green", highlight: false },
+            ].map((row, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06, duration: 0.5 }}
+                className={`grid grid-cols-3 border-t border-slate-100 ${row.highlight ? "bg-slate-50/80" : "bg-white"} group hover:bg-rose-50/40 transition-colors`}
+              >
+                <div className="p-5 text-sm font-semibold text-slate-700">{row.feature}</div>
+                <div className="p-5 text-center border-l border-slate-100">
+                  <span className="text-sm text-slate-400 flex items-center justify-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0 inline-block" />
+                    {row.paper}
+                  </span>
+                </div>
+                <div className="p-5 text-center border-l border-rose-100 bg-rose-50/30 group-hover:bg-rose-50/60">
+                  <span className="text-sm font-semibold text-slate-900 flex items-center justify-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F43F8F] shrink-0 inline-block" />
+                    {row.digital}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Savings Callout */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="mt-10 max-w-2xl mx-auto text-center"
+          >
+            <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-8 py-5 rounded-full bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white shadow-2xl shadow-rose-300/50">
+              <span className="text-2xl">💸</span>
+              <span className="text-base md:text-lg font-bold">
+                Save up to <span className="text-2xl font-extrabold">₹39,000+</span> compared to traditional paper invitations
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── Pricing ───────────────────── */}
       <section id="pricing" className="py-32 bg-linear-to-b from-rose-50/50 via-white to-amber-50/50 relative overflow-hidden">
         {/* Decorative elements */}
@@ -835,20 +946,23 @@ export default function Home() {
             <PricingCard
               tier="Dearest Basic"
               price="399"
-              features={["Beautiful animated design", "Event details & direction map", "Space for 1 wedding photo", "1 year of hosting included", "Shareable via WhatsApp & Social"]}
+              originalPrice="699"
+              features={["Beautiful animated design", "Event details & direction map", "Space for 1 wedding photo", "1 year of hosting included", "Edit details for 48 hours", "Shareable via WhatsApp & Social"]}
               delay={0.1}
             />
             <PricingCard
               tier="Dearest Silver"
               price="799"
-              features={["Everything in Basic", "See who's coming (Guest List)", "Up to 5 photos", "Your favourite background music", "Download your guest names", "Helping Hand (Priority Help)"]}
+              originalPrice="1299"
+              features={["Everything in Basic", "See who's coming (Guest List)", "Up to 5 photos", "Your favourite background music", "Edit details for 48 hours", "Download your guest names", "Helping Hand (Priority Help)"]}
               isPopular
               delay={0.2}
             />
             <PricingCard
               tier="Dearest Gold"
               price="999"
-              features={["Everything in Silver", "Up to 10 photos", "Magic Interactive Envelope opening", "Custom decorative heart motif", "Lifetime access for memories", "Your personal wedding helper"]}
+              originalPrice="1999"
+              features={["Everything in Silver", "Up to 10 photos", "Magic Interactive Envelope opening", "Custom decorative heart motif", "Edit details for 48 hours", "Lifetime access for memories", "Your personal wedding helper"]}
               delay={0.3}
             />
           </div>

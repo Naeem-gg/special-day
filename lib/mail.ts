@@ -1,5 +1,6 @@
 import { render } from "@react-email/render";
 import PurchaseReceiptEmail from "@/components/emails/PurchaseReceiptEmail";
+import GiftCouponEmail from "@/components/emails/GiftCouponEmail";
 import React from "react";
 import { Resend } from "resend";
 
@@ -21,9 +22,10 @@ export async function sendEmail({
 
   try {
     const resend = new Resend(RESEND_API_KEY);
+    const fromEmail = process.env.RESEND_FROM_EMAIL || "DNvites <noreply@dnvites.app>";
 
     const data = await resend.emails.send({
-      from: "DNvites <noreply@dnvites.app>", // Replace with your verified sender email
+      from: fromEmail,
       to: [to],
       subject: subject,
       html: htmlContent,
@@ -69,6 +71,33 @@ export async function sendPurchaseReceipt({
   return sendEmail({
     to,
     subject: "Your DNvites Invitation is Ready! 🎉",
+    htmlContent,
+  });
+}
+
+export async function sendGiftCoupon({
+  to,
+  planName,
+  couponCode,
+  senderName,
+}: {
+  to: string;
+  planName: string;
+  couponCode: string;
+  senderName?: string;
+}) {
+  // @ts-ignore
+  const htmlContent = await render(
+    React.createElement(GiftCouponEmail, {
+      planName,
+      couponCode,
+      senderName,
+    })
+  );
+
+  return sendEmail({
+    to,
+    subject: "You've received a gifted invitation! 🎁",
     htmlContent,
   });
 }

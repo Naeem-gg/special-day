@@ -32,6 +32,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Coupon usage limit reached" }, { status: 400 });
     }
 
+    let tierRestriction = null;
+    if (coupon.code.startsWith("GIFT-")) {
+      const parts = coupon.code.split("-");
+      if (parts.length >= 3) {
+        tierRestriction = parts[1].toLowerCase();
+      }
+    }
+
     return NextResponse.json({
       success: true,
       coupon: {
@@ -39,6 +47,7 @@ export async function POST(req: NextRequest) {
         code: coupon.code,
         discountType: coupon.discountType,
         discountValue: coupon.discountValue,
+        tierRestriction,
       },
     });
   } catch (error) {

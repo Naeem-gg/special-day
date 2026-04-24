@@ -14,17 +14,15 @@ import {
   Plus, 
   CheckCircle, 
   XCircle,
-  Clock
+  Clock,
+  Edit,
+  Copy,
+  Check
 } from "lucide-react";
 import { format } from "date-fns";
 
-// --- AdminOverview ---
-export function AdminOverview() {
-  const [stats, setStats] = useState<any>(null);
-
-  useEffect(() => {
-    fetch("/api/admin/stats").then(res => res.json()).then(data => setStats(data.stats));
-  }, []);
+export function AdminOverview({ initialStats }: { initialStats: any }) {
+  const [stats, setStats] = useState<any>(initialStats);
 
   if (!stats) return <div>Loading stats...</div>;
 
@@ -53,12 +51,8 @@ export function AdminOverview() {
 }
 
 // --- InvitationManager ---
-export function InvitationManager() {
-  const [invitations, setInvitations] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch("/api/admin/invitations").then(res => res.json()).then(setInvitations);
-  }, []);
+export function InvitationManager({ initialInvitations = [] }: { initialInvitations: any[] }) {
+  const [invitations, setInvitations] = useState<any[]>(initialInvitations);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this invitation?")) return;
@@ -115,37 +109,65 @@ export function InvitationManager() {
 }
 
 // --- CouponManager ---
-export function CouponManager() {
-  const [coupons, setCoupons] = useState<any[]>([]);
+export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }) {
+  const [coupons, setCoupons] = useState<any[]>(initialCoupons);
   const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [newCoupon, setNewCoupon] = useState({
     code: "",
     discountType: "percentage",
     discountValue: "",
     usageLimit: "",
+    expiresAt: "",
+    active: true,
   });
 
-  useEffect(() => {
-    fetch("/api/admin/coupons").then(res => res.json()).then(setCoupons);
-  }, []);
-
-  const handleAdd = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/admin/coupons", {
-      method: "POST",
+    const isEditing = editingId !== null;
+    const url = "/api/admin/coupons";
+    const method = isEditing ? "PATCH" : "POST";
+    
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...newCoupon,
+        id: editingId,
         discountValue: parseInt(newCoupon.discountValue),
         usageLimit: newCoupon.usageLimit ? parseInt(newCoupon.usageLimit) : null,
+        expiresAt: newCoupon.expiresAt ? new Date(newCoupon.expiresAt).toISOString() : null,
       }),
     });
+    
     if (res.ok) {
       const data = await res.json();
-      setCoupons([data, ...coupons]);
-      setIsAdding(false);
-      setNewCoupon({ code: "", discountType: "percentage", discountValue: "", usageLimit: "" });
+      if (isEditing) {
+        setCoupons(coupons.map(c => c.id === editingId ? data : c));
+      } else {
+        setCoupons([data, ...coupons]);
+      }
+      resetForm();
     }
+  };
+
+  const resetForm = () => {
+    setIsAdding(false);
+    setEditingId(null);
+    setNewCoupon({ code: "", discountType: "percentage", discountValue: "", usageLimit: "", expiresAt: "", active: true });
+  };
+
+  const handleEditClick = (coupon: any) => {
+    setNewCoupon({
+      code: coupon.code,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue.toString(),
+      usageLimit: coupon.usageLimit ? coupon.usageLimit.toString() : "",
+      expiresAt: coupon.expiresAt ? new Date(coupon.expiresAt).toISOString().split('T')[0] : "",
+      active: coupon.active,
+    });
+    setEditingId(coupon.id);
+    setIsAdding(true);
   };
 
   const handleDelete = async (id: number) => {
@@ -161,16 +183,16 @@ export function CouponManager() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Coupon Management</h2>
-        <Button onClick={() => setIsAdding(!isAdding)} variant={isAdding ? "outline" : "default"}>
+        <Button onClick={() => isAdding ? resetForm() : setIsAdding(true)} variant={isAdding ? "outline" : "default"}>
           {isAdding ? "Cancel" : <><Plus className="w-4 h-4 mr-2" /> Add Coupon</>}
         </Button>
       </div>
 
       {isAdding && (
         <Card>
-          <CardHeader><CardTitle>Create New Coupon</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{editingId ? "Update Coupon" : "Create New Coupon"}</CardTitle></CardHeader>
           <CardContent>
-            <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
               <div className="space-y-1">
                 <Label>Code</Label>
                 <Input 
@@ -200,7 +222,30 @@ export function CouponManager() {
                   required 
                 />
               </div>
-              <Button type="submit">Create</Button>
+              <div className="space-y-1">
+                <Label>Expires At</Label>
+                <Input 
+                  type="date"
+                  value={newCoupon.expiresAt}
+                  onChange={e => setNewCoupon({...newCoupon, expiresAt: e.target.value})}
+                />
+              </div>
+              {editingId && (
+                <div className="space-y-1">
+                  <Label>Status</Label>
+                  <select 
+                    className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+                    value={newCoupon.active.toString()}
+                    onChange={e => setNewCoupon({...newCoupon, active: e.target.value === "true"})}
+                  >
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                  </select>
+                </div>
+              )}
+              <Button type="submit" className={editingId ? "col-span-full md:col-span-1" : ""}>
+                {editingId ? "Update" : "Create"}
+              </Button>
             </form>
           </CardContent>
         </Card>
@@ -216,6 +261,7 @@ export function CouponManager() {
                   <th className="px-6 py-3">Discount</th>
                   <th className="px-6 py-3">Used</th>
                   <th className="px-6 py-3">Limit</th>
+                  <th className="px-6 py-3">Expires</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Actions</th>
                 </tr>
@@ -229,6 +275,7 @@ export function CouponManager() {
                     </td>
                     <td className="px-6 py-4">{coupon.usedCount}</td>
                     <td className="px-6 py-4">{coupon.usageLimit || "∞"}</td>
+                    <td className="px-6 py-4">{coupon.expiresAt ? format(new Date(coupon.expiresAt), "MMM d, yyyy") : "Never"}</td>
                     <td className="px-6 py-4">
                       {coupon.active ? (
                         <span className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-1" /> Active</span>
@@ -236,7 +283,10 @@ export function CouponManager() {
                         <span className="flex items-center text-red-600"><XCircle className="w-3 h-3 mr-1" /> Inactive</span>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <button onClick={() => handleEditClick(coupon)} className="text-blue-600 hover:text-blue-900">
+                        <Edit className="h-4 w-4" />
+                      </button>
                       <button onClick={() => handleDelete(coupon.id)} className="text-red-600 hover:text-red-900">
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -253,12 +303,8 @@ export function CouponManager() {
 }
 
 // --- TierManager ---
-export function TierManager() {
-  const [tiers, setTiers] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch("/api/admin/tiers").then(res => res.json()).then(setTiers);
-  }, []);
+export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
+  const [tiers, setTiers] = useState<any[]>(initialTiers);
 
   const handleUpdatePrice = async (id: number, price: number) => {
     const res = await fetch("/api/admin/tiers", {
@@ -376,6 +422,107 @@ export function AdminSettings() {
           </form>
         )}
         {message && <p className="text-sm text-center text-gray-600 mt-2">{message}</p>}
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- GiftInviteManager ---
+export function GiftInviteManager() {
+  const [recipient, setRecipient] = useState("");
+  const [tier, setTier] = useState("premium");
+  const [generatedCode, setGeneratedCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generatedCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setGeneratedCode("");
+
+    const code = `GIFT-${tier.toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+    const res = await fetch("/api/admin/coupons", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code,
+        discountType: "percentage",
+        discountValue: 100,
+        usageLimit: 1,
+        active: true,
+      }),
+    });
+
+    if (res.ok) {
+      setGeneratedCode(code);
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <Card className="max-w-xl">
+      <CardHeader>
+        <CardTitle>Gift an Invitation</CardTitle>
+        <CardDescription>
+          Generate a special 100% discount code restricted to a specific tier. Give this code to the recipient so they can create their invitation for free.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleGenerate} className="space-y-4">
+          <div className="space-y-2">
+            <Label>Recipient Email (Optional, for your records)</Label>
+            <Input 
+              placeholder="friend@example.com" 
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Tier to Gift</Label>
+            <select 
+              className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+              value={tier}
+              onChange={(e) => setTier(e.target.value)}
+            >
+              <option value="basic">Basic Plan</option>
+              <option value="standard">Standard Plan</option>
+              <option value="premium">Premium Plan</option>
+            </select>
+          </div>
+          <Button type="submit" disabled={isLoading} className="w-full bg-[#F43F8F] hover:bg-[#d82a75]">
+            {isLoading ? "Generating..." : "Generate Gift Code"}
+          </Button>
+        </form>
+
+        {generatedCode && (
+          <div className="mt-6 p-4 bg-green-50 border border-green-100 rounded-xl text-center space-y-2">
+            <p className="text-green-800 font-medium">Gift Code Generated Successfully!</p>
+            <div className="flex items-center justify-center gap-3">
+              <div className="text-2xl font-bold tracking-widest text-green-900 bg-white py-2 px-6 rounded-lg border border-green-200 shadow-sm">
+                {generatedCode}
+              </div>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="bg-white border-green-200 hover:bg-green-50 text-green-700"
+                onClick={handleCopy}
+                title="Copy to clipboard"
+              >
+                {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+              </Button>
+            </div>
+            <p className="text-sm text-green-700">
+              Share this code with the user. They can select the <strong>{tier.toUpperCase()}</strong> tier and enter this code at checkout to get it for free.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

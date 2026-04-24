@@ -18,7 +18,11 @@ export default function LoginPage() {
   const [step, setStep] = useState<"auth" | "otp">("auth");
   const [mode, setMode] = useState<"login" | "register">("login");
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendCount, setResendCount] = useState(0);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +76,45 @@ export default function LoginPage() {
       setError("An unexpected error occurred.");
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || resendCount >= 1) return;
+    
+    setIsResending(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage("New code sent! Check your inbox.");
+        setResendCount(prev => prev + 1);
+        setResendCooldown(60);
+        const timer = setInterval(() => {
+          setResendCooldown(prev => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        setError(data.error || "Failed to resend code.");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred.");
+    } finally {
+      setIsResending(true); // Keep resending state or reset
+      setIsResending(false);
     }
   };
 
@@ -194,6 +237,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
+                    {message && <p className="text-sm text-green-600 font-medium">{message}</p>}
                     <Button 
                       type="submit" 
                       className="w-full h-12 rounded-xl bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white font-semibold text-base shadow-lg shadow-rose-200/50 hover:shadow-xl hover:shadow-rose-300/50 transition-all"
@@ -201,6 +245,33 @@ export default function LoginPage() {
                     >
                       {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify & Sign In"}
                     </Button>
+                    
+                    <div className="text-center mt-2">
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        disabled={isResending || resendCooldown > 0 || resendCount >= 1}
+                        className={`text-sm font-medium transition-colors ${
+                          resendCount >= 1 
+                            ? "text-gray-300 cursor-not-allowed" 
+                            : resendCooldown > 0 
+                              ? "text-gray-400 cursor-wait" 
+                              : "text-[#F43F8F] hover:text-[#c73272]"
+                        }`}
+                      >
+                        {isResending ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <Loader2 className="w-3 h-3 animate-spin" /> Resending...
+                          </span>
+                        ) : resendCount >= 1 ? (
+                          "Resend limit reached"
+                        ) : resendCooldown > 0 ? (
+                          `Resend in ${resendCooldown}s`
+                        ) : (
+                          "Didn't receive code? Resend"
+                        )}
+                      </button>
+                    </div>
                     <button
                       type="button"
                       onClick={() => { setStep("auth"); setOtp(""); }}

@@ -17,6 +17,8 @@ export const users = pgTable("users", {
   name: text("name"),
   loginOtp: text("login_otp"),
   loginOtpExpires: timestamp("login_otp_expires"),
+  otpCountToday: integer("otp_count_today").default(0).notNull(),
+  lastOtpAt: timestamp("last_otp_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

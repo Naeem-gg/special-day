@@ -4,17 +4,17 @@ import { decrypt } from "@/lib/auth-utils";
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect /admin routes
-  if (pathname.startsWith("/admin")) {
+  // Protect /adminn routes
+  if (pathname.startsWith("/adminn")) {
     // Exclude login page from protection
-    if (pathname === "/admin/login") {
+    if (pathname === "/adminn/login") {
       return NextResponse.next();
     }
 
     const session = request.cookies.get("admin_session")?.value;
 
     if (!session) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+      return NextResponse.redirect(new URL("/adminn/login", request.url));
     }
 
     try {
@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.next();
     } catch (error) {
       console.error("Middleware Auth Error:", error);
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+      return NextResponse.redirect(new URL("/adminn/login", request.url));
     }
   }
 
@@ -49,5 +49,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/adminn/:path*", "/api/admin/:path*"],
 };

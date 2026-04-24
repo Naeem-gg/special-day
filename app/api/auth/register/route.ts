@@ -26,6 +26,18 @@ export async function POST(req: NextRequest) {
       if (existingUser.emailVerified) {
         return NextResponse.json({ error: "Email is already registered" }, { status: 400 });
       }
+
+      const today = new Date().toDateString();
+      const lastOtpDate = existingUser.lastOtpAt ? new Date(existingUser.lastOtpAt).toDateString() : null;
+      
+      let count = existingUser.otpCountToday;
+      if (today !== lastOtpDate) {
+        count = 0;
+      }
+
+      if (count >= 2) {
+        return NextResponse.json({ error: "Daily limit reached. You can only receive 2 verification emails per day." }, { status: 429 });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,11 +45,17 @@ export async function POST(req: NextRequest) {
     const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     if (existingUser) {
+      const today = new Date().toDateString();
+      const lastOtpDate = existingUser.lastOtpAt ? new Date(existingUser.lastOtpAt).toDateString() : null;
+      const newCount = (today === lastOtpDate) ? existingUser.otpCountToday + 1 : 1;
+
       // Update unverified user with new password and OTP
       await db.update(users).set({
         password: hashedPassword,
         loginOtp: otp,
         loginOtpExpires: expires,
+        otpCountToday: newCount,
+        lastOtpAt: new Date(),
       }).where(eq(users.id, existingUser.id));
     } else {
       // Create new user
@@ -47,11 +65,13 @@ export async function POST(req: NextRequest) {
         loginOtp: otp,
         loginOtpExpires: expires,
         emailVerified: false,
+        otpCountToday: 1,
+        lastOtpAt: new Date(),
       });
     }
 
     // Send OTP via email
-    await sendEmail({
+    const emailSent = await sendEmail({
       to: email,
       subject: "Verify Your Email - DNvites",
       htmlContent: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; text-align: center;">
@@ -61,6 +81,10 @@ export async function POST(req: NextRequest) {
         <p>This code will expire in 10 minutes.</p>
       </div>`,
     });
+
+    if (!emailSent) {
+      return NextResponse.json({ error: "Failed to send verification email. Please try again later." }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true, message: "Verification OTP sent" });
   } catch (error) {

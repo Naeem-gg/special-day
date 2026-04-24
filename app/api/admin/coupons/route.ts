@@ -17,24 +17,58 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { code, discountType, discountValue, expiresAt, usageLimit } = body;
+    const { code, discountType, discountValue, expiresAt, usageLimit, active } = body;
 
     if (!code || !discountType || discountValue === undefined) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const [newCoupon] = await db.insert(coupons).values({
+    const insertData: any = {
       code: code.toUpperCase(),
       discountType,
       discountValue,
-      expiresAt: expiresAt ? new Date(expiresAt) : null,
       usageLimit,
-    }).returning();
+      active: active !== undefined ? active : true,
+    };
+
+    if (expiresAt) {
+      insertData.expiresAt = new Date(expiresAt);
+    }
+
+    const [newCoupon] = await db.insert(coupons).values(insertData).returning();
 
     return NextResponse.json(newCoupon);
   } catch (error) {
     console.error("Create Coupon Error:", error);
     return NextResponse.json({ error: "Failed to create coupon" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, code, discountType, discountValue, expiresAt, usageLimit, active } = body;
+
+    if (!id || !code || !discountType || discountValue === undefined) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const [updatedCoupon] = await db.update(coupons)
+      .set({
+        code: code.toUpperCase(),
+        discountType,
+        discountValue,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        usageLimit,
+        active: active !== undefined ? active : true,
+      })
+      .where(eq(coupons.id, id))
+      .returning();
+
+    return NextResponse.json(updatedCoupon);
+  } catch (error) {
+    console.error("Update Coupon Error:", error);
+    return NextResponse.json({ error: "Failed to update coupon" }, { status: 500 });
   }
 }
 
@@ -49,3 +83,4 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Failed to delete coupon" }, { status: 500 });
   }
 }
+
