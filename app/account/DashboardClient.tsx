@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
-import { Calendar, Eye, Settings, Share2, Plus, ArrowRight, BarChart3, Users, TrendingUp, ExternalLink, X, Trash2, Download, CheckCircle2, XCircle, Loader2, Edit3, Clock } from "lucide-react";
+import { Calendar, Eye, Settings, Share2, Plus, ArrowRight, BarChart3, Users, TrendingUp, ExternalLink, X, Trash2, Download, CheckCircle2, XCircle, Loader2, Edit3, Clock, Star, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { useState, useEffect } from "react";
@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { TestimonialForm } from "@/components/testimonials/TestimonialForm";
 
 const TIER_GRADIENT: Record<string, string> = {
   basic: "from-rose-100 to-amber-100",
@@ -28,10 +29,20 @@ const TIER_BADGE_STYLE: Record<string, string> = {
   premium: "bg-amber-50 text-amber-600 border-amber-100",
 };
 
-export function DashboardClient({ email, invitations }: { email: string; invitations: any[] }) {
+export function DashboardClient({ 
+  email, 
+  invitations, 
+  hasReviewed: initialHasReviewed = false 
+}: { 
+  email: string; 
+  invitations: any[];
+  hasReviewed?: boolean;
+}) {
   const [selectedInvite, setSelectedInvite] = useState<any>(null);
   const [rsvps, setRsvps] = useState<any[]>([]);
   const [isLoadingRsvps, setIsLoadingRsvps] = useState(false);
+  const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(initialHasReviewed);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -128,6 +139,38 @@ export function DashboardClient({ email, invitations }: { email: string; invitat
             </Button>
           </Link>
         </div>
+
+        {/* ── Review Banner ────────────── */}
+        {!hasReviewed && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8"
+          >
+            <Card className="bg-linear-to-r from-[#F43F8F] to-[#c73272] border-0 shadow-lg shadow-rose-200 overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                <Star className="w-32 h-32 text-white fill-white" />
+              </div>
+              <CardContent className="p-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-5 text-center md:text-left">
+                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 border border-white/30">
+                    <MessageSquare className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white font-serif">Loving your invitations?</h3>
+                    <p className="text-white/80 text-sm">Share your experience with us and help other couples create their dream wedding!</p>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => setShowReviewDialog(true)}
+                  className="bg-white text-[#F43F8F] hover:bg-rose-50 rounded-full px-8 font-bold shadow-xl shadow-black/5 shrink-0"
+                >
+                  Write a Review
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* ── Analytics Overview ────────────── */}
         {totalInvitations > 0 && (
@@ -304,6 +347,17 @@ export function DashboardClient({ email, invitations }: { email: string; invitat
                         Share Invitation
                         <Share2 className="w-4 h-4" />
                       </Button>
+
+                      {!hasReviewed && (
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-between text-[#F43F8F] hover:bg-rose-50 font-semibold"
+                          onClick={() => setShowReviewDialog(true)}
+                        >
+                          Rate Your Experience
+                          <Star className="w-4 h-4 fill-[#F43F8F]" />
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -394,6 +448,25 @@ export function DashboardClient({ email, invitations }: { email: string; invitat
                 </div>
               )}
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* ── Review Dialog ────────────── */}
+      <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+        <DialogContent className="max-w-lg p-0 border-0 rounded-3xl overflow-hidden shadow-2xl">
+          <div className="bg-linear-to-r from-rose-50 to-amber-50 p-6 border-b border-rose-100 text-center">
+            <h3 className="text-xl font-serif text-slate-900">Your Feedback Matters</h3>
+            <p className="text-xs text-slate-500 mt-1">We'd love to hear how we helped with your special day.</p>
+          </div>
+          <div className="p-4">
+            <TestimonialForm 
+              initialEmail={email} 
+              initialName={invitations[0]?.brideName && invitations[0]?.groomName ? `${invitations[0].brideName} & ${invitations[0].groomName}` : ""}
+              onSuccess={() => {
+                setHasReviewed(true);
+                setTimeout(() => setShowReviewDialog(false), 2000);
+              }}
+            />
           </div>
         </DialogContent>
       </Dialog>

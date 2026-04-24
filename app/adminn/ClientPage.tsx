@@ -4,10 +4,11 @@ import { useState } from "react";
 import { AdminOverview, InvitationManager, CouponManager, TierManager, AdminSettings, GiftInviteManager } from "@/components/admin/AdminDashboard";
 import { TestimonialManager } from "@/components/admin/TestimonialManager";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Ticket, Users, CreditCard, Settings, Gift, MessageSquare, ChevronDown } from "lucide-react";
+import { LogOut, LayoutDashboard, Ticket, Users, CreditCard, Settings, Gift, MessageSquare, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AdminClientPageProps {
   initialStats: any;
@@ -25,7 +26,7 @@ export function AdminClientPage({
   initialTestimonials 
 }: AdminClientPageProps) {
   const router = useRouter();
-  const [expandedSection, setExpandedSection] = useState<string | null>("stats");
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const handleLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -33,34 +34,40 @@ export function AdminClientPage({
   };
 
   const sections = [
-    { id: "stats", label: "Business Stats", icon: LayoutDashboard, component: <AdminOverview initialStats={initialStats} /> },
-    { id: "invitations", label: "Manage Invitations", icon: Users, component: <InvitationManager initialInvitations={initialInvitations} /> },
-    { id: "coupons", label: "Discount Coupons", icon: Ticket, component: <CouponManager initialCoupons={initialCoupons} /> },
-    { id: "tiers", label: "Pricing & Plans", icon: CreditCard, component: <TierManager initialTiers={initialTiers} /> },
-    { id: "testimonials", label: "Testimonials", icon: MessageSquare, component: <TestimonialManager initialTestimonials={initialTestimonials} /> },
-    { id: "gift", label: "Gift an Invite", icon: Gift, component: <GiftInviteManager /> },
-    { id: "settings", label: "Account Settings", icon: Settings, component: <AdminSettings /> },
+    { id: "stats", label: "Overview", desc: "Business metrics", icon: LayoutDashboard, color: "rose", component: <AdminOverview initialStats={initialStats} /> },
+    { id: "invitations", label: "Invites", desc: "Manage cards", icon: Users, color: "blue", component: <InvitationManager initialInvitations={initialInvitations} /> },
+    { id: "coupons", label: "Coupons", desc: "Discounts", icon: Ticket, color: "purple", component: <CouponManager initialCoupons={initialCoupons} /> },
+    { id: "tiers", label: "Pricing", desc: "Manage plans", icon: CreditCard, color: "amber", component: <TierManager initialTiers={initialTiers} /> },
+    { id: "testimonials", label: "Reviews", desc: "Feedback", icon: MessageSquare, color: "emerald", component: <TestimonialManager initialTestimonials={initialTestimonials} /> },
+    { id: "gift", label: "Gift", desc: "Send credit", icon: Gift, color: "pink", component: <GiftInviteManager /> },
+    { id: "settings", label: "Settings", desc: "Admin security", icon: Settings, color: "slate", component: <AdminSettings /> },
   ];
 
-  const toggleSection = (id: string) => {
-    setExpandedSection(expandedSection === id ? null : id);
-    // Smooth scroll to the expanded section after a tiny delay
-    if (expandedSection !== id) {
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
+  const currentSection = sections.find(s => s.id === activeSection);
+
+  const COLOR_MAP: Record<string, string> = {
+    rose: "bg-rose-50 text-rose-500",
+    blue: "bg-blue-50 text-blue-500",
+    purple: "bg-purple-50 text-purple-500",
+    amber: "bg-amber-50 text-amber-500",
+    emerald: "bg-emerald-50 text-emerald-500",
+    pink: "bg-pink-50 text-pink-500",
+    slate: "bg-slate-100 text-slate-500",
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFD]">
+    <div className="min-h-screen bg-[#FDFCFD] selection:bg-rose-100">
       {/* Premium Top Bar */}
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-rose-50 px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-1.5 bg-rose-50 rounded-lg">
+          <button 
+            onClick={() => setActiveSection(null)}
+            className="p-1.5 bg-rose-50 rounded-lg hover:scale-105 transition-transform"
+          >
             <DNvitesLogo className="h-5 w-auto" />
-          </div>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-300 hidden sm:block">Admin Portal</span>
+          </button>
+          <div className="h-4 w-px bg-rose-100 mx-2" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-300">Admin Panel</span>
         </div>
         
         <div className="flex items-center gap-2">
@@ -81,58 +88,68 @@ export function AdminClientPage({
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto p-4 md:p-8 space-y-3 pb-24">
-        {sections.map((section) => {
-          const isExpanded = expandedSection === section.id;
-          return (
-            <div 
-              key={section.id} 
-              id={section.id}
-              className={`group bg-white border border-gray-100 rounded-[2rem] transition-all duration-500 overflow-hidden ${
-                isExpanded ? "ring-2 ring-rose-50 shadow-2xl shadow-rose-100/40" : "hover:border-rose-100 hover:shadow-lg hover:shadow-rose-50/50"
-              }`}
+      <main className="max-w-6xl mx-auto p-6 md:p-10">
+        <AnimatePresence mode="wait">
+          {!activeSection ? (
+            <motion.div
+              key="grid"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
             >
-              <button
-                onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center justify-between p-6 md:p-8 text-left"
-              >
-                <div className="flex items-center gap-5">
-                  <div className={`p-3 rounded-2xl transition-all duration-500 ${
-                    isExpanded ? "bg-[#F43F8F] text-white rotate-6" : "bg-gray-50 text-gray-400 group-hover:bg-rose-50 group-hover:text-[#F43F8F]"
-                  }`}>
-                    <section.icon className="w-5 h-5" />
+              {sections.map((section) => (
+                <motion.button
+                  key={section.id}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setActiveSection(section.id)}
+                  className="aspect-square bg-white border border-gray-100 rounded-[2.5rem] p-8 text-left shadow-sm hover:shadow-xl hover:shadow-rose-100/50 hover:border-rose-100 transition-all flex flex-col justify-between group"
+                >
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${COLOR_MAP[section.color]}`}>
+                    <section.icon className="w-7 h-7" />
                   </div>
                   <div>
-                    <h3 className={`text-lg font-bold transition-colors ${isExpanded ? "text-gray-900" : "text-gray-500 group-hover:text-gray-900"}`}>
-                      {section.label}
-                    </h3>
-                    <p className="text-[11px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">
-                      {isExpanded ? "Collapse Section" : "Click to manage"}
-                    </p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">{section.label}</h3>
+                    <p className="text-xs text-gray-400 font-medium leading-relaxed">{section.desc}</p>
                   </div>
-                </div>
-                <div className={`transition-transform duration-500 ${isExpanded ? "rotate-180" : ""}`}>
-                  <ChevronDown className={`w-5 h-5 ${isExpanded ? "text-[#F43F8F]" : "text-gray-300"}`} />
-                </div>
-              </button>
-
-              <div 
-                className={`transition-all duration-700 ease-in-out ${
-                  isExpanded ? "max-h-[3000px] opacity-100 border-t border-gray-50" : "max-h-0 opacity-0 pointer-events-none"
-                }`}
-              >
-                <div className="p-6 md:p-10 bg-linear-to-b from-white to-gray-50/30">
-                  {section.component}
+                </motion.button>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="detail"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-8"
+            >
+              <div className="flex items-center gap-6">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setActiveSection(null)}
+                  className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm hover:bg-rose-50 hover:text-[#F43F8F] transition-all"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 font-serif">{currentSection?.label}</h2>
+                  <p className="text-sm text-gray-400 font-medium">{currentSection?.desc}</p>
                 </div>
               </div>
-            </div>
-          );
-        })}
+
+              <div className="bg-white border border-gray-50 rounded-[3rem] p-6 md:p-10 shadow-2xl shadow-rose-100/20">
+                {currentSection?.component}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 pointer-events-none bg-linear-to-t from-white via-white/80 to-transparent">
-        <div className="max-w-5xl mx-auto flex justify-center">
-          <p className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.3em]">DNvites Premium Control</p>
+      <div className="fixed bottom-0 left-0 right-0 p-6 pointer-events-none">
+        <div className="max-w-6xl mx-auto flex justify-center">
+          <p className="text-[10px] font-bold text-gray-200 uppercase tracking-[0.4em]">DNvites Control v2.0</p>
         </div>
       </div>
     </div>

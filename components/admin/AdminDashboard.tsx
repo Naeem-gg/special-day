@@ -310,40 +310,85 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
 // --- TierManager ---
 export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
   const [tiers, setTiers] = useState<any[]>(initialTiers);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [localPrices, setLocalPrices] = useState<Record<number, string>>(
+    initialTiers.reduce((acc, t) => ({ ...acc, [t.id]: t.price.toString() }), {})
+  );
 
-  const handleUpdatePrice = async (id: number, price: number) => {
-    const res = await fetch("/api/admin/tiers", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, price }),
-    });
-    if (res.ok) {
-      setTiers(prev => prev.map(t => t.id === id ? { ...t, price } : t));
+  const handleUpdatePrice = async (id: number) => {
+    setUpdatingId(id);
+    const price = parseInt(localPrices[id]);
+    
+    try {
+      const res = await fetch("/api/admin/tiers", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, price }),
+      });
+      if (res.ok) {
+        setTiers(prev => prev.map(t => t.id === id ? { ...t, price } : t));
+        alert("Price updated successfully!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update price.");
+    } finally {
+      setUpdatingId(null);
     }
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
-      {tiers.map((tier) => (
-        <Card key={tier.id}>
-          <CardHeader>
-            <CardTitle>{tier.name}</CardTitle>
-            <CardDescription className="capitalize">Tier: {tier.slug}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1">
-              <Label>Price (₹)</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  defaultValue={tier.price}
-                  onBlur={(e) => handleUpdatePrice(tier.id, parseInt(e.target.value))}
-                />
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-gray-900">Plan Pricing</h2>
+        <p className="text-xs text-rose-500 font-bold uppercase tracking-widest">
+          ⚠️ Be careful, changes are live immediately
+        </p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        {tiers.map((tier) => (
+          <Card key={tier.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all">
+            <div className="h-1.5 w-full bg-linear-to-r from-rose-400 to-[#c73272]" />
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">{tier.name}</CardTitle>
+                <div className="px-2 py-0.5 bg-gray-100 rounded text-[10px] font-bold uppercase text-gray-500">
+                  {tier.slug}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+              <CardDescription>Base price for this tier</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-gray-500 uppercase">Current Price (₹)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    value={localPrices[tier.id]}
+                    onChange={(e) => setLocalPrices({ ...localPrices, [tier.id]: e.target.value })}
+                    className="font-mono text-lg font-bold text-gray-900 focus:border-[#F43F8F] focus:ring-[#F43F8F]/20"
+                  />
+                </div>
+              </div>
+              <Button 
+                onClick={() => handleUpdatePrice(tier.id)} 
+                disabled={updatingId === tier.id || localPrices[tier.id] === tier.price.toString()}
+                className="w-full bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all h-11"
+              >
+                {updatingId === tier.id ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Saving...
+                  </div>
+                ) : (
+                  "Update Price"
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

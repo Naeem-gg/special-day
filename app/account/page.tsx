@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getUserSession } from "@/lib/auth-utils";
 import { db } from "@/lib/db";
-import { invitations } from "@/lib/db/schema";
+import { invitations, testimonials } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { DashboardClient } from "./DashboardClient";
 
@@ -18,10 +18,16 @@ export default async function AccountPage() {
     orderBy: (invitations, { desc }) => [desc(invitations.createdAt)],
   });
 
+  // Check if user has already submitted a testimonial
+  const existingTestimonial = await db.query.testimonials.findFirst({
+    where: eq(testimonials.email, session.email),
+  });
+
   return (
     <DashboardClient 
       email={session.email} 
       invitations={userInvitations} 
+      hasReviewed={!!existingTestimonial}
     />
   );
 }

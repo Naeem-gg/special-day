@@ -9,10 +9,12 @@ import { toast } from "sonner";
 
 export function TestimonialForm({ 
   initialName = "", 
-  initialEmail = "" 
+  initialEmail = "",
+  onSuccess
 }: { 
   initialName?: string; 
   initialEmail?: string; 
+  onSuccess?: () => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [rating, setRating] = useState(5);
@@ -38,6 +40,7 @@ export function TestimonialForm({
         toast.success("Thank you for your feedback! It will be visible once approved.");
         setFormData({ name: "", email: "", message: "" });
         setRating(5);
+        if (onSuccess) onSuccess();
       } else {
         const data = await res.json();
         toast.error(data.error || "Failed to submit. Please try again.");

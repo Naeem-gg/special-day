@@ -834,6 +834,33 @@ export default function HomeClient({ testimonials }: { testimonials: any[] }) {
               Choose the perfect plan to share your love story. No hidden fees,
               no recurring subscriptions. Just a one-time payment for a lifetime of memories.
             </p>
+
+            {/* 🚀 Limited Launch Highlight */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              className="relative max-w-lg mx-auto"
+            >
+              <div className="absolute -inset-1 bg-linear-to-r from-[#F43F8F] via-amber-400 to-[#F43F8F] rounded-2xl blur-md opacity-30 animate-pulse" />
+              <div className="relative bg-white border border-rose-100 p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-4 shadow-xl shadow-rose-100/40">
+                <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center shrink-0">
+                  <Sparkles className="w-6 h-6 text-[#F43F8F]" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-black text-gray-900 uppercase tracking-tighter">
+                    🚀 Exclusive <span className="text-[#F43F8F]">Launch Pricing</span>
+                  </p>
+                  <p className="text-[11px] text-gray-500 font-medium leading-tight">
+                    Valid only for the <span className="text-[#F43F8F] font-bold">first 20 customers</span>. 
+                    Prices will increase by ₹300 soon!
+                  </p>
+                </div>
+                <div className="ml-auto bg-rose-100 text-[#F43F8F] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest hidden sm:block">
+                  Limited
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
