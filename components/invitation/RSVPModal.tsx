@@ -17,9 +17,10 @@ import { CheckCircle2 } from "lucide-react";
 
 interface RSVPModalProps {
   invitationId: number;
+  inline?: boolean;
 }
 
-export default function RSVPModal({ invitationId }: RSVPModalProps) {
+export default function RSVPModal({ invitationId, inline = false }: RSVPModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -63,7 +64,7 @@ export default function RSVPModal({ invitationId }: RSVPModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-50">
+        <div className={`${inline ? "absolute" : "fixed"} bottom-6 right-6 md:bottom-10 md:right-10 z-50`}>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

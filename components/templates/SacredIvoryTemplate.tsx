@@ -51,7 +51,7 @@ function IvoryDivider() {
   );
 }
 
-export default function SacredIvoryTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
+export default function SacredIvoryTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline }: TemplateProps) {
   const [goldLeaves, setGoldLeaves] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -106,7 +106,7 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
       <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : inline ? "min-h-[700px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(160deg, #FFFDF5 0%, #FFF8E7 30%, #FAF0DC 70%, #FFFDF5 100%)" }}>
           
           {/* Video backdrop */}
@@ -169,8 +169,8 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
 
             <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="ivory-gradient-text font-light leading-none"
-              style={{ fontSize: isThumbnail ? "3.5rem" : "clamp(3.5rem, 12vw, 8rem)", letterSpacing: "0.05em" }}>
+              className="ivory-gradient-text font-light leading-tight md:leading-none"
+              style={{ fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", letterSpacing: "0.05em" }}>
               {brideName}
             </motion.h1>
 
@@ -183,8 +183,8 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
 
             <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="ivory-gradient-text font-light leading-none"
-              style={{ fontSize: isThumbnail ? "3.5rem" : "clamp(3.5rem, 12vw, 8rem)", letterSpacing: "0.05em" }}>
+              className="ivory-gradient-text font-light leading-tight md:leading-none"
+              style={{ fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", letterSpacing: "0.05em" }}>
               {groomName}
             </motion.h1>
 

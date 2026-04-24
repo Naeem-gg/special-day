@@ -132,7 +132,13 @@ export default function CloudinaryUpload({ onUpload, onRemove, images, maxUpload
       <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4">
         {images.map((img) => (
           <div key={img.publicId} className="relative aspect-3/4 rounded-xl overflow-hidden border border-gray-200 shadow-xs group">
-            <Image src={img.url} alt="Gallery" fill sizes="" className="object-cover transition-transform group-hover:scale-105" />
+            <Image 
+              src={img.url} 
+              alt="Gallery" 
+              fill 
+              sizes="(max-width: 768px) 33vw, 25vw"
+              className="object-cover transition-transform group-hover:scale-105" 
+            />
             <button
               onClick={() => onRemove(img.publicId)}
               className="absolute top-1.5 right-1.5 p-1.5 bg-black/50 hover:bg-red-500 text-white rounded-full transition-all backdrop-blur-md z-10"

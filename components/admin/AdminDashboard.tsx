@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Users, 
-  Ticket, 
-  TrendingUp, 
-  Trash2, 
-  Plus, 
-  CheckCircle, 
+import {
+  Users,
+  Ticket,
+  TrendingUp,
+  Trash2,
+  Plus,
+  CheckCircle,
   XCircle,
   Clock,
   Edit,
@@ -20,6 +20,7 @@ import {
   Check
 } from "lucide-react";
 import { format } from "date-fns";
+import Link from "next/link";
 
 export function AdminOverview({ initialStats }: { initialStats: any }) {
   const [stats, setStats] = useState<any>(initialStats);
@@ -27,22 +28,27 @@ export function AdminOverview({ initialStats }: { initialStats: any }) {
   if (!stats) return <div>Loading stats...</div>;
 
   const statCards = [
-    { title: "Total Invitations", value: stats.totalInvitations, icon: Users, color: "text-blue-600" },
-    { title: "Total RSVPs", value: stats.totalRSVPs, icon: CheckCircle, color: "text-green-600" },
-    { title: "Active Coupons", value: stats.activeCoupons, icon: Ticket, color: "text-purple-600" },
-    { title: "Estimated Revenue", value: `₹${stats.estimatedRevenue}`, icon: TrendingUp, color: "text-orange-600" },
+    { title: "Invitations", value: stats.totalInvitations, icon: Users, color: "bg-blue-50 text-blue-600", border: "border-blue-100" },
+    { title: "RSVPs", value: stats.totalRSVPs, icon: CheckCircle, color: "bg-green-50 text-green-600", border: "border-green-100" },
+    { title: "Coupons", value: stats.activeCoupons, icon: Ticket, color: "bg-purple-50 text-purple-600", border: "border-purple-100" },
+    { title: "Revenue", value: `₹${stats.estimatedRevenue.toLocaleString()}`, icon: TrendingUp, color: "bg-rose-50 text-[#F43F8F]", border: "border-rose-100" },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       {statCards.map((stat, i) => (
-        <Card key={i}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            <stat.icon className={`h-4 w-4 ${stat.color}`} />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
+        <Card key={i} className={`overflow-hidden border-none shadow-sm bg-white hover:shadow-md transition-all duration-300`}>
+          <div className={`h-1 w-full ${stat.color.split(' ')[1].replace('text-', 'bg-')}`} />
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className={`p-2 rounded-lg ${stat.color}`}>
+                <stat.icon className="h-4 w-4 md:h-5 md:w-5" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">{stat.title}</p>
+              <div className="text-xl md:text-2xl font-bold text-gray-900">{stat.value}</div>
+            </div>
           </CardContent>
         </Card>
       ))}
@@ -65,46 +71,48 @@ export function InvitationManager({ initialInvitations = [] }: { initialInvitati
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Manage Invitations</CardTitle>
-        <CardDescription>View and manage all wedding invitations created on the platform.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="relative overflow-x-auto">
-          <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-              <tr>
-                <th className="px-6 py-3">Couple</th>
-                <th className="px-6 py-3">Slug</th>
-                <th className="px-6 py-3">Tier</th>
-                <th className="px-6 py-3">Created At</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invitations.map((inv) => (
-                <tr key={inv.id} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium text-gray-900">
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-gray-900">Manage Invitations</h2>
+        <div className="text-sm text-muted-foreground">{invitations.length} Total</div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {invitations.map((inv) => (
+          <Card key={inv.id} className="overflow-hidden hover:shadow-md transition-shadow group">
+            <CardContent className="p-4 space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <h3 className="font-bold text-gray-900 line-clamp-1">
                     {inv.brideName} & {inv.groomName}
-                  </td>
-                  <td className="px-6 py-4">/{inv.slug}</td>
-                  <td className="px-6 py-4">
-                    <span className="capitalize px-2 py-1 bg-gray-100 rounded text-xs">{inv.tier}</span>
-                  </td>
-                  <td className="px-6 py-4">{format(new Date(inv.createdAt), "MMM d, yyyy")}</td>
-                  <td className="px-6 py-4">
-                    <button onClick={() => handleDelete(inv.id)} className="text-red-600 hover:text-red-900">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </CardContent>
-    </Card>
+                  </h3>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> {format(new Date(inv.createdAt), "MMM d, yyyy")}
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleDelete(inv.id)}
+                  className="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-1 bg-gray-100 text-gray-600 rounded">
+                  {inv.tier}
+                </span>
+                <Link href={`/invite/${inv.slug}`} target="_blank">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                    View Invite →
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -127,7 +135,7 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
     const isEditing = editingId !== null;
     const url = "/api/admin/coupons";
     const method = isEditing ? "PATCH" : "POST";
-    
+
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -139,7 +147,7 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
         expiresAt: newCoupon.expiresAt ? new Date(newCoupon.expiresAt).toISOString() : null,
       }),
     });
-    
+
     if (res.ok) {
       const data = await res.json();
       if (isEditing) {
@@ -195,19 +203,19 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
               <div className="space-y-1">
                 <Label>Code</Label>
-                <Input 
-                  placeholder="SAVE20" 
-                  value={newCoupon.code} 
-                  onChange={e => setNewCoupon({...newCoupon, code: e.target.value.toUpperCase()})}
-                  required 
+                <Input
+                  placeholder="SAVE20"
+                  value={newCoupon.code}
+                  onChange={e => setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })}
+                  required
                 />
               </div>
               <div className="space-y-1">
                 <Label>Type</Label>
-                <select 
+                <select
                   className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
                   value={newCoupon.discountType}
-                  onChange={e => setNewCoupon({...newCoupon, discountType: e.target.value})}
+                  onChange={e => setNewCoupon({ ...newCoupon, discountType: e.target.value })}
                 >
                   <option value="percentage">Percentage (%)</option>
                   <option value="fixed">Fixed (₹)</option>
@@ -215,28 +223,28 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
               </div>
               <div className="space-y-1">
                 <Label>Value</Label>
-                <Input 
-                  type="number" 
+                <Input
+                  type="number"
                   value={newCoupon.discountValue}
-                  onChange={e => setNewCoupon({...newCoupon, discountValue: e.target.value})}
-                  required 
+                  onChange={e => setNewCoupon({ ...newCoupon, discountValue: e.target.value })}
+                  required
                 />
               </div>
               <div className="space-y-1">
                 <Label>Expires At</Label>
-                <Input 
+                <Input
                   type="date"
                   value={newCoupon.expiresAt}
-                  onChange={e => setNewCoupon({...newCoupon, expiresAt: e.target.value})}
+                  onChange={e => setNewCoupon({ ...newCoupon, expiresAt: e.target.value })}
                 />
               </div>
               {editingId && (
                 <div className="space-y-1">
                   <Label>Status</Label>
-                  <select 
+                  <select
                     className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
                     value={newCoupon.active.toString()}
-                    onChange={e => setNewCoupon({...newCoupon, active: e.target.value === "true"})}
+                    onChange={e => setNewCoupon({ ...newCoupon, active: e.target.value === "true" })}
                   >
                     <option value="true">Active</option>
                     <option value="false">Inactive</option>
@@ -251,53 +259,50 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
         </Card>
       )}
 
-      <Card>
-        <CardContent className="pt-6">
-          <div className="relative overflow-x-auto">
-            <table className="w-full text-sm text-left text-gray-500">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3">Code</th>
-                  <th className="px-6 py-3">Discount</th>
-                  <th className="px-6 py-3">Used</th>
-                  <th className="px-6 py-3">Limit</th>
-                  <th className="px-6 py-3">Expires</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {coupons.map((coupon) => (
-                  <tr key={coupon.id} className="bg-white border-b hover:bg-gray-50">
-                    <td className="px-6 py-4 font-bold text-gray-900">{coupon.code}</td>
-                    <td className="px-6 py-4">
-                      {coupon.discountType === "percentage" ? `${coupon.discountValue}%` : `₹${coupon.discountValue}`}
-                    </td>
-                    <td className="px-6 py-4">{coupon.usedCount}</td>
-                    <td className="px-6 py-4">{coupon.usageLimit || "∞"}</td>
-                    <td className="px-6 py-4">{coupon.expiresAt ? format(new Date(coupon.expiresAt), "MMM d, yyyy") : "Never"}</td>
-                    <td className="px-6 py-4">
-                      {coupon.active ? (
-                        <span className="flex items-center text-green-600"><CheckCircle className="w-3 h-3 mr-1" /> Active</span>
-                      ) : (
-                        <span className="flex items-center text-red-600"><XCircle className="w-3 h-3 mr-1" /> Inactive</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <button onClick={() => handleEditClick(coupon)} className="text-blue-600 hover:text-blue-900">
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(coupon.id)} className="text-red-600 hover:text-red-900">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {coupons.map((coupon) => (
+          <Card key={coupon.id} className="overflow-hidden hover:shadow-md transition-shadow">
+            <div className={`h-1 w-full ${coupon.active ? "bg-green-500" : "bg-red-400"}`} />
+            <CardContent className="p-4 space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-lg font-bold tracking-wider text-gray-900">{coupon.code}</div>
+                  <div className="text-xs text-[#F43F8F] font-bold">
+                    {coupon.discountType === "percentage" ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue} OFF`}
+                  </div>
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => handleEditClick(coupon)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                    <Edit className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => handleDelete(coupon.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold tracking-tight text-gray-500">
+                <div className="bg-gray-50 p-2 rounded">
+                  Used: <span className="text-gray-900">{coupon.usedCount}</span>
+                </div>
+                <div className="bg-gray-50 p-2 rounded">
+                  Limit: <span className="text-gray-900">{coupon.usageLimit || "∞"}</span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between text-[10px] text-muted-foreground border-t border-gray-50">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> {coupon.expiresAt ? format(new Date(coupon.expiresAt), "MMM d") : "No Expiry"}
+                </span>
+                <span className={`flex items-center gap-1 ${coupon.active ? "text-green-600" : "text-red-500"}`}>
+                  {coupon.active ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                  {coupon.active ? "Active" : "Inactive"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
@@ -313,7 +318,7 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
       body: JSON.stringify({ id, price }),
     });
     if (res.ok) {
-      setTiers(prev => prev.map(t => t.id === id ? {...t, price} : t));
+      setTiers(prev => prev.map(t => t.id === id ? { ...t, price } : t));
     }
   };
 
@@ -329,8 +334,8 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
             <div className="space-y-1">
               <Label>Price (₹)</Label>
               <div className="flex gap-2">
-                <Input 
-                  type="number" 
+                <Input
+                  type="number"
                   defaultValue={tier.price}
                   onBlur={(e) => handleUpdatePrice(tier.id, parseInt(e.target.value))}
                 />
@@ -478,15 +483,15 @@ export function GiftInviteManager() {
         <form onSubmit={handleGenerate} className="space-y-4">
           <div className="space-y-2">
             <Label>Recipient Email (Optional, for your records)</Label>
-            <Input 
-              placeholder="friend@example.com" 
+            <Input
+              placeholder="friend@example.com"
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
             />
           </div>
           <div className="space-y-2">
             <Label>Tier to Gift</Label>
-            <select 
+            <select
               className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
               value={tier}
               onChange={(e) => setTier(e.target.value)}
@@ -508,9 +513,9 @@ export function GiftInviteManager() {
               <div className="text-2xl font-bold tracking-widest text-green-900 bg-white py-2 px-6 rounded-lg border border-green-200 shadow-sm">
                 {generatedCode}
               </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
+              <Button
+                variant="outline"
+                size="icon"
                 className="bg-white border-green-200 hover:bg-green-50 text-green-700"
                 onClick={handleCopy}
                 title="Copy to clipboard"

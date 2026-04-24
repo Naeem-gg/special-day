@@ -147,6 +147,17 @@ const statements = [
     attending     BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
   )`,
+
+  /* ── testimonials ── */
+  `CREATE TABLE IF NOT EXISTS testimonials (
+    id            SERIAL PRIMARY KEY,
+    name          TEXT         NOT NULL,
+    email         TEXT         NOT NULL,
+    rating        INTEGER      NOT NULL DEFAULT 5,
+    message       TEXT         NOT NULL,
+    is_public     BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+  )`,
 ];
 
 // New columns that may not exist yet (idempotent ALTER TABLE)

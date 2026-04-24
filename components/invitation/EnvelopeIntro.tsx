@@ -8,6 +8,7 @@ interface EnvelopeIntroProps {
   groomName: string;
   variant?: string;
   autoOpen?: boolean;
+  inline?: boolean;
 }
 
 /* ─── Theme map ────────────────────────────────────────────────────────── */
@@ -93,25 +94,33 @@ const VARIANT_MAP = {
 interface Sparkle { id: number; x: number; y: number; size: number; angle: number; dist: number; color: string; }
 
 function SparkleParticles({ active, color }: { active: boolean; color: string }) {
-  const particles: Sparkle[] = Array.from({ length: 28 }, (_, i) => ({
-    id: i,
-    x: 50, y: 50,
-    size: 3 + Math.random() * 5,
-    angle: (i / 28) * 360 + Math.random() * 13,
-    dist: 80 + Math.random() * 180,
-    color: i % 3 === 0 ? "#ffffff" : i % 3 === 1 ? color : "#fff8d0",
-  }));
+  const [mounted, setMounted] = useState(false);
+  const particlesRef = useRef<Sparkle[]>([]);
+
+  useEffect(() => {
+    particlesRef.current = Array.from({ length: 28 }, (_, i) => ({
+      id: i,
+      x: 50, y: 50,
+      size: 3 + Math.random() * 5,
+      angle: (i / 28) * 360 + Math.random() * 13,
+      dist: 80 + Math.random() * 180,
+      color: i % 3 === 0 ? "#ffffff" : i % 3 === 1 ? color : "#fff8d0",
+    }));
+    setMounted(true);
+  }, [color]);
+
+  if (!mounted) return null;
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {particles.map(p => (
+      {particlesRef.current.map(p => (
         <motion.div
           key={p.id}
-          initial={{ opacity: 0, x: "50vw", y: "50vh", scale: 0 }}
+          initial={{ opacity: 0, x: "50%", y: "50%", scale: 0 }}
           animate={active ? {
             opacity: [0, 1, 1, 0],
-            x: `calc(50vw + ${Math.cos(p.angle * Math.PI / 180) * p.dist}px)`,
-            y: `calc(50vh + ${Math.sin(p.angle * Math.PI / 180) * p.dist}px)`,
+            x: `calc(50% + ${Math.cos(p.angle * Math.PI / 180) * p.dist}px)`,
+            y: `calc(50% + ${Math.sin(p.angle * Math.PI / 180) * p.dist}px)`,
             scale: [0, 1.4, 1, 0],
           } : { opacity: 0 }}
           transition={{ duration: 1.2, ease: "easeOut", delay: Math.random() * 0.3 }}
@@ -165,6 +174,34 @@ function WaxSeal({ theme, initials, glowing, cracking }: {
           <filter id="sealEmboss">
             <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.5)" />
           </filter>
+          <filter id="engraved">
+            {/* True deboss: offset shadow to simulate depth */}
+            <feFlood floodColor="rgba(0,0,0,0.6)" result="dark" />
+            <feOffset dx="0" dy="-1" result="offsetDark" />
+            <feComposite in="dark" in2="offsetDark" operator="over" />
+            <feComposite in2="SourceAlpha" operator="in" result="darkShadow" />
+            
+            <feFlood floodColor="rgba(255,255,255,0.15)" result="light" />
+            <feOffset dx="0" dy="1.5" result="offsetLight" />
+            <feComposite in="light" in2="offsetLight" operator="over" />
+            <feComposite in2="SourceAlpha" operator="in" result="lightHighlight" />
+            
+            <feMerge>
+              <feMergeNode in="lightHighlight" />
+              <feMergeNode in="darkShadow" />
+            </feMerge>
+          </filter>
+          <filter id="insetShadow">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur" />
+            <feOffset dx="0" dy="1" result="offsetBlur" />
+            <feComposite in="SourceAlpha" in2="offsetBlur" operator="arithmetic" k2="-1" k3="1" result="shadowDiff" />
+            <feFlood floodColor="rgba(0,0,0,0.5)" result="color" />
+            <feComposite in="color" in2="shadowDiff" operator="in" result="shadow" />
+            <feMerge>
+              <feMergeNode in="SourceGraphic" />
+              <feMergeNode in="shadow" />
+            </feMerge>
+          </filter>
         </defs>
 
         {/* Outer scalloped edge — 16-point starburst */}
@@ -175,8 +212,8 @@ function WaxSeal({ theme, initials, glowing, cracking }: {
           return (
             <g key={i}>
               <line
-                x1={60 + Math.cos(a) * r1} y1={60 + Math.sin(a) * r1}
-                x2={60 + Math.cos(aH) * r2} y2={60 + Math.sin(aH) * r2}
+                x1={Number((60 + Math.cos(a) * r1).toFixed(3))} y1={Number((60 + Math.sin(a) * r1).toFixed(3))}
+                x2={Number((60 + Math.cos(aH) * r2).toFixed(3))} y2={Number((60 + Math.sin(aH) * r2).toFixed(3))}
                 stroke={theme.sealTop} strokeWidth="0" />
             </g>
           );
@@ -189,7 +226,7 @@ function WaxSeal({ theme, initials, glowing, cracking }: {
           const r = 56;
           return (
             <circle key={i}
-              cx={60 + Math.cos(a) * r} cy={60 + Math.sin(a) * r}
+              cx={Number((60 + Math.cos(a) * r).toFixed(3))} cy={Number((60 + Math.sin(a) * r).toFixed(3))}
               r="4.5" fill={theme.sealTop} opacity="0.9" />
           );
         })}
@@ -206,23 +243,54 @@ function WaxSeal({ theme, initials, glowing, cracking }: {
           const a = (i / 8) * Math.PI * 2;
           return (
             <line key={i}
-              x1={60 + Math.cos(a) * 20} y1={60 + Math.sin(a) * 20}
-              x2={60 + Math.cos(a) * 34} y2={60 + Math.sin(a) * 34}
+              x1={Number((60 + Math.cos(a) * 20).toFixed(3))} y1={Number((60 + Math.sin(a) * 20).toFixed(3))}
+              x2={Number((60 + Math.cos(a) * 34).toFixed(3))} y2={Number((60 + Math.sin(a) * 34).toFixed(3))}
               stroke={theme.sealMid} strokeWidth="1" opacity="0.5" strokeLinecap="round" />
           );
         })}
 
-        {/* Initials */}
+        {/* Initials — true engraved look */}
+        {/* Layer 1: Deep shadow (bottom of the engrave) */}
         <text
-          x="60" y="67"
+          x="60"
+          y="69"
           textAnchor="middle"
-          fontFamily="'Playfair Display', Georgia, serif"
+          fontFamily="'Cormorant Garamond', 'Playfair Display', Georgia, serif"
           fontSize="22"
-          fontWeight="bold"
-          fontStyle="italic"
+          fontWeight="700"
+          fill="rgba(0,0,0,0.5)"
+          className="select-none"
+          style={{ letterSpacing: "2px" }}
+        >
+          {initials}
+        </text>
+        {/* Layer 2: Light highlight (top edge of the carve) */}
+        <text
+          x="60"
+          y="67"
+          textAnchor="middle"
+          fontFamily="'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+          fontSize="22"
+          fontWeight="700"
+          fill="rgba(255,255,255,0.12)"
+          className="select-none"
+          style={{ letterSpacing: "2px" }}
+        >
+          {initials}
+        </text>
+        {/* Layer 3: Main visible initials with deboss filter */}
+        <text
+          x="60"
+          y="68"
+          textAnchor="middle"
+          fontFamily="'Cormorant Garamond', 'Playfair Display', Georgia, serif"
+          fontSize="22"
+          fontWeight="700"
           fill={theme.initials}
-          filter="url(#sealEmboss)"
-          opacity="0.95"
+          opacity="0.35"
+          filter="url(#insetShadow)"
+          className="select-none"
+          style={{ letterSpacing: "2px" }}
         >
           {initials}
         </text>
@@ -245,7 +313,7 @@ function WaxSeal({ theme, initials, glowing, cracking }: {
 
 /* ─── Main component ───────────────────────────────────────────────────── */
 export default function EnvelopeIntro({
-  brideName, groomName, variant = "default", autoOpen = false,
+  brideName, groomName, variant = "default", autoOpen = false, inline = false,
 }: EnvelopeIntroProps) {
   const [step, setStep] = useState<"idle" | "seal_glow" | "cracking" | "opening" | "flash" | "finished">("idle");
   const theme = VARIANT_MAP[variant as keyof typeof VARIANT_MAP] ?? VARIANT_MAP.default;
@@ -292,7 +360,7 @@ export default function EnvelopeIntro({
           key="envelope-container"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 1.8, ease: "easeOut" } }}
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden cursor-pointer select-none"
+          className={`${inline ? "absolute" : "fixed"} inset-0 z-[100] flex items-center justify-center overflow-hidden cursor-pointer select-none`}
           style={{ background: theme.bg }}
           onClick={!autoOpen ? handleOpen : undefined}
         >

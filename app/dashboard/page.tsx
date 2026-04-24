@@ -14,6 +14,7 @@ import { Footer } from "@/components/Footer";
 import confetti from "canvas-confetti";
 import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock, Info, X } from "lucide-react";
 import { TEMPLATES, TIER_TEMPLATES } from "@/components/templates/types";
+import { TestimonialForm } from "@/components/testimonials/TestimonialForm";
 
 declare global {
   interface Window {
@@ -307,7 +308,6 @@ export default function Dashboard() {
         if (verifyRes.ok) {
           setCheckoutStep("success");
           confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ["#F43F8F", "#D4AF37", "#FFFFFF"] });
-          setTimeout(() => { window.location.href = `/invite/${formData.slug}`; }, 3000);
         } else {
           setCheckoutStep("error");
           setPaymentMessage(verifyData.error || "Payment verification failed.");
@@ -383,9 +383,6 @@ export default function Dashboard() {
                 origin: { y: 0.6 },
                 colors: ["#F43F8F", "#D4AF37", "#FFFFFF"]
               });
-              setTimeout(() => {
-                window.location.href = `/invite/${formData.slug}`;
-              }, 3000);
             } else {
               setCheckoutStep("error");
               setPaymentMessage(verifyData.error || "Payment verification failed.");
@@ -660,18 +657,23 @@ export default function Dashboard() {
                     <div className="space-y-3">
                       <h3 className="text-3xl font-serif text-gray-900">It's Official! 🥂</h3>
                       <p className="text-muted-foreground text-sm leading-relaxed">
-                        Your beautiful invitation is ready to be shared with the world. Redirecting you to your creation...
+                        Your beautiful invitation is ready to be shared with the world.
                       </p>
                     </div>
+
+                    <div className="pt-4 pb-2 border-t border-rose-50">
+                      <TestimonialForm 
+                        initialName={`${formData.brideName} & ${formData.groomName}`}
+                        initialEmail={formData.userEmail}
+                      />
+                    </div>
+
                     <div className="pt-4">
-                      <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: 3 }}
-                          className="h-full bg-green-500"
-                        />
-                      </div>
+                      <Link href={`/invite/${formData.slug}`}>
+                        <Button className="w-full bg-gray-900 text-white rounded-xl h-12 font-bold">
+                          View Your Invitation Now →
+                        </Button>
+                      </Link>
                     </div>
                   </motion.div>
                 )}

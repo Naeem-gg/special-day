@@ -1,4 +1,4 @@
-import { Html, Head, Body, Container, Text, Section, Heading, Hr } from "@react-email/components";
+import { Html, Head, Body, Container, Text, Section, Heading, Hr } from "react-email";
 import * as React from "react";
 
 interface PurchaseReceiptEmailProps {

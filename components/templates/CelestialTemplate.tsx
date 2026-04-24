@@ -106,7 +106,9 @@ function ConstellationLines({ name1, name2 }: { name1: string; name2: string }) 
   );
 }
 
-export default function CelestialTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
+export default function CelestialTemplate({ 
+  brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline 
+}: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -144,7 +146,7 @@ export default function CelestialTemplate({ brideName, groomName, date, venue, e
       <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : inline ? "min-h-[700px]" : "min-h-screen"}`}
           style={{ background: "linear-gradient(180deg, #020412 0%, #0A0E2A 40%, #0D0620 100%)" }}>
 
           {/* Video backdrop */}
@@ -181,7 +183,8 @@ export default function CelestialTemplate({ brideName, groomName, date, venue, e
 
             <motion.h1 initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="aurora-text celestial-glow font-light leading-none" style={{ fontSize: "clamp(3rem, 11vw, 8.5rem)" }}>
+              className="aurora-text celestial-glow font-light leading-tight md:leading-none" 
+              style={{ fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3rem, 11vw, 8.5rem)" }}>
               {brideName}
             </motion.h1>
 
@@ -196,7 +199,8 @@ export default function CelestialTemplate({ brideName, groomName, date, venue, e
 
             <motion.h1 initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="aurora-text celestial-glow font-light leading-none" style={{ fontSize: "clamp(3rem, 11vw, 8.5rem)" }}>
+              className="aurora-text celestial-glow font-light leading-tight md:leading-none" 
+              style={{ fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3rem, 11vw, 8.5rem)" }}>
               {groomName}
             </motion.h1>
 

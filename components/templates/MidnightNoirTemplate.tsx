@@ -1,53 +1,42 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Clock, ChevronDown, Star, Map as MapIcon } from "lucide-react";
+import { MapPin, Clock, Star, ChevronDown, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
 
 function StarField() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const stars = Array.from({ length: 200 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.5,
-      speed: 0.2 + Math.random() * 0.5,
-      brightness: Math.random(),
-      delta: (Math.random() - 0.5) * 0.02,
-    }));
-
-    let animId: number;
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      stars.forEach(s => {
-        s.brightness += s.delta;
-        if (s.brightness > 1 || s.brightness < 0) s.delta *= -1;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(201,168,76,${s.brightness})`;
-        ctx.fill();
-      });
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => cancelAnimationFrame(animId);
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />;
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      {Array.from({ length: 50 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute bg-white rounded-full"
+          style={{
+            width: Math.random() * 2 + 1,
+            height: Math.random() * 2 + 1,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            opacity: [0.1, 0.6, 0.1],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 4,
+            repeat: Infinity,
+            delay: Math.random() * 5,
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
-export default function MidnightNoirTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
+export default function MidnightNoirTemplate({ 
+  brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline 
+}: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -63,41 +52,32 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
   return (
     <>
       <style>{`
-        @keyframes goldGlow {
-          0%, 100% { text-shadow: 0 0 20px rgba(201,168,76,0.4), 0 0 40px rgba(201,168,76,0.2); }
-          50% { text-shadow: 0 0 30px rgba(201,168,76,0.7), 0 0 60px rgba(201,168,76,0.4); }
+        @keyframes noirGlow {
+          0%, 100% { text-shadow: 0 0 20px rgba(201,168,76,0.2); }
+          50% { text-shadow: 0 0 40px rgba(201,168,76,0.4); }
         }
-        @keyframes spotlightSweep {
-          0% { transform: translateX(-100%) skewX(-20deg); }
-          100% { transform: translateX(200%) skewX(-20deg); }
-        }
-        .glow-text { animation: goldGlow 3s ease-in-out infinite; }
-        .spotlight { animation: spotlightSweep 4s ease-in-out forwards; }
+        .glow-text { animation: noirGlow 4s ease-in-out infinite; }
       `}</style>
 
-      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif", background: "#0D0D0D" }}>
+      <div className={isThumbnail ? "min-h-full" : "min-h-screen"} style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
 
         {/* ── HERO ─────────────────────────────────── */}
-        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : "min-h-screen"}`}
-          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, #1A1208 0%, #0D0D0D 100%)" }}>
+        <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-10 ${isThumbnail ? "min-h-[812px]" : inline ? "min-h-[700px]" : "min-h-screen"}`}
+          style={{ background: "#050505" }}>
+          
+          {/* Animated starfield backdrop */}
+          <StarField />
 
           {/* Video backdrop */}
           {!isThumbnail && (
             <video
               autoPlay muted loop playsInline
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              style={{ opacity: 0.15, mixBlendMode: "lighten" }}
+              style={{ opacity: 0.15, mixBlendMode: "screen" }}
             >
               <source src="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4" type="video/mp4" />
             </video>
           )}
-
-          <StarField />
-
-          {/* Spotlight sweep */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="spotlight absolute inset-y-0 w-1/3" style={{ background: "linear-gradient(90deg, transparent, rgba(201,168,76,0.05), transparent)", animationDelay: "1s" }} />
-          </div>
 
           {/* Decorative gold rings */}
           {[300, 500, 700].map((s, i) => (
@@ -107,21 +87,22 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
               transition={{ duration: 30 + i * 10, repeat: Infinity, ease: "linear" }} />
           ))}
 
-          <div className="relative z-10 max-w-4xl">
+          <div className="relative z-10 max-w-3xl px-4">
             <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 2 }}
-              className="w-20 h-20 mx-auto mb-8 rounded-full flex items-center justify-center"
+              className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-6 md:mb-8 rounded-full flex items-center justify-center"
               style={{ border: "1px solid rgba(201,168,76,0.4)", background: "rgba(201,168,76,0.05)" }}>
               <Star className="w-8 h-8" style={{ color: "#C9A84C", fill: "#C9A84C" }} />
             </motion.div>
 
             <motion.p initial={{ opacity: 0, letterSpacing: "0.8em" }} animate={{ opacity: 1, letterSpacing: "0.5em" }}
-              transition={{ duration: 2 }} className="font-sans text-xs uppercase mb-10" style={{ color: "#888" }}>
+              transition={{ duration: 2 }} className="font-sans text-[10px] md:text-xs uppercase mb-10" style={{ color: "#888" }}>
               The Pleasure of Your Company
             </motion.p>
 
             <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="glow-text font-light leading-none" style={{ color: "#C9A84C", fontSize: "clamp(3rem, 11vw, 8.5rem)" }}>
+              className="glow-text font-light leading-tight md:leading-none" 
+              style={{ color: "#C9A84C", fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4.5rem)" : "clamp(3rem, 11vw, 8.5rem)" }}>
               {brideName}
             </motion.h1>
 
@@ -129,18 +110,19 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
               className="mx-auto my-6 h-px" style={{ width: 120, background: "linear-gradient(to right, transparent, #C9A84C, transparent)" }} />
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
-              className="text-3xl font-light italic my-3" style={{ color: "rgba(201,168,76,0.6)" }}>&amp;</motion.p>
+              className="text-2xl md:text-3xl font-light italic my-2 md:my-3" style={{ color: "rgba(201,168,76,0.6)" }}>&amp;</motion.p>
 
             <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="glow-text font-light leading-none" style={{ color: "#C9A84C", fontSize: "clamp(3rem, 11vw, 8.5rem)" }}>
+              className="glow-text font-light leading-tight md:leading-none" 
+              style={{ color: "#C9A84C", fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4.5rem)" : "clamp(3rem, 11vw, 8.5rem)" }}>
               {groomName}
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.5 }}
-              className="font-sans text-base tracking-widest mt-10" style={{ color: "#C0C0C0" }}>{fmt}</motion.p>
+              className="font-sans text-sm md:text-base tracking-widest mt-8 md:mt-10" style={{ color: "#C0C0C0" }}>{fmt}</motion.p>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}
-              className="font-sans text-sm mt-2" style={{ color: "#666" }}>{venue}</motion.p>
+              className="font-sans text-xs md:text-sm mt-2 px-4" style={{ color: "#666" }}>{venue}</motion.p>
           </div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.5 }}
@@ -152,17 +134,17 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
         </section>
 
         {/* ── COUNTDOWN ───────────────────────────── */}
-        <section className="py-20 text-center" style={{ background: "#111" }}>
+        <section className="py-20 text-center px-4" style={{ background: "#0A0A0A" }}>
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <p className="font-sans text-xs uppercase tracking-[0.4em] mb-10" style={{ color: "#C9A84C" }}>The Night Approaches</p>
+            <p className="font-sans text-xs uppercase tracking-[0.5em] mb-10" style={{ color: "#C9A84C" }}>Event Countdown</p>
             <div className="flex gap-4 md:gap-10 justify-center flex-wrap">
               {[{ label: "Days", v: time.days }, { label: "Hours", v: time.hours }, { label: "Minutes", v: time.minutes }, { label: "Seconds", v: time.seconds }].map(i => (
                 <div key={i.label} className="flex flex-col items-center gap-2">
                   <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-light"
-                    style={{ border: "1px solid rgba(201,168,76,0.3)", color: "#C9A84C", background: "rgba(201,168,76,0.03)" }}>
+                    style={{ border: "1px solid #C9A84C", color: "#C9A84C", background: "#111" }}>
                     {String(i.v).padStart(2, "0")}
                   </div>
-                  <span className="font-sans text-[10px] uppercase tracking-widest" style={{ color: "#555" }}>{i.label}</span>
+                  <span className="font-sans text-[10px] uppercase tracking-widest" style={{ color: "#666" }}>{i.label}</span>
                 </div>
               ))}
             </div>
@@ -170,33 +152,31 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
         </section>
 
         {/* ── EVENTS ──────────────────────────────── */}
-        <section className="py-24 px-4" style={{ background: "#0D0D0D" }}>
+        <section className="py-24 px-4" style={{ background: "#050505" }}>
           <div className="max-w-3xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-              <p className="font-sans text-xs uppercase tracking-[0.4em] mb-3" style={{ color: "#C9A84C" }}>An Evening Curated For You</p>
-              <h2 className="text-4xl font-light" style={{ color: "#F5F0E8" }}>The Events</h2>
-              <div className="mx-auto mt-4 h-px" style={{ width: 60, background: "linear-gradient(to right, transparent, #C9A84C, transparent)" }} />
+              <h2 className="text-4xl font-light tracking-widest uppercase" style={{ color: "#C9A84C" }}>The Schedule</h2>
+              <div className="mx-auto mt-4 h-px" style={{ width: 60, background: "#C9A84C" }} />
             </motion.div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {events.map((ev, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
+                <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ delay: i * 0.15 }}
-                  className="p-8" style={{ background: "#141414", border: "1px solid rgba(201,168,76,0.15)" }}>
-                  <div className="flex gap-5">
-                    <div className="text-2xl font-sans font-light" style={{ color: "rgba(201,168,76,0.4)" }}>{String(i + 1).padStart(2, "0")}</div>
+                  className="p-8 border border-white/5" style={{ background: "#111" }}>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-2xl font-light mb-2" style={{ color: "#F5F0E8" }}>{ev.name}</h3>
+                      <h3 className="text-2xl font-light mb-2" style={{ color: "#C9A84C" }}>{ev.name}</h3>
                       {ev.description && <p className="font-sans text-sm mb-4" style={{ color: "#888" }}>{ev.description}</p>}
                       <div className="flex flex-wrap gap-4 font-sans text-xs" style={{ color: "#666" }}>
                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{ev.time}</span>
                         <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{ev.location}</span>
                       </div>
-                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`} target="_blank" rel="noopener noreferrer"
-                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#C9A84C] hover:text-[#0D0D0D] hover:border-[#C9A84C]"
-                        style={{ borderColor: "rgba(201,168,76,0.3)", color: "#C9A84C" }}>
-                        <MapIcon className="w-3 h-3" /> Open in Maps
-                      </a>
                     </div>
+                    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#C9A84C] hover:text-black hover:border-[#C9A84C]"
+                      style={{ borderColor: "#C9A84C", color: "#C9A84C" }}>
+                      <MapIcon className="w-3 h-3" /> Directions
+                    </a>
                   </div>
                 </motion.div>
               ))}
@@ -206,16 +186,16 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
 
         {/* ── GALLERY ─────────────────────────────── */}
         {gallery.length > 0 && (
-          <section className="py-24 px-4" style={{ background: "#111" }}>
+          <section className="py-24 px-4" style={{ background: "#0D0D0D" }}>
             <div className="max-w-5xl mx-auto">
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
-                <h2 className="text-4xl font-light" style={{ color: "#C9A84C" }}>Moments in the Dark</h2>
+                <h2 className="text-4xl font-light tracking-widest uppercase" style={{ color: "#C9A84C" }}>The Gallery</h2>
               </motion.div>
-              <div className="columns-2 md:columns-3 gap-3 space-y-3">
+              <div className="columns-2 md:columns-3 gap-4 space-y-4">
                 {gallery.map((img, i) => (
                   <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }} className="overflow-hidden" style={{ breakInside: "avoid", border: "1px solid rgba(201,168,76,0.2)" }}>
-                    <img src={img.url} alt="" className="w-full object-cover transition-transform duration-700 hover:scale-105 brightness-75 hover:brightness-90" />
+                    transition={{ delay: i * 0.1 }} className="overflow-hidden border border-white/5" style={{ breakInside: "avoid" }}>
+                    <img src={img.url} alt="" className="w-full object-cover grayscale hover:grayscale-0 transition-all duration-700 hover:scale-105" />
                   </motion.div>
                 ))}
               </div>
@@ -224,11 +204,11 @@ export default function MidnightNoirTemplate({ brideName, groomName, date, venue
         )}
 
         {/* ── FOOTER ──────────────────────────────── */}
-        <section className="py-20 text-center" style={{ background: "#0D0D0D", borderTop: "1px solid rgba(201,168,76,0.15)" }}>
+        <section className="py-20 text-center" style={{ background: "#050505" }}>
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <Star className="w-8 h-8 mx-auto mb-6" style={{ color: "#C9A84C", fill: "#C9A84C" }} />
-            <h2 className="text-3xl font-light mb-2" style={{ color: "#F5F0E8" }}>Your Presence Illuminates the Night</h2>
-            <p className="font-sans text-sm mb-10" style={{ color: "#555" }}>{venue}</p>
+            <Star className="w-8 h-8 mx-auto mb-6" style={{ color: "#C9A84C" }} />
+            <h2 className="text-3xl font-light mb-2 uppercase tracking-widest" style={{ color: "#C9A84C" }}>Join Us Under The Stars</h2>
+            <p className="font-sans text-sm mb-10" style={{ color: "#666" }}>{venue}</p>
             {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
           </motion.div>
         </section>

@@ -1,4 +1,4 @@
-import { render } from "@react-email/render";
+import { render } from "react-email";
 import PurchaseReceiptEmail from "@/components/emails/PurchaseReceiptEmail";
 import GiftCouponEmail from "@/components/emails/GiftCouponEmail";
 import React from "react";

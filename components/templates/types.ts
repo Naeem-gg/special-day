@@ -22,6 +22,8 @@ export interface TemplateProps {
   isThumbnail?: boolean;
   invitationId?: number;
   tier?: "basic" | "standard" | "premium";
+  autoOpen?: boolean;
+  inline?: boolean;
 }
 
 export interface TemplateMeta {
