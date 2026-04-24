@@ -25,6 +25,38 @@ export async function POST(req: NextRequest) {
       if (generated_signature !== razorpay_signature) {
         return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
       }
+    } else {
+      // If bypassPayment is true, we MUST verify the coupon actually results in 0 cost
+      const { couponId, tier } = invitationData;
+      if (!couponId) {
+        return NextResponse.json({ error: "Bypass payment requires a coupon" }, { status: 403 });
+      }
+
+      // Fetch coupon from DB
+      const coupon = await db.query.coupons.findFirst({
+        where: eq(coupons.id, couponId),
+      });
+
+      if (!coupon || !coupon.active) {
+        return NextResponse.json({ error: "Invalid or inactive coupon" }, { status: 403 });
+      }
+
+      // Check if it's a 100% discount
+      const isFullDiscount = coupon.discountType === "percentage" && coupon.discountValue === 100;
+      
+      // If it's not a 100% discount, check if it's a fixed discount that covers the whole price
+      let isFixedFullDiscount = false;
+      if (coupon.discountType === "fixed") {
+        const { tiers } = await import("@/lib/db/schema");
+        const [tierData] = await db.select().from(tiers).where(eq(tiers.slug, tier || "basic"));
+        if (tierData && coupon.discountValue >= tierData.price) {
+          isFixedFullDiscount = true;
+        }
+      }
+
+      if (!isFullDiscount && !isFixedFullDiscount) {
+        return NextResponse.json({ error: "This coupon does not cover the full amount. Payment is required." }, { status: 403 });
+      }
     }
 
     // Payment is verified
