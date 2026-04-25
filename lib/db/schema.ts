@@ -1,4 +1,5 @@
 import { pgTable, serial, text, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const admins = pgTable("admins", {
   id: serial("id").primaryKey(),
@@ -93,3 +94,37 @@ export const testimonials = pgTable("testimonials", {
   isPublic: boolean("is_public").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// type: 'complaint' | 'feedback' | 'grievance' | 'feature_request'
+// status: 'open' | 'in_progress' | 'resolved' | 'closed'
+export const feedback = pgTable("feedback", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  type: text("type").notNull().default("feedback"),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: text("status").notNull().default("open"),
+  isPublic: boolean("is_public").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const feedbackReplies = pgTable("feedback_replies", {
+  id: serial("id").primaryKey(),
+  feedbackId: integer("feedback_id").references(() => feedback.id, { onDelete: "cascade" }).notNull(),
+  message: text("message").notNull(),
+  isAdmin: boolean("is_admin").default(false).notNull(),
+  authorName: text("author_name").notNull().default("DNvites Support"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const feedbackRelations = relations(feedback, ({ many }) => ({
+  replies: many(feedbackReplies),
+}));
+
+export const feedbackRepliesRelations = relations(feedbackReplies, ({ one }) => ({
+  feedback: one(feedback, {
+    fields: [feedbackReplies.feedbackId],
+    references: [feedback.id],
+  }),
+}));

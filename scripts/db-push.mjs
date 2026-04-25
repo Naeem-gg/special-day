@@ -158,6 +158,29 @@ const statements = [
     is_public     BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
   )`,
+
+  /* ── feedback ── */
+  `CREATE TABLE IF NOT EXISTS feedback (
+    id            SERIAL PRIMARY KEY,
+    name          TEXT         NOT NULL,
+    email         TEXT         NOT NULL,
+    type          TEXT         NOT NULL DEFAULT 'feedback',
+    subject       TEXT         NOT NULL,
+    message       TEXT         NOT NULL,
+    status        TEXT         NOT NULL DEFAULT 'open',
+    is_public     BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+  )`,
+
+  /* ── feedback_replies ── */
+  `CREATE TABLE IF NOT EXISTS feedback_replies (
+    id            SERIAL PRIMARY KEY,
+    feedback_id   INTEGER      NOT NULL REFERENCES feedback(id) ON DELETE CASCADE,
+    message       TEXT         NOT NULL,
+    is_admin      BOOLEAN      NOT NULL DEFAULT FALSE,
+    author_name   TEXT         NOT NULL DEFAULT 'DNvites Support',
+    created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+  )`,
 ];
 
 // New columns that may not exist yet (idempotent ALTER TABLE)

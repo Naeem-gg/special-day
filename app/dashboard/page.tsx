@@ -15,6 +15,7 @@ import confetti from "canvas-confetti";
 import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock, Info, X } from "lucide-react";
 import { TEMPLATES, TIER_TEMPLATES } from "@/components/templates/types";
 import { TestimonialForm } from "@/components/testimonials/TestimonialForm";
+import { detectCurrency, getDisplayPrice, Currency } from "@/lib/currency";
 
 declare global {
   interface Window {
@@ -145,6 +146,11 @@ export default function Dashboard() {
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [session, setSession] = useState<{ authenticated: boolean; user?: any } | null>(null);
+  const [currency, setCurrency] = useState<Currency>("INR");
+
+  useEffect(() => {
+    detectCurrency().then(setCurrency);
+  }, []);
 
   // ── Checkout Flow ───────────────────
   const [checkoutStep, setCheckoutStep] = useState<"idle" | "review" | "processing" | "verifying" | "success" | "error">("idle");
@@ -415,7 +421,8 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tierSlug: formData.tier,
-          couponCode: couponData ? couponCode : undefined
+          couponCode: couponData ? couponCode : undefined,
+          currency
         }),
       });
 
@@ -611,12 +618,12 @@ export default function Dashboard() {
                         {couponData && (
                           <div className="flex justify-between text-sm text-green-600 font-medium px-1">
                             <span>Discount ({couponCode})</span>
-                            <span>-₹{(tiers.find(t => t.slug === formData.tier)?.price || 0) - calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0)}</span>
+                            <span>-{getDisplayPrice((tiers.find(t => t.slug === formData.tier)?.price || 0) - calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0), currency).symbol}{getDisplayPrice((tiers.find(t => t.slug === formData.tier)?.price || 0) - calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0), currency).amount}</span>
                           </div>
                         )}
                         <div className="flex justify-between items-center pt-2 border-t border-rose-100 font-serif">
                           <span className="text-lg text-gray-900">Total Payable</span>
-                          <span className="text-2xl text-[#F43F8F]">₹{calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0)}</span>
+                          <span className="text-2xl text-[#F43F8F]">{getDisplayPrice(calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0), currency).symbol}{getDisplayPrice(calculateFinalPrice(tiers.find(t => t.slug === formData.tier)?.price || 0), currency).amount}</span>
                         </div>
                       </div>
                     </div>
@@ -1420,7 +1427,7 @@ export default function Dashboard() {
                         Woohoo! Code applied — you get{" "}
                         {couponData.discountType === "percentage"
                           ? `${couponData.discountValue}%`
-                          : `₹${couponData.discountValue}`}{" "}
+                          : `${getDisplayPrice(couponData.discountValue, currency).symbol}${getDisplayPrice(couponData.discountValue, currency).amount}`}{" "}
                         off! 🎉
                       </motion.p>
                     )}

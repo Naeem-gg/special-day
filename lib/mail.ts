@@ -1,6 +1,7 @@
 import { render } from "react-email";
 import PurchaseReceiptEmail from "@/components/emails/PurchaseReceiptEmail";
 import GiftCouponEmail from "@/components/emails/GiftCouponEmail";
+import FeedbackNotificationEmail from "@/components/emails/FeedbackNotificationEmail";
 import React from "react";
 import { Resend } from "resend";
 
@@ -98,6 +99,40 @@ export async function sendGiftCoupon({
   return sendEmail({
     to,
     subject: "You've received a gifted invitation! 🎁",
+    htmlContent,
+  });
+}
+
+export async function sendFeedbackNotification({
+  name,
+  email,
+  type,
+  subject,
+  message,
+  feedbackId,
+}: {
+  name: string;
+  email: string;
+  type: string;
+  subject: string;
+  message: string;
+  feedbackId: number;
+}) {
+  // @ts-ignore
+  const htmlContent = await render(
+    React.createElement(FeedbackNotificationEmail, {
+      name,
+      email,
+      type,
+      subject,
+      message,
+      feedbackId,
+    })
+  );
+
+  return sendEmail({
+    to: "dnvites@duck.com",
+    subject: `[${type.toUpperCase()}] ${subject} — from ${name}`,
     htmlContent,
   });
 }

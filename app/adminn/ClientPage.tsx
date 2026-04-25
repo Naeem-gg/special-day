@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { AdminOverview, InvitationManager, CouponManager, TierManager, AdminSettings, GiftInviteManager } from "@/components/admin/AdminDashboard";
 import { TestimonialManager } from "@/components/admin/TestimonialManager";
+import { FeedbackManager } from "@/components/admin/FeedbackManager";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Ticket, Users, CreditCard, Settings, Gift, MessageSquare, ArrowLeft } from "lucide-react";
+import { LogOut, LayoutDashboard, Ticket, Users, CreditCard, Settings, Gift, MessageSquare, ArrowLeft, Inbox } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
@@ -39,6 +40,7 @@ export function AdminClientPage({
     { id: "coupons", label: "Coupons", desc: "Discounts", icon: Ticket, color: "purple", component: <CouponManager initialCoupons={initialCoupons} /> },
     { id: "tiers", label: "Pricing", desc: "Manage plans", icon: CreditCard, color: "amber", component: <TierManager initialTiers={initialTiers} /> },
     { id: "testimonials", label: "Reviews", desc: "Feedback", icon: MessageSquare, color: "emerald", component: <TestimonialManager initialTestimonials={initialTestimonials} /> },
+    { id: "feedback", label: "Feedback", desc: "Complaints & grievances", icon: Inbox, color: "orange", component: <FeedbackManager /> },
     { id: "gift", label: "Gift", desc: "Send credit", icon: Gift, color: "pink", component: <GiftInviteManager /> },
     { id: "settings", label: "Settings", desc: "Admin security", icon: Settings, color: "slate", component: <AdminSettings /> },
   ];
@@ -52,6 +54,7 @@ export function AdminClientPage({
     amber: "bg-amber-50 text-amber-500",
     emerald: "bg-emerald-50 text-emerald-500",
     pink: "bg-pink-50 text-pink-500",
+    orange: "bg-orange-50 text-orange-500",
     slate: "bg-slate-100 text-slate-500",
   };
 

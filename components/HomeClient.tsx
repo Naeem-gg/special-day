@@ -112,12 +112,14 @@ function FeatureCard({
 
 /* ── Pricing Card ─────────────────────── */
 function PricingCard({
-  tier, price, originalPrice, features, isPopular = false, delay = 0,
+  tier, price: inrPrice, originalPrice: inrOriginal, features, isPopular = false, delay = 0, currency
 }: {
-  tier: string; price: string; originalPrice?: string; features: string[]; isPopular?: boolean; delay?: number;
+  tier: string; price: string; originalPrice?: string; features: string[]; isPopular?: boolean; delay?: number; currency: Currency;
 }) {
   const isBasic = tier.toLowerCase().includes("basic");
   const isGold = tier.toLowerCase().includes("gold");
+  const displayPrice = getDisplayPrice(parseInt(inrPrice), currency);
+  const displayOriginal = inrOriginal ? getDisplayPrice(parseInt(inrOriginal), currency) : null;
 
   return (
     <motion.div
@@ -163,9 +165,13 @@ function PricingCard({
           </div>
           <h4 className={`text-xl font-serif tracking-wide ${isPopular ? "text-white" : "text-gray-900"}`}>{tier}</h4>
           <div className="flex items-baseline gap-2">
-            <span className={`text-4xl font-serif ${isPopular ? "text-white" : "text-gray-900"}`}>₹{price}</span>
-            {originalPrice && (
-              <span className={`text-xl font-serif line-through ${isPopular ? "text-white/60" : "text-gray-400"}`}>₹{originalPrice}</span>
+            <span className={`text-4xl font-serif ${isPopular ? "text-white" : "text-gray-900"}`}>
+              {displayPrice.symbol}{displayPrice.amount}
+            </span>
+            {displayOriginal && (
+              <span className={`text-xl font-serif line-through ${isPopular ? "text-white/60" : "text-gray-400"}`}>
+                {displayOriginal.symbol}{displayOriginal.amount}
+              </span>
             )}
             <span className={`text-sm ${isPopular ? "text-white/60" : "text-muted-foreground"}`}>/ invitation</span>
           </div>
@@ -225,9 +231,16 @@ function ProgressBar() {
 }
 
 
+import { detectCurrency, getDisplayPrice, Currency } from "@/lib/currency";
+
 /* ════════ MAIN HOME CLIENT ══════════════ */
 export default function HomeClient({ testimonials }: { testimonials: any[] }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currency, setCurrency] = useState<Currency>("INR");
+
+  useEffect(() => {
+    detectCurrency().then(setCurrency);
+  }, []);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({
     target: heroRef,
@@ -870,6 +883,7 @@ export default function HomeClient({ testimonials }: { testimonials: any[] }) {
               originalPrice="699"
               features={["Beautiful animated design", "Event details & direction map", "Space for 1 wedding photo", "1 year of hosting included", "Edit details for 48 hours", "Shareable via WhatsApp & Social"]}
               delay={0.1}
+              currency={currency}
             />
             <PricingCard
               tier="Dearest Silver"
@@ -878,6 +892,7 @@ export default function HomeClient({ testimonials }: { testimonials: any[] }) {
               features={["Everything in Basic", "See who's coming (Guest List)", "Up to 5 photos", "Your favourite background music", "Edit details for 48 hours", "Download your guest names", "Helping Hand (Priority Help)"]}
               isPopular
               delay={0.2}
+              currency={currency}
             />
             <PricingCard
               tier="Dearest Gold"
@@ -885,6 +900,7 @@ export default function HomeClient({ testimonials }: { testimonials: any[] }) {
               originalPrice="1999"
               features={["Everything in Silver", "Up to 10 photos", "Magic Interactive Envelope opening", "Custom decorative heart motif", "Edit details for 48 hours", "Lifetime access for memories", "Your personal wedding helper"]}
               delay={0.3}
+              currency={currency}
             />
           </div>
         </div>

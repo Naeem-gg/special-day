@@ -29,6 +29,9 @@ dependencies:
   '@radix-ui/react-tabs':
     specifier: ^1.1.13
     version: 1.1.13(@types/react-dom@19.2.3)(@types/react@19.2.14)(react-dom@19.2.5)(react@19.2.5)
+  '@react-email/render':
+    specifier: ^2.0.7
+    version: 2.0.7(react-dom@19.2.5)(react@19.2.5)
   '@types/pg':
     specifier: ^8.20.0
     version: 8.20.0
@@ -97,7 +100,7 @@ dependencies:
     version: 6.0.0(react-dom@19.2.5)(react@19.2.5)
   resend:
     specifier: ^6.12.2
-    version: 6.12.2
+    version: 6.12.2(@react-email/render@2.0.7)
   sonner:
     specifier: ^2.0.7
     version: 2.0.7(react-dom@19.2.5)(react@19.2.5)
@@ -5912,7 +5915,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /resend@6.12.2:
+  /resend@6.12.2(@react-email/render@2.0.7):
     resolution: {integrity: sha512-xwgmU4b0OqoabJsIoK/x0Whk0Fcs3bpbK4i/DEWPiE5hYJHyHl0TbB6QbI3gIr+bLdLUJ1GYm/fe41aVFuHXgw==}
     engines: {node: '>=20'}
     peerDependencies:
@@ -5921,6 +5924,7 @@ packages:
       '@react-email/render':
         optional: true
     dependencies:
+      '@react-email/render': 2.0.7(react-dom@19.2.5)(react@19.2.5)
       postal-mime: 2.7.4
       svix: 1.90.0
     dev: false

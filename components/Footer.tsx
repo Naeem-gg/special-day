@@ -55,6 +55,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/" className="hover:text-[#F43F8F] transition-colors">Home</Link></li>
               <li><Link href="/dashboard" className="hover:text-[#F43F8F] transition-colors">Dashboard</Link></li>
+              <li><Link href="/feedback" className="hover:text-[#F43F8F] transition-colors font-semibold text-[#F43F8F]/80">Feedback & Requests</Link></li>
             </ul>
           </div>
           <div>

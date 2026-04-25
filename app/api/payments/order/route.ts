@@ -7,7 +7,8 @@ import { razorpay } from "@/lib/razorpay";
 export async function POST(req: NextRequest) {
   try {
 
-    const { tierSlug, couponCode } = await req.json();
+    const { tierSlug, couponCode, currency = "INR" } = await req.json();
+    const { getDisplayPrice } = await import("@/lib/currency");
 
     // 1. Fetch the tier from DB to get the true base price
     const [tier] = await db.select().from(tiers).where(eq(tiers.slug, tierSlug));
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
     }
 
-    let finalAmount = tier.price;
+    let baseAmount = tier.price;
 
     // 2. If a coupon is provided, validate it strictly on the server
     if (couponCode) {
@@ -38,18 +39,21 @@ export async function POST(req: NextRequest) {
         if (!isExpired && !isLimitReached) {
           // Apply discount
           if (coupon.discountType === "percentage") {
-            finalAmount = Math.round(tier.price * (1 - coupon.discountValue / 100));
+            baseAmount = Math.round(tier.price * (1 - coupon.discountValue / 100));
           } else {
-            finalAmount = Math.max(0, tier.price - coupon.discountValue);
+            baseAmount = Math.max(0, tier.price - coupon.discountValue);
           }
         }
       }
     }
 
-    // 3. Create the Razorpay order with the SECURELY calculated amount
+    // 3. Get the final amount based on target currency
+    const pricing = getDisplayPrice(baseAmount, currency as any);
+
+    // 4. Create the Razorpay order with the SECURELY calculated amount
     const options = {
-      amount: Math.round(finalAmount * 100), // Razorpay expects amount in paise (integer)
-      currency: "INR",
+      amount: Math.round(pricing.amount * 100), // Razorpay expects amount in smallest unit (paise/cents)
+      currency: pricing.code,
       receipt: `receipt_${Date.now()}`,
     };
 
