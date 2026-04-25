@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TEMPLATES, TIER_TEMPLATES, TemplateMeta } from "@/components/templates/types";
@@ -101,6 +101,18 @@ function PreviewLandingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
+
+  useEffect(() => {
+    const bride = searchParams.get("brideName");
+    const groom = searchParams.get("groomName");
+    const date = searchParams.get("dateStr");
+    const tmpl = searchParams.get("template");
+
+    if (bride) setBrideName(bride);
+    if (groom) setGroomName(groom);
+    if (date) setWeddingDate(date);
+    if (tmpl) setSelectedTemplate(tmpl);
+  }, [searchParams]);
 
   const handlePreview = async () => {
     if (!brideName || !groomName || !weddingDate) {

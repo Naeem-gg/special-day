@@ -181,9 +181,9 @@ export default function RoyalGoldTemplate({
             <video
               autoPlay muted loop playsInline
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              style={{ opacity: 0.12, mixBlendMode: "screen" }}
+              style={{ opacity: 0.5, mixBlendMode: "screen" }}
             >
-              <source src="https://assets.mixkit.co/videos/preview/mixkit-red-fleshy-waves-1080-large.mp4" type="video/mp4" />
+              <source src="/videos/wedding bg2.mp4" type="video/mp4" />
             </video>
           )}
 

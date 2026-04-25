@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Clock, ChevronDown, Feather, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
@@ -107,124 +107,197 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
 
         {/* ── HERO ─────────────────────────────────── */}
         <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : inline ? "min-h-[700px]" : "min-h-screen"}`}
-          style={{ background: "linear-gradient(160deg, #FFFDF5 0%, #FFF8E7 30%, #FAF0DC 70%, #FFFDF5 100%)" }}>
+          style={{ background: "#000" }}>
           
-          {/* Video backdrop */}
+          {/* Full Opacity Video Backdrop */}
           {!isThumbnail && (
-            <video
-              autoPlay muted loop playsInline
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              style={{ opacity: 0.08, mixBlendMode: "multiply" }}
-            >
-              <source src="https://assets.mixkit.co/videos/preview/mixkit-autumn-leaves-on-a-golden-background-4075-large.mp4" type="video/mp4" />
-            </video>
+            <div className="absolute inset-0 z-0">
+              <video
+                autoPlay 
+                muted 
+                loop 
+                playsInline
+                className="w-full h-full object-cover"
+                style={{ opacity: 1 }}
+              >
+                <source src="/videos/wedding bg.mp4" type="video/mp4" />
+              </video>
+              {/* Vignette & Soft Overlay for readability */}
+              <div className="absolute inset-0 bg-black/20" style={{ background: "radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%)" }} />
+            </div>
           )}
           
           {goldLeaves.map((s, i) => <GoldLeaf key={i} style={s} />)}
 
           {/* Ornamental corner SVGs */}
-          <div className="absolute inset-6 md:inset-12 pointer-events-none">
+          <div className="absolute inset-6 md:inset-12 pointer-events-none z-10">
             {/* Top-left corner */}
-            <svg className="absolute top-0 left-0 w-16 h-16 md:w-24 md:h-24" viewBox="0 0 100 100" fill="none">
+            <svg className="absolute top-0 left-0 w-16 h-16 md:w-24 md:h-24" viewBox="0 0 100 100" fill="none" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}>
               <motion.path d="M5 40 L5 5 L40 5" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round"
-                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.5 }} />
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 1.5 }} />
               <motion.path d="M5 20 Q20 20, 20 5" stroke="#D4AF37" strokeWidth="1" opacity="0.4"
-                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 1 }} />
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 2 }} />
             </svg>
             {/* Top-right corner */}
-            <svg className="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24" viewBox="0 0 100 100" fill="none">
+            <svg className="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24" viewBox="0 0 100 100" fill="none" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))" }}>
               <motion.path d="M60 5 L95 5 L95 40" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round"
-                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.7 }} />
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 1.7 }} />
               <motion.path d="M80 5 Q80 20, 95 20" stroke="#D4AF37" strokeWidth="1" opacity="0.4"
-                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 1.2 }} />
-            </svg>
-            {/* Bottom-left corner */}
-            <svg className="absolute bottom-0 left-0 w-16 h-16 md:w-24 md:h-24" viewBox="0 0 100 100" fill="none">
-              <motion.path d="M5 60 L5 95 L40 95" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round"
-                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.9 }} />
-            </svg>
-            {/* Bottom-right corner */}
-            <svg className="absolute bottom-0 right-0 w-16 h-16 md:w-24 md:h-24" viewBox="0 0 100 100" fill="none">
-              <motion.path d="M95 60 L95 95 L60 95" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round"
-                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 1.1 }} />
+                initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 2.2 }} />
             </svg>
           </div>
 
-          {/* Subtle radial glow */}
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212,175,55,0.06) 0%, transparent 70%)" }} />
-
-          <div className="relative z-10 max-w-3xl">
-            <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 2 }}
-              className="w-16 h-16 mx-auto mb-8 rounded-full flex items-center justify-center"
-              style={{ border: "1px solid rgba(212,175,55,0.4)", background: "rgba(212,175,55,0.06)" }}>
-              <Feather className="w-7 h-7" style={{ color: "#D4AF37" }} />
+          <div className="relative z-20 max-w-3xl drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0, rotate: -45 }} 
+              animate={{ opacity: 1, scale: 1, rotate: 0 }} 
+              transition={{ duration: 1.2, delay: 0.8, ease: "backOut" }}
+              className="w-16 h-16 mx-auto mb-8 rounded-full flex items-center justify-center shadow-xl"
+              style={{ border: "1.5px solid #D4AF37", background: "rgba(255,255,255,0.95)" }}>
+              <Feather className="w-7 h-7" style={{ color: "#8B4513" }} />
             </motion.div>
 
-            <motion.p initial={{ opacity: 0, letterSpacing: "1em" }} animate={{ opacity: 1, letterSpacing: "0.5em" }}
-              transition={{ duration: 2.5 }} className="font-sans text-[9px] uppercase mb-10"
-              style={{ color: "#B8860B", fontFamily: "'Montserrat', sans-serif" }}>
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }} 
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.2 }} 
+              className="font-sans text-[10px] uppercase mb-10 tracking-[0.5em] font-bold"
+              style={{ color: "#FFF", textShadow: "0 2px 10px rgba(0,0,0,0.8)", fontFamily: "'Montserrat', sans-serif" }}>
               Together With Their Families
             </motion.p>
 
-            <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="ivory-gradient-text font-light leading-tight md:leading-none"
-              style={{ fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", letterSpacing: "0.05em" }}>
+            <motion.h1 
+              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }} 
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 1.5, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
+              className="font-light leading-tight md:leading-none text-white"
+              style={{ 
+                fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", 
+                letterSpacing: "0.05em",
+                textShadow: "0 4px 20px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.8)"
+              }}>
               {brideName}
             </motion.h1>
 
-            <IvoryDivider />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2 }}
+            >
+              <div className="flex justify-center items-center gap-4 my-10">
+                <div className="h-px w-20 bg-white/60 shadow-sm" />
+                <motion.p 
+                  initial={{ scale: 0.5, opacity: 0 }} 
+                  animate={{ scale: 1, opacity: 1 }} 
+                  transition={{ delay: 2.2, duration: 0.8 }}
+                  className="text-3xl font-light italic text-white" 
+                  style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}>&amp;</motion.p>
+                <div className="h-px w-20 bg-white/60 shadow-sm" />
+              </div>
+            </motion.div>
 
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}
-              className="text-2xl font-light italic" style={{ color: "rgba(139,69,19,0.5)" }}>&amp;</motion.p>
-
-            <IvoryDivider />
-
-            <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.5, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="ivory-gradient-text font-light leading-tight md:leading-none"
-              style={{ fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", letterSpacing: "0.05em" }}>
+            <motion.h1 
+              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }} 
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 1.5, delay: 1.8, ease: [0.22, 1, 0.36, 1] }}
+              className="font-light leading-tight md:leading-none text-white"
+              style={{ 
+                fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", 
+                letterSpacing: "0.05em",
+                textShadow: "0 4px 20px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.8)"
+              }}>
               {groomName}
             </motion.h1>
 
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.5 }}
-              className="mt-10 text-sm tracking-[0.4em] uppercase"
-              style={{ color: "#8B4513", fontFamily: "'Montserrat', sans-serif" }}>{fmt}</motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2.5, duration: 1 }}
+              className="text-white"
+              style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
+            >
+              <p className="mt-10 text-sm tracking-[0.4em] uppercase font-semibold"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}>{fmt}</p>
 
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}
-              className="mt-3 text-sm" style={{ color: "#B8860B", fontFamily: "'Montserrat', sans-serif" }}>{venue}</motion.p>
+              <p className="mt-3 text-sm font-medium opacity-90" style={{ fontFamily: "'Montserrat', sans-serif" }}>{venue}</p>
+            </motion.div>
           </div>
 
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.5 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-            <span className="text-[8px] uppercase tracking-[0.5em]" style={{ color: "#B8860B", fontFamily: "'Montserrat', sans-serif" }}>Scroll</span>
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ delay: 3.5 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
+            <span className="text-[10px] uppercase tracking-[0.5em] text-white font-bold" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)", fontFamily: "'Montserrat', sans-serif" }}>Scroll</span>
             <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-              <ChevronDown className="w-4 h-4" style={{ color: "#D4AF37" }} />
+              <ChevronDown className="w-5 h-5 text-white" />
             </motion.div>
           </motion.div>
         </section>
 
         {/* ── COUNTDOWN ───────────────────────────── */}
-        <section className="py-20 text-center" style={{ background: "#FFFDF5" }}>
+        <section className="py-24 text-center relative overflow-hidden" style={{ background: "#FFFDF5" }}>
+          {/* Decorative background element */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-[#D4AF37] to-transparent opacity-30" />
+          
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <p className="text-[10px] uppercase tracking-[0.6em] mb-10"
-              style={{ color: "#B8860B", fontFamily: "'Montserrat', sans-serif" }}>Days Until Forever</p>
-            <div className="flex gap-6 md:gap-12 justify-center flex-wrap">
-              {[{ label: "Days", v: time.days }, { label: "Hours", v: time.hours }, { label: "Minutes", v: time.minutes }, { label: "Seconds", v: time.seconds }].map(i => (
-                <div key={i.label} className="flex flex-col items-center gap-3">
-                  <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl md:text-3xl font-light transition-all duration-500"
+            <motion.p 
+              initial={{ letterSpacing: "0.8em", opacity: 0 }}
+              whileInView={{ letterSpacing: "0.4em", opacity: 1 }}
+              transition={{ duration: 1.5 }}
+              className="text-[11px] uppercase mb-12"
+              style={{ color: "#8B4513", fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}>
+              The Grand Beginning In
+            </motion.p>
+
+            <div className="flex gap-4 md:gap-10 justify-center flex-wrap px-4">
+              {[{ label: "Days", v: time.days }, { label: "Hours", v: time.hours }, { label: "Minutes", v: time.minutes }, { label: "Seconds", v: time.seconds }].map((i, idx) => (
+                <motion.div 
+                  key={i.label} 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.1, duration: 0.8 }}
+                  className="flex flex-col items-center gap-4 group"
+                >
+                  <div className="relative w-20 h-24 md:w-24 md:h-28 flex items-center justify-center overflow-hidden"
                     style={{
-                      color: "#8B4513",
-                      border: "1px solid rgba(212,175,55,0.35)",
-                      background: "linear-gradient(135deg, rgba(212,175,55,0.05), rgba(250,240,220,0.8))",
-                      boxShadow: "0 4px 20px rgba(212,175,55,0.1)",
+                      background: "linear-gradient(135deg, #FFFDF5 0%, #FFF8E7 100%)",
+                      border: "1px solid rgba(212,175,55,0.4)",
+                      boxShadow: "0 10px 40px rgba(212,175,55,0.08)",
                     }}>
-                    {String(i.v).padStart(2, "0")}
+                    
+                    {/* Shimmer effect */}
+                    <motion.div 
+                      animate={{ x: ["-100%", "200%"] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
+                      className="absolute inset-0 z-10 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg] pointer-events-none"
+                    />
+
+                    {/* Rolling Number Animation */}
+                    <AnimatePresence mode="popLayout">
+                      <motion.span
+                        key={i.v}
+                        initial={{ y: 40, opacity: 0, filter: "blur(4px)" }}
+                        animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                        exit={{ y: -40, opacity: 0, filter: "blur(4px)" }}
+                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="text-3xl md:text-5xl font-light z-20"
+                        style={{ color: "#5C3317" }}
+                      >
+                        {String(i.v).padStart(2, "0")}
+                      </motion.span>
+                    </AnimatePresence>
+
+                    {/* Corner accents inside boxes */}
+                    <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-[#D4AF37]/30" />
+                    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[#D4AF37]/30" />
                   </div>
-                  <span className="text-[9px] uppercase tracking-[0.3em]"
-                    style={{ color: "#B8860B", fontFamily: "'Montserrat', sans-serif" }}>{i.label}</span>
-                </div>
+                  
+                  <span className="text-[10px] uppercase tracking-[0.3em] font-bold"
+                    style={{ color: "#B8860B", fontFamily: "'Montserrat', sans-serif" }}>
+                    {i.label}
+                  </span>
+                </motion.div>
               ))}
             </div>
           </motion.div>

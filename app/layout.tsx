@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Playfair_Display, Cormorant_Garamond, Montserrat } from "next/font/google"
+import { Inter, Playfair_Display, Cormorant_Garamond, Montserrat, Cinzel } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -9,6 +9,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "600"], variable: "--font-cormorant" })
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-montserrat" })
+const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "700", "900"], variable: "--font-cinzel" })
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://dnvites.com"
 
@@ -121,7 +122,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${montserrat.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${playfair.variable} ${cormorant.variable} ${montserrat.variable} ${cinzel.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
           <Toaster position="top-center" richColors />

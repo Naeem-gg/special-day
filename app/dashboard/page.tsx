@@ -67,11 +67,11 @@ const TemplateCard = ({ tmpl, formData, isSelected, handlePointerDown, handlePoi
           }}>
             <TemplateRouter
               template={tmpl.slug}
-              brideName={formData.brideName || "Ayesha"}
-              groomName={formData.groomName || "Abdullah"}
+              brideName={formData.brideName || "Anjali"}
+              groomName={formData.groomName || "Arjun"}
               date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
-              venue={formData.venue || "Grand Ballroom"}
-              events={formData.events[0]?.name ? formData.events : [{ name: "Ceremony", time: "4:00 PM", location: "Main Hall", description: "Vows and Rings" }]}
+              venue={formData.venue || "The Taj Mahal Palace, Mumbai"}
+              events={formData.events[0]?.name ? formData.events : [{ name: "Sangeet", time: "6:00 PM", location: "Crystal Ballroom", description: "Music & Dance" }]}
               gallery={formData.gallery}
               isPreview={true}
               isThumbnail={true}
@@ -107,12 +107,12 @@ const TemplateCard = ({ tmpl, formData, isSelected, handlePointerDown, handlePoi
 const transformAudioUrl = (url: string) => {
   if (!url) return url;
   let cleanUrl = url.trim();
-  
+
   // Dropbox: Convert to direct content link
   if (cleanUrl.includes("dropbox.com")) {
     return cleanUrl.replace("www.dropbox.com", "dl.dropboxusercontent.com").split("?")[0];
   }
-  
+
   // Google Drive: Convert to direct stream/download link
   if (cleanUrl.includes("drive.google.com")) {
     const match = cleanUrl.match(/\/d\/(.+?)\//) || cleanUrl.match(/id=(.+?)(&|$)/);
@@ -120,7 +120,7 @@ const transformAudioUrl = (url: string) => {
       return `https://drive.google.com/uc?export=download&id=${match[1]}`;
     }
   }
-  
+
   return cleanUrl;
 };
 
@@ -752,7 +752,7 @@ export default function Dashboard() {
                     </div>
 
                     <div className="pt-4 pb-2 border-t border-rose-50">
-                      <TestimonialForm 
+                      <TestimonialForm
                         initialName={`${formData.brideName} & ${formData.groomName}`}
                         initialEmail={formData.userEmail}
                       />
@@ -937,14 +937,14 @@ export default function Dashboard() {
             )}
           </h1>
           <p className="text-muted-foreground">
-            {isEditMode 
+            {isEditMode
               ? `Correcting details for ${formData.brideName} & ${formData.groomName}`
               : "Fill in a few details below and your invite will be ready to share!"
             }
           </p>
           {isEditMode && (
-            <Button 
-              variant="link" 
+            <Button
+              variant="link"
               className="text-[#F43F8F] p-0 h-auto font-bold text-xs"
               onClick={() => {
                 window.location.href = "/dashboard";
@@ -1118,7 +1118,7 @@ export default function Dashboard() {
                   </Label>
                   <Input
                     id="venue"
-                    placeholder="e.g. Grand Ballroom, Karachi"
+                    placeholder="e.g. Grand National Lawns, Mumbai"
                     value={formData.venue}
                     onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
                     required
@@ -1225,7 +1225,7 @@ export default function Dashboard() {
                   </div>
 
                   {formData.musicUrl && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="mt-2 p-3 bg-green-50 border border-green-100 rounded-xl"
@@ -1244,11 +1244,11 @@ export default function Dashboard() {
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 ml-11 sm:ml-0">
-                          <audio 
+                          <audio
                             ref={audioRef}
-                            src={formData.musicUrl} 
+                            src={formData.musicUrl}
                             onPlay={() => setIsPreviewPlaying(true)}
                             onPause={() => setIsPreviewPlaying(false)}
                             onEnded={() => setIsPreviewPlaying(false)}
@@ -1319,10 +1319,10 @@ export default function Dashboard() {
                 `}</style>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {TEMPLATES.map((tmpl) => (
-                    <TemplateCard 
-                      key={tmpl.slug} 
-                      tmpl={tmpl} 
-                      formData={formData} 
+                    <TemplateCard
+                      key={tmpl.slug}
+                      tmpl={tmpl}
+                      formData={formData}
                       isSelected={formData.template === tmpl.slug}
                       handlePointerDown={handlePointerDown}
                       handlePointerUpOrLeave={handlePointerUpOrLeave}

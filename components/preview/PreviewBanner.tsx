@@ -49,6 +49,15 @@ export default function PreviewBanner({
   const pct = (secondsLeft / PREVIEW_DURATION) * 100;
   const isUrgent = secondsLeft < 60;
 
+  const handleBack = () => {
+    const params = new URLSearchParams();
+    if (brideName) params.append("brideName", brideName);
+    if (groomName) params.append("groomName", groomName);
+    if (dateStr) params.append("dateStr", dateStr);
+    if (template) params.append("template", template);
+    router.push(`/preview?${params.toString()}`);
+  };
+
   return (
     <>
       {/* ── Sticky Banner ── */}
@@ -60,29 +69,35 @@ export default function PreviewBanner({
         </div>
 
         <div className="flex items-center justify-between px-4 py-2.5 max-w-7xl mx-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-sans uppercase tracking-[0.3em] text-white/60 hidden md:block">Preview Mode</span>
-            <span className="text-white/40 hidden md:block">·</span>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleBack}
+              className="group flex items-center gap-2 text-white/50 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+              <span className="text-[10px] font-sans font-bold uppercase tracking-widest hidden sm:block">Back</span>
+            </button>
+            <span className="text-white/20 hidden md:block">|</span>
             <div className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" style={{ color: isUrgent ? "#FCA5A5" : "#D4AF37" }} />
               <span className={`font-mono text-sm font-bold ${isUrgent ? "text-red-300" : "text-amber-300"}`}>
                 {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
               </span>
-              <span className="text-white/50 text-xs font-sans">remaining</span>
+              <span className="text-white/50 text-[10px] font-sans uppercase tracking-tight">left</span>
             </div>
           </div>
 
-          <div className="text-center hidden md:block">
-            <p className="text-white/60 text-xs font-sans">You're previewing this invitation • Not shareable</p>
+          <div className="text-center hidden lg:block">
+            <p className="text-white/60 text-[10px] font-sans uppercase tracking-widest">Preview Mode • {template.replace(/-/g, ' ')}</p>
           </div>
 
           <button
             onClick={handleBuy}
-            className="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-sans font-bold uppercase tracking-wider transition-all hover:scale-105"
+            className="flex items-center gap-2 px-5 py-1.5 rounded-full text-[10px] font-sans font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg"
             style={{ background: "linear-gradient(90deg, #F43F8F, #D4AF37)", color: "white" }}>
             <ShoppingBag className="w-3.5 h-3.5" />
-            <span className="hidden sm:block">Buy This Template</span>
-            <span className="sm:hidden">Buy</span>
+            <span className="hidden sm:block">Unlock Full Template</span>
+            <span className="sm:hidden">Unlock</span>
           </button>
         </div>
       </div>
@@ -107,7 +122,7 @@ export default function PreviewBanner({
                   style={{ background: "linear-gradient(90deg, #F43F8F, #D4AF37)", color: "white" }}>
                   Create My Invitation ✨
                 </button>
-                <button onClick={() => router.push("/preview")}
+                <button onClick={handleBack}
                   className="px-8 py-3 rounded-full font-sans text-sm border border-white/20 text-white/70 hover:text-white transition-colors">
                   Try Another Template
                 </button>

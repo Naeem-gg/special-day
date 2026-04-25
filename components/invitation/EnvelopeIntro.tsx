@@ -181,22 +181,22 @@ function WaxSeal({ theme, initials, glowing, cracking }: {
             <feOffset dx="0" dy="-1" result="offsetDark" />
             <feComposite in="dark" in2="offsetDark" operator="over" />
             <feComposite in2="SourceAlpha" operator="in" result="darkShadow" />
-            
+
             <feFlood floodColor="rgba(255,255,255,0.15)" result="light" />
             <feOffset dx="0" dy="1.5" result="offsetLight" />
             <feComposite in="light" in2="offsetLight" operator="over" />
             <feComposite in2="SourceAlpha" operator="in" result="lightHighlight" />
-            
+
             <feMerge>
               <feMergeNode in="lightHighlight" />
               <feMergeNode in="darkShadow" />
             </feMerge>
           </filter>
           <filter id="insetShadow">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur" />
-            <feOffset dx="0" dy="1" result="offsetBlur" />
+            <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="blur" />
+            <feOffset dx="0" dy="2.5" result="offsetBlur" />
             <feComposite in="SourceAlpha" in2="offsetBlur" operator="arithmetic" k2="-1" k3="1" result="shadowDiff" />
-            <feFlood floodColor="rgba(0,0,0,0.5)" result="color" />
+            <feFlood floodColor="rgba(0,0,0,0.9)" result="color" />
             <feComposite in="color" in2="shadowDiff" operator="in" result="shadow" />
             <feMerge>
               <feMergeNode in="SourceGraphic" />
@@ -250,48 +250,49 @@ function WaxSeal({ theme, initials, glowing, cracking }: {
           );
         })}
 
-        {/* Initials — true engraved look */}
-        {/* Layer 1: Deep shadow (bottom of the engrave) */}
-        <text
-          x="60"
-          y="69"
-          textAnchor="middle"
-          fontFamily="'Cormorant Garamond', 'Playfair Display', Georgia, serif"
-          fontSize="22"
-          fontWeight="700"
-          fill="rgba(0,0,0,0.5)"
-          className="select-none"
-          style={{ letterSpacing: "2px" }}
-        >
-          {initials}
-        </text>
-        {/* Layer 2: Light highlight (top edge of the carve) */}
-        <text
-          x="60"
-          y="67"
-          textAnchor="middle"
-          fontFamily="'Cormorant Garamond', 'Playfair Display', Georgia, serif"
-          fontSize="22"
-          fontWeight="700"
-          fill="rgba(255,255,255,0.12)"
-          className="select-none"
-          style={{ letterSpacing: "2px" }}
-        >
-          {initials}
-        </text>
-        {/* Layer 3: Main visible initials with deboss filter */}
+        {/* Initials — Sharp Engraved Look (No Blur) */}
+        {/* 1. Top/Inner Shadow (The "Depression") */}
         <text
           x="60"
           y="68"
           textAnchor="middle"
-          fontFamily="'Cormorant Garamond', 'Playfair Display', Georgia, serif"
-          fontSize="22"
+          fontFamily="var(--font-cinzel), serif"
+          fontSize="30"
+          fontWeight="700"
+          fill="rgba(0,0,0,0.4)"
+          className="select-none"
+          style={{ letterSpacing: "1px" }}
+        >
+          {initials}
+        </text>
+
+        {/* 2. Bottom Highlight (The "Edge") */}
+        <text
+          x="60"
+          y="70"
+          textAnchor="middle"
+          fontFamily="var(--font-cinzel), serif"
+          fontSize="30"
+          fontWeight="700"
+          fill="rgba(255,255,255,0.15)"
+          className="select-none"
+          style={{ letterSpacing: "1px" }}
+        >
+          {initials}
+        </text>
+
+        {/* 3. Main Face (Recessed) */}
+        <text
+          x="60"
+          y="69"
+          textAnchor="middle"
+          fontFamily="var(--font-cinzel), serif"
+          fontSize="30"
           fontWeight="700"
           fill={theme.initials}
-          opacity="0.35"
-          filter="url(#insetShadow)"
+          opacity="0.5"
           className="select-none"
-          style={{ letterSpacing: "2px" }}
+          style={{ letterSpacing: "1px" }}
         >
           {initials}
         </text>
@@ -320,7 +321,7 @@ export default function EnvelopeIntro({
   const theme = VARIANT_MAP[variant as keyof typeof VARIANT_MAP] ?? VARIANT_MAP.default;
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const initials = `${brideName?.[0] ?? "B"}&${groomName?.[0] ?? "G"}`;
+  const initials = `${(brideName?.[0] ?? "B").toUpperCase()}&${(groomName?.[0] ?? "G").toUpperCase()}`;
 
   const handleOpen = () => {
     if (step !== "idle") return;
@@ -348,7 +349,7 @@ export default function EnvelopeIntro({
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
     }
   }, []);
 
@@ -476,7 +477,7 @@ export default function EnvelopeIntro({
                   }
                   transition={{ duration: 0.55, ease: "easeOut" }}
                   className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2"
-                  style={{ width: "7rem", height: "7rem" }}
+                  style={{ width: "16rem", height: "16rem" }}
                 >
                   <WaxSeal
                     theme={theme}

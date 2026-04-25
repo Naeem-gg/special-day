@@ -643,7 +643,7 @@ export default function HomeClient({ testimonials }: { testimonials: any[] }) {
               <div className="absolute bottom-10 left-10 right-10 text-white space-y-2">
                 <p className="text-xs font-bold uppercase tracking-widest opacity-80">Live Guest View</p>
                 <p className="text-2xl font-serif">"The most beautiful invite I've ever received!"</p>
-                <p className="text-sm italic opacity-70">— Sarah, Wedding Guest</p>
+                <p className="text-sm italic opacity-70">— Ananya, Wedding Guest</p>
               </div>
             </motion.div>
           </div>

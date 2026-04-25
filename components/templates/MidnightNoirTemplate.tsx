@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Clock, Star, ChevronDown, Map as MapIcon } from "lucide-react";
 import type { TemplateProps } from "./types";
 import RSVPModal from "@/components/invitation/RSVPModal";
@@ -68,16 +68,7 @@ export default function MidnightNoirTemplate({
           {/* Animated starfield backdrop */}
           <StarField />
 
-          {/* Video backdrop */}
-          {!isThumbnail && (
-            <video
-              autoPlay muted loop playsInline
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              style={{ opacity: 0.15, mixBlendMode: "screen" }}
-            >
-              <source src="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-1610-large.mp4" type="video/mp4" />
-            </video>
-          )}
+
 
           {/* Decorative gold rings */}
           {[300, 500, 700].map((s, i) => (
@@ -134,18 +125,55 @@ export default function MidnightNoirTemplate({
         </section>
 
         {/* ── COUNTDOWN ───────────────────────────── */}
-        <section className="py-20 text-center px-4" style={{ background: "#0A0A0A" }}>
+        <section className="py-24 text-center px-4 relative" style={{ background: "#0A0A0A" }}>
+          {/* Decorative divider */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent" />
+          
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <p className="font-sans text-xs uppercase tracking-[0.5em] mb-10" style={{ color: "#C9A84C" }}>Event Countdown</p>
+            <motion.p 
+              initial={{ letterSpacing: "1em", opacity: 0 }}
+              whileInView={{ letterSpacing: "0.5em", opacity: 1 }}
+              transition={{ duration: 1.5 }}
+              className="font-sans text-[11px] uppercase mb-12" 
+              style={{ color: "#C9A84C" }}>
+              The Countdown to Eternity
+            </motion.p>
+
             <div className="flex gap-4 md:gap-10 justify-center flex-wrap">
-              {[{ label: "Days", v: time.days }, { label: "Hours", v: time.hours }, { label: "Minutes", v: time.minutes }, { label: "Seconds", v: time.seconds }].map(i => (
-                <div key={i.label} className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-light"
-                    style={{ border: "1px solid #C9A84C", color: "#C9A84C", background: "#111" }}>
-                    {String(i.v).padStart(2, "0")}
+              {[{ label: "Days", v: time.days }, { label: "Hours", v: time.hours }, { label: "Minutes", v: time.minutes }, { label: "Seconds", v: time.seconds }].map((i, idx) => (
+                <motion.div 
+                  key={i.label} 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.1, duration: 0.8 }}
+                  className="flex flex-col items-center gap-3"
+                >
+                  <div className="relative w-18 h-20 md:w-24 md:h-28 flex items-center justify-center overflow-hidden"
+                    style={{ 
+                      border: "1px solid rgba(201,168,76,0.5)", 
+                      background: "linear-gradient(180deg, #111 0%, #050505 100%)",
+                      boxShadow: "0 0 30px rgba(201,168,76,0.1) inset"
+                    }}>
+                    
+                    {/* Golden edge glow */}
+                    <div className="absolute inset-0 pointer-events-none shadow-[0_0_15px_rgba(201,168,76,0.1)]" />
+
+                    <AnimatePresence mode="popLayout">
+                      <motion.span
+                        key={i.v}
+                        initial={{ y: 30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -30, opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="text-3xl md:text-5xl font-light z-10"
+                        style={{ color: "#C9A84C", textShadow: "0 0 10px rgba(201,168,76,0.3)" }}
+                      >
+                        {String(i.v).padStart(2, "0")}
+                      </motion.span>
+                    </AnimatePresence>
                   </div>
-                  <span className="font-sans text-[10px] uppercase tracking-widest" style={{ color: "#666" }}>{i.label}</span>
-                </div>
+                  <span className="font-sans text-[10px] uppercase tracking-[0.3em]" style={{ color: "#888" }}>{i.label}</span>
+                </motion.div>
               ))}
             </div>
           </motion.div>
