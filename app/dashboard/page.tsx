@@ -57,6 +57,7 @@ export default function Dashboard() {
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
   const [isUploadingMusic, setIsUploadingMusic] = useState(false);
+  const [uploadedMusicName, setUploadedMusicName] = useState("");
   const [session, setSession] = useState<{ authenticated: boolean; user?: any } | null>(null);
 
   // ── Checkout Flow ───────────────────
@@ -325,7 +326,7 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tierSlug: formData.tier,
-          couponPrice: finalPrice
+          couponCode: couponData ? couponCode : undefined
         }),
       });
 
@@ -1115,6 +1116,7 @@ export default function Dashboard() {
                             const result = await res.json();
                             if (result.secure_url) {
                               setFormData({ ...formData, musicUrl: result.secure_url });
+                              setUploadedMusicName(file.name);
                             }
                           } catch (err) {
                             console.error("Music upload failed:", err);
@@ -1126,6 +1128,63 @@ export default function Dashboard() {
                       />
                     </label>
                   </div>
+
+                  {formData.musicUrl && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2 flex items-center justify-between p-3 bg-green-50 border border-green-100 rounded-xl"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-green-800">
+                            {uploadedMusicName ? "Song Uploaded!" : "Audio Link Attached"}
+                          </p>
+                          <p className="text-[10px] text-green-700/70 truncate max-w-[200px]">
+                            {uploadedMusicName || formData.musicUrl}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <audio 
+                          src={formData.musicUrl} 
+                          className="hidden" 
+                          id="preview-audio" 
+                          onPlay={() => console.log("Playing preview")}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-3 text-[10px] font-bold text-green-700 hover:bg-green-100"
+                          onClick={() => {
+                            const audio = document.getElementById('preview-audio') as HTMLAudioElement;
+                            if (audio) {
+                              if (audio.paused) audio.play();
+                              else audio.pause();
+                            }
+                          }}
+                        >
+                          Preview
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-red-400 hover:text-red-600 hover:bg-red-50"
+                          onClick={() => {
+                            setFormData({ ...formData, musicUrl: "" });
+                            setUploadedMusicName("");
+                          }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
 
                   <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-amber-500" />

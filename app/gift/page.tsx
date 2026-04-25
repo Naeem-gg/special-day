@@ -122,7 +122,7 @@ export default function GiftPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           tierSlug: selectedTier.id,
-          couponPrice: finalPrice
+          couponCode: couponData ? couponCode : undefined
         }),
       });
       const orderData = await res.json();
