@@ -103,6 +103,27 @@ const TemplateCard = ({ tmpl, formData, isSelected, handlePointerDown, handlePoi
   );
 };
 
+/* ── Audio URL Transformer ─────────────────── */
+const transformAudioUrl = (url: string) => {
+  if (!url) return url;
+  let cleanUrl = url.trim();
+  
+  // Dropbox: Convert to direct content link
+  if (cleanUrl.includes("dropbox.com")) {
+    return cleanUrl.replace("www.dropbox.com", "dl.dropboxusercontent.com").split("?")[0];
+  }
+  
+  // Google Drive: Convert to direct stream/download link
+  if (cleanUrl.includes("drive.google.com")) {
+    const match = cleanUrl.match(/\/d\/(.+?)\//) || cleanUrl.match(/id=(.+?)(&|$)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+  }
+  
+  return cleanUrl;
+};
+
 export default function Dashboard() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editSlug, setEditSlug] = useState("");
@@ -120,6 +141,9 @@ export default function Dashboard() {
   const [shakeKey, setShakeKey] = useState(0);
   const [isUploadingMusic, setIsUploadingMusic] = useState(false);
   const [uploadedMusicName, setUploadedMusicName] = useState("");
+  const [uploadedMusicSize, setUploadedMusicSize] = useState("");
+  const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [session, setSession] = useState<{ authenticated: boolean; user?: any } | null>(null);
 
   // ── Checkout Flow ───────────────────
@@ -192,7 +216,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetch("/api/auth/me")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return { authenticated: false };
+        return res.json().catch(() => ({ authenticated: false }));
+      })
       .then((data) => {
         setSession(data);
         if (data.authenticated && data.user?.email) {
@@ -204,7 +231,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetch("/api/tiers")
-      .then((res) => res.json())
+      .then((res) => (res.ok ? res.json() : []))
       .then(setTiers)
       .catch((err) => console.error("Failed to fetch tiers:", err));
   }, []);
@@ -1128,9 +1155,14 @@ export default function Dashboard() {
                       <Input
                         id="musicUrl"
                         placeholder="Paste a link OR upload a file"
-                        value={formData.musicUrl}
-                        onChange={(e) => setFormData({ ...formData, musicUrl: e.target.value })}
-                        className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 pr-10"
+                        value={uploadedMusicName ? `File Uploaded: ${uploadedMusicName}` : formData.musicUrl}
+                        onChange={(e) => {
+                          const originalUrl = e.target.value;
+                          const transformed = transformAudioUrl(originalUrl);
+                          setFormData({ ...formData, musicUrl: transformed });
+                        }}
+                        readOnly={!!uploadedMusicName}
+                        className={`border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 pr-10 ${uploadedMusicName ? "bg-gray-50 text-gray-500 cursor-not-allowed" : ""}`}
                       />
                       {formData.musicUrl && (
                         <button
@@ -1179,6 +1211,7 @@ export default function Dashboard() {
                             if (result.secure_url) {
                               setFormData({ ...formData, musicUrl: result.secure_url });
                               setUploadedMusicName(file.name);
+                              setUploadedMusicSize((file.size / (1024 * 1024)).toFixed(2) + " MB");
                             }
                           } catch (err) {
                             console.error("Music upload failed:", err);
@@ -1195,55 +1228,60 @@ export default function Dashboard() {
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-2 flex items-center justify-between p-3 bg-green-50 border border-green-100 rounded-xl"
+                      className="mt-2 p-3 bg-green-50 border border-green-100 rounded-xl"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                          <CheckCircle2 className="w-4 h-4" />
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 shrink-0">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-green-800 truncate">
+                              {uploadedMusicName || "Audio File Attached"}
+                            </p>
+                            <p className="text-[10px] text-green-700/70">
+                              {uploadedMusicSize || "Ready to play"}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-xs font-bold text-green-800">
-                            {uploadedMusicName ? "Song Uploaded!" : "Audio Link Attached"}
-                          </p>
-                          <p className="text-[10px] text-green-700/70 truncate max-w-[200px]">
-                            {uploadedMusicName || formData.musicUrl}
-                          </p>
+                        
+                        <div className="flex items-center gap-2 ml-11 sm:ml-0">
+                          <audio 
+                            ref={audioRef}
+                            src={formData.musicUrl} 
+                            onPlay={() => setIsPreviewPlaying(true)}
+                            onPause={() => setIsPreviewPlaying(false)}
+                            onEnded={() => setIsPreviewPlaying(false)}
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 px-4 text-[10px] font-bold bg-green-100 text-green-700 hover:bg-green-200 border-none rounded-lg"
+                            onClick={() => {
+                              if (audioRef.current) {
+                                if (audioRef.current.paused) audioRef.current.play();
+                                else audioRef.current.pause();
+                              }
+                            }}
+                          >
+                            {isPreviewPlaying ? "Pause" : "Preview"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg"
+                            onClick={() => {
+                              setFormData({ ...formData, musicUrl: "" });
+                              setUploadedMusicName("");
+                              setUploadedMusicSize("");
+                            }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5 mr-1" />
+                            <span className="text-[10px] font-bold">Remove</span>
+                          </Button>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <audio 
-                          src={formData.musicUrl} 
-                          className="hidden" 
-                          id="preview-audio" 
-                          onPlay={() => console.log("Playing preview")}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 px-3 text-[10px] font-bold text-green-700 hover:bg-green-100"
-                          onClick={() => {
-                            const audio = document.getElementById('preview-audio') as HTMLAudioElement;
-                            if (audio) {
-                              if (audio.paused) audio.play();
-                              else audio.pause();
-                            }
-                          }}
-                        >
-                          Preview
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-red-400 hover:text-red-600 hover:bg-red-50"
-                          onClick={() => {
-                            setFormData({ ...formData, musicUrl: "" });
-                            setUploadedMusicName("");
-                          }}
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
                       </div>
                     </motion.div>
                   )}

@@ -57,7 +57,17 @@ export default function CloudinaryUpload({ onUpload, onRemove, images, maxUpload
   };
 
   const handleUpload = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
+    console.log("CloudinaryUpload: Save button clicked");
+    if (!imageSrc) {
+      console.error("CloudinaryUpload: No image source found");
+      return;
+    }
+    
+    if (!croppedAreaPixels) {
+      console.warn("CloudinaryUpload: Missing croppedAreaPixels");
+      showMessage("error", "Please wait for the image to load or try moving it slightly.");
+      return;
+    }
 
     if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) {
       showMessage("error", "Cloudinary environment variables are missing! Check your .env.local file.");
@@ -187,22 +197,24 @@ export default function CloudinaryUpload({ onUpload, onRemove, images, maxUpload
               </div>
 
               {/* Cropper Area */}
-              <div className="relative flex-1 w-full bg-black">
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={3 / 4}
-                  onCropChange={setCrop}
-                  onCropComplete={onCropComplete}
-                  onZoomChange={setZoom}
-                  showGrid={true}
-                  objectFit="contain"
-                />
+              <div className="relative flex-1 w-full bg-black min-h-[400px] md:min-h-[500px]">
+                {imageSrc && (
+                  <Cropper
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={3 / 4}
+                    onCropChange={setCrop}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                    showGrid={true}
+                    objectFit="contain"
+                  />
+                )}
               </div>
 
               {/* Bottom Controls */}
-              <div className="flex-none p-6 pb-safe bg-black md:bg-gray-50 flex flex-col gap-5 border-t border-white/10 md:border-gray-100 z-10">
+              <div className="flex-none p-6 pb-safe bg-black md:bg-gray-50 flex flex-col gap-5 border-t border-white/10 md:border-gray-100 z-50 relative">
                 <div className="flex items-center gap-4 px-2">
                   <span className="text-[10px] font-bold text-white/50 md:text-gray-400 uppercase tracking-wider">Zoom</span>
                   <input
