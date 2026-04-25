@@ -55,6 +55,7 @@ export default function BackgroundMusic({ url }: BackgroundMusicProps) {
           whileHover={{ scale: 1.1, y: -2 }}
           whileTap={{ scale: 0.9 }}
           onClick={togglePlay}
+          style={{ willChange: "transform" }}
           className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 border ${isPlaying
               ? "bg-white text-rose-500 border-rose-100"
               : "bg-black/80 text-white border-white/10 backdrop-blur-xl"

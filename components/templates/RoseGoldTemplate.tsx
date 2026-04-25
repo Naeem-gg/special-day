@@ -39,13 +39,14 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    setPetals(Array.from({ length: 22 }, () => ({
+    const count = isThumbnail ? 6 : (window.innerWidth < 768 ? 12 : 22);
+    setPetals(Array.from({ length: count }, () => ({
       left: `${Math.random() * 100}%`,
       animationDuration: `${7 + Math.random() * 8}s`,
       animationDelay: `${Math.random() * 10}s`,
       animation: `petalFall ${7 + Math.random() * 8}s ${Math.random() * 10}s infinite linear`,
     })));
-  }, []);
+  }, [isThumbnail]);
 
   useEffect(() => {
     const tick = () => {
@@ -195,15 +196,20 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
                 <p className="font-sans text-xs uppercase tracking-[0.4em] mb-3" style={{ color: "#B76E79" }}>Captured Moments</p>
                 <h2 className="text-4xl font-light" style={{ color: "#2C1810" }}>Photo Gallery</h2>
               </motion.div>
-              <div className="columns-2 md:columns-3 gap-4 space-y-4">
-                {gallery.map((img, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                    className="overflow-hidden rounded-2xl" style={{ breakInside: "avoid" }}>
-                    <img src={img.url} alt="" className="w-full object-cover transition-transform duration-700 hover:scale-105" />
-                  </motion.div>
-                ))}
-              </div>
+            <div className="columns-2 md:columns-3 gap-4 space-y-4">
+              {gallery.map((img, i) => (
+                <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                  className="overflow-hidden rounded-2xl" style={{ breakInside: "avoid", willChange: "transform, opacity" }}>
+                  <img 
+                    src={img.url} 
+                    alt="" 
+                    loading="lazy"
+                    className="w-full object-cover transition-transform duration-700 hover:scale-105" 
+                  />
+                </motion.div>
+              ))}
+            </div>
             </div>
           </section>
         )}

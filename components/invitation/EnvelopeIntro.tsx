@@ -98,11 +98,12 @@ function SparkleParticles({ active, color }: { active: boolean; color: string })
   const particlesRef = useRef<Sparkle[]>([]);
 
   useEffect(() => {
-    particlesRef.current = Array.from({ length: 28 }, (_, i) => ({
+    const count = window.innerWidth < 768 ? 12 : 28;
+    particlesRef.current = Array.from({ length: count }, (_, i) => ({
       id: i,
       x: 50, y: 50,
       size: 3 + Math.random() * 5,
-      angle: (i / 28) * 360 + Math.random() * 13,
+      angle: (i / count) * 360 + Math.random() * 13,
       dist: 80 + Math.random() * 180,
       color: i % 3 === 0 ? "#ffffff" : i % 3 === 1 ? color : "#fff8d0",
     }));

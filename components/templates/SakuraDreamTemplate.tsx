@@ -21,12 +21,13 @@ export default function SakuraDreamTemplate({ brideName, groomName, date, venue,
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    setPetals(Array.from({ length: 20 }, () => ({
+    const count = isThumbnail ? 5 : (window.innerWidth < 768 ? 10 : 20);
+    setPetals(Array.from({ length: count }, () => ({
       left: `${Math.random() * 100}%`,
       top: `-20px`,
       animation: `sakuraFall ${6 + Math.random() * 9}s ${Math.random() * 12}s infinite ease-in-out`,
     })));
-  }, []);
+  }, [isThumbnail]);
 
   useEffect(() => {
     const tick = () => {
@@ -176,8 +177,14 @@ export default function SakuraDreamTemplate({ brideName, groomName, date, venue,
                 {gallery.map((img, i) => (
                   <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                    className="overflow-hidden rounded-3xl aspect-square">
-                    <img src={img.url} alt="" className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
+                    className="overflow-hidden rounded-3xl aspect-square"
+                    style={{ willChange: "transform, opacity" }}>
+                    <img 
+                      src={img.url} 
+                      alt="" 
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" 
+                    />
                   </motion.div>
                 ))}
               </div>

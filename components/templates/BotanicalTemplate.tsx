@@ -44,12 +44,13 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    setLeaves(Array.from({ length: 14 }, () => ({
+    const count = isThumbnail ? 4 : (window.innerWidth < 768 ? 8 : 14);
+    setLeaves(Array.from({ length: count }, () => ({
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
       transform: `rotate(${Math.random() * 360}deg) scale(${0.7 + Math.random() * 1})`,
     })));
-  }, []);
+  }, [isThumbnail]);
 
   useEffect(() => {
     const tick = () => {
@@ -195,8 +196,13 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
             <div className="columns-2 md:columns-3 gap-4 space-y-4">
               {gallery.map((img, i) => (
                 <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                  className="overflow-hidden rounded-2xl border" style={{ borderColor: "#C5DEB8", breakInside: "avoid" }}>
-                  <img src={img.url} alt="" className="w-full object-cover transition-transform duration-700 hover:scale-105" />
+                  className="overflow-hidden rounded-2xl border" style={{ borderColor: "#C5DEB8", breakInside: "avoid", willChange: "opacity" }}>
+                  <img 
+                    src={img.url} 
+                    alt="" 
+                    loading="lazy"
+                    className="w-full object-cover transition-transform duration-700 hover:scale-105" 
+                  />
                 </motion.div>
               ))}
             </div>

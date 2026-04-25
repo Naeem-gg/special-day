@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Script from "next/script";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence, Variants, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +39,68 @@ const cardVariants: Variants = {
     y: 0,
     transition: { duration: 0.6, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] },
   }),
+};
+
+/* ── Optimized Template Card ─────────────────── */
+const TemplateCard = ({ tmpl, formData, isSelected, handlePointerDown, handlePointerUpOrLeave, handleTemplateSelect }: any) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "200px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      onPointerDown={(e) => handlePointerDown(tmpl.slug, e)}
+      onPointerUp={handlePointerUpOrLeave}
+      onPointerLeave={handlePointerUpOrLeave}
+      onContextMenu={(e) => e.preventDefault()}
+      whileHover={{ scale: 1.03, y: -3 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={() => handleTemplateSelect(tmpl.slug)}
+      className={`group relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all select-none flex flex-col ${isSelected ? "border-[#F43F8F] shadow-lg shadow-rose-200/50" : "border-gray-100 hover:border-rose-200"}`}
+    >
+      <div className="h-56 relative w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
+        {isInView ? (
+          <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{
+            width: '375px',
+            height: '812px',
+            transform: 'translate(-50%, -50%) scale(var(--preview-scale))'
+          }}>
+            <TemplateRouter
+              template={tmpl.slug}
+              brideName={formData.brideName || "Ayesha"}
+              groomName={formData.groomName || "Abdullah"}
+              date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
+              venue={formData.venue || "Grand Ballroom"}
+              events={formData.events[0]?.name ? formData.events : [{ name: "Ceremony", time: "4:00 PM", location: "Main Hall", description: "Vows and Rings" }]}
+              gallery={formData.gallery}
+              isPreview={true}
+              isThumbnail={true}
+            />
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-4xl">{tmpl.emoji}</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-transparent z-10" />
+        {isSelected && (
+          <div className="absolute top-3 right-3 z-20 w-6 h-6 rounded-full bg-[#F43F8F] flex items-center justify-center shadow-lg ring-2 ring-white">
+            <CheckCircle2 className="w-4 h-4 text-white" />
+          </div>
+        )}
+      </div>
+
+      <div className="p-3 bg-white border-t border-gray-100 z-20 relative">
+        <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
+        <div className="flex items-center justify-between mt-1">
+          <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400">{tmpl.tier} plan</span>
+          <span className="text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-0.5" style={{ color: "#F43F8F" }}>
+            <Eye className="w-3 h-3" />Hold
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  );
 };
 
 export default function Dashboard() {
@@ -1218,63 +1280,17 @@ export default function Dashboard() {
                   }
                 `}</style>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {TEMPLATES.map((tmpl) => {
-                    const isSelected = formData.template === tmpl.slug;
-                    return (
-                      <motion.div
-                        key={tmpl.slug}
-                        onPointerDown={(e) => handlePointerDown(tmpl.slug, e)}
-                        onPointerUp={handlePointerUpOrLeave}
-                        onPointerLeave={handlePointerUpOrLeave}
-                        onContextMenu={(e) => e.preventDefault()}
-                        whileHover={{ scale: 1.03, y: -3 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => handleTemplateSelect(tmpl.slug)}
-                        className={`group relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all select-none flex flex-col ${isSelected ? "border-[#F43F8F] shadow-lg shadow-rose-200/50" : "border-gray-100 hover:border-rose-200"}`}
-                      >
-                        {/* Dynamic Template Preview Thumbnail */}
-                        <div className="h-56 relative w-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${tmpl.palette[0]}, ${tmpl.palette[1]})` }}>
-                          <div className="absolute top-1/2 left-1/2 pointer-events-none" style={{
-                            width: '375px',
-                            height: '812px',
-                            transform: 'translate(-50%, -50%) scale(var(--preview-scale))'
-                          }}>
-                            <TemplateRouter
-                              template={tmpl.slug}
-                              brideName={formData.brideName || "Ayesha"}
-                              groomName={formData.groomName || "Abdullah"}
-                              date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
-                              venue={formData.venue || "Grand Ballroom"}
-                              events={formData.events[0]?.name ? formData.events : [{ name: "Ceremony", time: "4:00 PM", location: "Main Hall", description: "Vows and Rings" }]}
-                              gallery={formData.gallery}
-                              isPreview={true}
-                              isThumbnail={true}
-                            />
-                          </div>
-                          {/* Invisible overlay to catch clicks/holds over the iframe/component */}
-                          <div className="absolute inset-0 bg-transparent z-10" />
-
-                          {isSelected && (
-                            <div className="absolute top-3 right-3 z-20 w-6 h-6 rounded-full bg-[#F43F8F] flex items-center justify-center shadow-lg ring-2 ring-white">
-                              <CheckCircle2 className="w-4 h-4 text-white" />
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="p-3 bg-white border-t border-gray-100 z-20 relative">
-                          <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
-                          <div className="flex items-center justify-between mt-1">
-                            <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400">{tmpl.tier} plan</span>
-                            <span
-                              className="text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-0.5"
-                              style={{ color: "#F43F8F" }}>
-                              <Eye className="w-3 h-3" />Hold
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                  {TEMPLATES.map((tmpl) => (
+                    <TemplateCard 
+                      key={tmpl.slug} 
+                      tmpl={tmpl} 
+                      formData={formData} 
+                      isSelected={formData.template === tmpl.slug}
+                      handlePointerDown={handlePointerDown}
+                      handlePointerUpOrLeave={handlePointerUpOrLeave}
+                      handleTemplateSelect={handleTemplateSelect}
+                    />
+                  ))}
                 </div>
               </CardContent>
             </Card>
