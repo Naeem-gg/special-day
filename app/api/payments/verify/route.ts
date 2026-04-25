@@ -4,6 +4,8 @@ import { eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { sendPurchaseReceipt } from "@/lib/mail";
+import { razorpay } from "@/lib/razorpay";
+import { tiers as tiersTable } from "@/lib/db/schema";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,6 +27,44 @@ export async function POST(req: NextRequest) {
       if (generated_signature !== razorpay_signature) {
         return NextResponse.json({ error: "Payment verification failed" }, { status: 400 });
       }
+
+      // ─── ANTI-MANIPULATION CHECK ───
+      // Fetch the actual payment from Razorpay to verify the amount
+      const payment = await razorpay.payments.fetch(razorpay_payment_id);
+      
+      // Re-calculate what the price SHOULD be based on the tier and coupon in the request
+      const { tier, couponId } = invitationData;
+      const [dbTier] = await db.select().from(tiersTable).where(eq(tiersTable.slug, tier || "basic"));
+      
+      if (!dbTier) {
+        return NextResponse.json({ error: "Invalid tier in invitation data" }, { status: 400 });
+      }
+
+      let expectedAmount = dbTier.price;
+      if (couponId) {
+        const coupon = await db.query.coupons.findFirst({
+          where: eq(coupons.id, couponId),
+        });
+        if (coupon && coupon.active) {
+          if (coupon.discountType === "percentage") {
+            expectedAmount = Math.round(dbTier.price * (1 - coupon.discountValue / 100));
+          } else {
+            expectedAmount = Math.max(0, dbTier.price - coupon.discountValue);
+          }
+        }
+      }
+
+      // Check if the amount actually paid matches our server-side calculation
+      // Razorpay amount is in paise
+      if (payment.amount !== expectedAmount * 100) {
+        console.error("PRICE MANIPULATION DETECTED:", {
+          paid: payment.amount,
+          expected: expectedAmount * 100,
+          user: invitationData.userEmail
+        });
+        return NextResponse.json({ error: "Price mismatch. Payment rejected." }, { status: 400 });
+      }
+      // ──────────────────────────────
     } else {
       // If bypassPayment is true, we MUST verify the coupon actually results in 0 cost
       const { couponId, tier } = invitationData;
@@ -142,13 +182,16 @@ export async function POST(req: NextRequest) {
     // Send the email in the background if email is provided
     if (userEmail) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dnvites.com";
+      // Format a professional brand order ID: #DNV + first 8 chars of razorpay ID
+      const displayOrderId = `#DNV${razorpay_order_id.replace('order_', '').substring(0, 8).toUpperCase()}`;
+      
       sendPurchaseReceipt({
         to: userEmail,
         brideName,
         groomName,
         planName: tier || "basic",
         amountPaid: paidAmount || 0,
-        orderId: razorpay_order_id,
+        orderId: displayOrderId,
         invitationLink: `${baseUrl}/invite/${slug}`,
       }).catch((err) => console.error("Failed to send receipt:", err));
     }

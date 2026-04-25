@@ -24,10 +24,21 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  const validatePassword = (pass: string) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(pass);
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    if (mode === "register" && !validatePassword(password)) {
+      setError("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
@@ -182,10 +193,31 @@ export default function LoginPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            minLength={6}
                             className="pl-10 border-rose-200 focus:border-[#F43F8F] rounded-xl h-12 text-base"
                           />
                         </div>
+                        {mode === "register" && password.length > 0 && (
+                          <div className="mt-2 space-y-1.5">
+                            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Security Requirements:</p>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                              <p className={`text-[11px] flex items-center gap-1.5 ${password.length >= 8 ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-1 h-1 rounded-full ${password.length >= 8 ? "bg-green-600" : "bg-gray-400"}`} /> 8+ Characters
+                              </p>
+                              <p className={`text-[11px] flex items-center gap-1.5 ${/[A-Z]/.test(password) ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-1 h-1 rounded-full ${/[A-Z]/.test(password) ? "bg-green-600" : "bg-gray-400"}`} /> Uppercase
+                              </p>
+                              <p className={`text-[11px] flex items-center gap-1.5 ${/[a-z]/.test(password) ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-1 h-1 rounded-full ${/[a-z]/.test(password) ? "bg-green-600" : "bg-gray-400"}`} /> Lowercase
+                              </p>
+                              <p className={`text-[11px] flex items-center gap-1.5 ${/\d/.test(password) ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-1 h-1 rounded-full ${/\d/.test(password) ? "bg-green-600" : "bg-gray-400"}`} /> Number
+                              </p>
+                              <p className={`text-[11px] flex items-center gap-1.5 ${/[@$!%*?&]/.test(password) ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-1 h-1 rounded-full ${/[@$!%*?&]/.test(password) ? "bg-green-600" : "bg-gray-400"}`} /> Special Char
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     {error && <p className="text-sm text-red-500 font-medium">{error}</p>}

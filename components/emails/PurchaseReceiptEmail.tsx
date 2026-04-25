@@ -1,4 +1,4 @@
-import { Html, Head, Body, Container, Text, Section, Heading, Hr } from "react-email";
+import { Html, Head, Body, Container, Text, Section, Heading, Hr, Link, Preview, Img } from "react-email";
 import * as React from "react";
 
 interface PurchaseReceiptEmailProps {
@@ -15,42 +15,81 @@ export default function PurchaseReceiptEmail({
   groomName = "Groom",
   planName = "Premium",
   amountPaid = 0,
-  orderId = "order_abc",
+  orderId = "DNV123456",
   invitationLink = "https://dnvites.com",
 }: PurchaseReceiptEmailProps) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://dnvites.com";
+
   return (
     <Html>
       <Head />
+      <Preview>Your DNvites Invitation is Ready! 🎉</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Thank You for Your Purchase! 🎉</Heading>
+          <Section style={logoSection}>
+             <Img
+              src={`${baseUrl}/logo.png`}
+              width="140"
+              height="auto"
+              alt="DNvites"
+              style={logo}
+            />
+          </Section>
+          
+          <Heading style={h1}>Purchase Confirmation</Heading>
+          
           <Text style={text}>
-            Hello {brideName} & {groomName},
+            Dear <strong>{brideName} & {groomName}</strong>,
           </Text>
           <Text style={text}>
-            We're thrilled to be part of your special day! Your payment for the <strong>{planName}</strong> plan has been successfully processed.
+            Congratulations! Your payment for the <strong>{planName}</strong> plan has been successfully received. We are honored to be a part of your wedding journey.
           </Text>
 
           <Section style={receiptSection}>
-            <Text style={receiptText}><strong>Order ID:</strong> {orderId}</Text>
-            <Text style={receiptText}><strong>Amount Paid:</strong> ₹{amountPaid}</Text>
+            <Text style={receiptHeading}>Order Summary</Text>
+            <Hr style={receiptHr} />
+            <div style={receiptRow}>
+              <Text style={receiptLabel}>Order ID</Text>
+              <Text style={receiptValue}>{orderId}</Text>
+            </div>
+            <div style={receiptRow}>
+              <Text style={receiptLabel}>Amount Paid</Text>
+              <Text style={receiptValue}>₹{amountPaid}</Text>
+            </div>
+            <div style={receiptRow}>
+              <Text style={receiptLabel}>Status</Text>
+              <Text style={{ ...receiptValue, color: "#10b981" }}>Success</Text>
+            </div>
           </Section>
 
-          <Text style={text}>
-            Your digital invitation is now live. You can view and share it using the link below:
+          <Text style={ctaText}>
+            Your beautiful digital invitation is now live and ready to be shared with your loved ones.
           </Text>
-          <Text style={linkContainer}>
-            <a href={invitationLink} style={button}>
+          
+          <Section style={buttonContainer}>
+            <Link href={invitationLink} style={button}>
               View Your Invitation
-            </a>
+            </Link>
+          </Section>
+
+          <Text style={secondaryText}>
+            You can share this link via WhatsApp, Instagram, or Email. Your guests can RSVP directly through the page.
           </Text>
 
           <Hr style={hr} />
-          <Text style={footer}>
-            If you have any questions or need further assistance, feel free to reply to this email.
-            <br />
-            - The DNvites Team
-          </Text>
+          <Section style={footerSection}>
+            <Text style={footer}>
+              <strong>DNvites – Dearest Invites</strong>
+              <br />
+              Premium Digital Wedding Invitations
+            </Text>
+            <Text style={footerLink}>
+              <Link href={baseUrl} style={link}>Website</Link> | <Link href="https://instagram.com/dnvites" style={link}>Instagram</Link>
+            </Text>
+            <Text style={footerSmall}>
+              If you have any questions, simply reply to this email. Our concierge team is here to help.
+            </Text>
+          </Section>
         </Container>
       </Body>
     </Html>
@@ -58,71 +97,147 @@ export default function PurchaseReceiptEmail({
 }
 
 const main = {
-  backgroundColor: "#f6f9fc",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  backgroundColor: "#fdf8f9",
+  padding: "40px 0",
 };
 
 const container = {
   backgroundColor: "#ffffff",
   margin: "0 auto",
-  padding: "40px 20px",
-  borderRadius: "12px",
+  padding: "48px",
+  borderRadius: "24px",
   maxWidth: "600px",
-  border: "1px solid #eee",
+  border: "1px solid #fce4ec",
+  boxShadow: "0 10px 25px rgba(244, 63, 143, 0.05)",
+};
+
+const logoSection = {
+  textAlign: "center" as const,
+  marginBottom: "32px",
+};
+
+const logo = {
+  margin: "0 auto",
 };
 
 const h1 = {
-  color: "#F43F8F",
-  fontSize: "24px",
-  fontWeight: "bold",
+  color: "#1a1a1a",
+  fontFamily: "'Playfair Display', serif",
+  fontSize: "28px",
+  fontWeight: "300",
   textAlign: "center" as const,
-  margin: "30px 0",
+  margin: "0 0 40px 0",
 };
 
 const text = {
-  color: "#333",
+  color: "#4a4a4a",
+  fontFamily: "'Inter', sans-serif",
   fontSize: "16px",
-  lineHeight: "24px",
+  lineHeight: "1.6",
+  marginBottom: "20px",
 };
 
 const receiptSection = {
-  backgroundColor: "#f9f9f9",
-  padding: "20px",
-  borderRadius: "8px",
-  margin: "20px 0",
+  backgroundColor: "#fafafa",
+  padding: "24px",
+  borderRadius: "16px",
+  margin: "32px 0",
+  border: "1px solid #f0f0f0",
 };
 
-const receiptText = {
-  color: "#333",
+const receiptHeading = {
+  fontSize: "12px",
+  fontWeight: "bold",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.05em",
+  color: "#888",
+  marginBottom: "12px",
+};
+
+const receiptHr = {
+  borderColor: "#eee",
+  margin: "12px 0",
+};
+
+const receiptRow = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginBottom: "8px",
+};
+
+const receiptLabel = {
   fontSize: "14px",
-  margin: "4px 0",
+  color: "#666",
+  margin: "0",
 };
 
-const linkContainer = {
+const receiptValue = {
+  fontSize: "14px",
+  fontWeight: "600",
+  color: "#1a1a1a",
+  margin: "0",
+};
+
+const ctaText = {
+  color: "#4a4a4a",
+  fontSize: "16px",
   textAlign: "center" as const,
-  margin: "30px 0",
+  marginBottom: "24px",
+};
+
+const buttonContainer = {
+  textAlign: "center" as const,
+  marginBottom: "32px",
 };
 
 const button = {
   backgroundColor: "#F43F8F",
-  borderRadius: "8px",
+  borderRadius: "100px",
   color: "#fff",
   fontSize: "16px",
   textDecoration: "none",
   textAlign: "center" as const,
   display: "inline-block",
-  padding: "12px 24px",
-  fontWeight: "bold",
+  padding: "16px 32px",
+  fontWeight: "600",
+  boxShadow: "0 4px 15px rgba(244, 63, 143, 0.3)",
+};
+
+const secondaryText = {
+  color: "#888",
+  fontSize: "14px",
+  textAlign: "center" as const,
+  marginBottom: "40px",
 };
 
 const hr = {
-  borderColor: "#e6ebf1",
-  margin: "20px 0",
+  borderColor: "#f0f0f0",
+  margin: "32px 0",
+};
+
+const footerSection = {
+  textAlign: "center" as const,
 };
 
 const footer = {
-  color: "#8898aa",
+  color: "#1a1a1a",
+  fontSize: "14px",
+  lineHeight: "20px",
+  marginBottom: "8px",
+};
+
+const footerLink = {
+  marginBottom: "16px",
+};
+
+const link = {
+  color: "#F43F8F",
+  textDecoration: "none",
+  fontSize: "14px",
+};
+
+const footerSmall = {
+  color: "#aaa",
   fontSize: "12px",
-  lineHeight: "16px",
+  lineHeight: "18px",
 };

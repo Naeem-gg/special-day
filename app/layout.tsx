@@ -28,6 +28,15 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.ico", type: "image/x-icon" },
+    ],
+    apple: [
+      { url: "/logo.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -37,7 +46,7 @@ export const metadata: Metadata = {
     description: "Create beautiful, animated digital wedding invitations in minutes. Share instantly via WhatsApp, Instagram or Email.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/logo.png",
         width: 1200,
         height: 630,
         alt: "DNvites - Digital Wedding Invitations",
@@ -48,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "DNvites – Dearest Invites | Digital Wedding Invitations",
     description: "Create beautiful, animated digital wedding invitations in minutes.",
-    images: ["/og-image.png"],
+    images: ["/logo.png"],
   },
   robots: {
     index: true,

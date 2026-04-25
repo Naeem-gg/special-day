@@ -13,8 +13,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    if (password.length < 6) {
-      return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
+    // Password validation regex
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return NextResponse.json({ 
+        error: "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character." 
+      }, { status: 400 });
     }
 
     // Check if user exists
@@ -73,12 +77,19 @@ export async function POST(req: NextRequest) {
     // Send OTP via email
     const emailSent = await sendEmail({
       to: email,
-      subject: "Verify Your Email - DNvites",
-      htmlContent: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; text-align: center;">
-        <h2>Welcome to DNvites!</h2>
-        <p>Your verification code is:</p>
-        <h1 style="font-size: 32px; letter-spacing: 4px; color: #F43F8F;">${otp}</h1>
-        <p>This code will expire in 10 minutes.</p>
+      subject: `Verify Your Email: ${otp}`,
+      htmlContent: `<div style="font-family: 'Inter', Helvetica, Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 40px; border: 1px solid #fce4ec; border-radius: 24px; text-align: center; background-color: #ffffff; box-shadow: 0 10px 25px rgba(244, 63, 143, 0.05);">
+        <div style="margin-bottom: 30px;">
+          <img src="https://dnvites.com/logo.png" alt="DNvites" style="width: 140px; height: auto;">
+        </div>
+        <h2 style="color: #1a1a1a; font-size: 24px; font-weight: 300; margin-bottom: 20px;">Welcome to DNvites!</h2>
+        <p style="color: #666; font-size: 16px; margin-bottom: 30px;">To complete your sign-up and start creating your beautiful wedding invitations, please use the following verification code:</p>
+        <div style="background-color: #fdf2f8; padding: 30px; border-radius: 16px; border: 1px dashed #F43F8F; margin-bottom: 30px;">
+          <h1 style="font-size: 42px; letter-spacing: 8px; color: #1a1a1a; margin: 0; font-family: monospace;">${otp}</h1>
+        </div>
+        <p style="color: #999; font-size: 14px; margin-bottom: 40px;">This code is valid for the next 10 minutes. If you did not request this code, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #f0f0f0; margin-bottom: 30px;">
+        <p style="color: #1a1a1a; font-size: 14px; font-weight: bold; margin-bottom: 40px;">DNvites — Premium Digital Invitations</p>
       </div>`,
     });
 
