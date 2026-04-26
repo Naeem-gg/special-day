@@ -57,6 +57,15 @@ export async function POST(req: NextRequest) {
       receipt: `receipt_${Date.now()}`,
     };
 
+    if (options.amount === 0) {
+      return NextResponse.json({
+        orderId: "FREE_" + Date.now(),
+        amount: 0,
+        currency: pricing.code,
+        isFree: true
+      });
+    }
+
     const order = await razorpay.orders.create(options);
 
     return NextResponse.json({ 

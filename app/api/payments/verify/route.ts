@@ -18,6 +18,10 @@ export async function POST(req: NextRequest) {
     } = await req.json();
 
     if (!bypassPayment) {
+      if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+        return NextResponse.json({ error: "Missing required payment parameters" }, { status: 400 });
+      }
+      
       // Verify signature
       const secret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
       const hmac = crypto.createHmac("sha256", secret);
@@ -116,6 +120,13 @@ export async function POST(req: NextRequest) {
         active: true
       }).returning();
 
+      // Update coupon usage for the coupon USED to buy the gift
+      if (invitationData.couponId) {
+        await db.update(coupons)
+          .set({ usedCount: sql`${coupons.usedCount} + 1` })
+          .where(eq(coupons.id, invitationData.couponId));
+      }
+
       // Send the gift code via email
       if (userEmail) {
         const { sendGiftCoupon } = await import("@/lib/mail");
@@ -169,10 +180,11 @@ export async function POST(req: NextRequest) {
       couponId: couponId || null,
       discountApplied: discountApplied || 0,
       paidAmount: paidAmount || 0,
-      razorpayOrderId: razorpay_order_id,
-      razorpayPaymentId: razorpay_payment_id
+      razorpayOrderId: razorpay_order_id || "FREE",
+      razorpayPaymentId: razorpay_payment_id || "FREE"
     }).returning();
 
+    // Update coupon usage if applicable
     if (couponId) {
       await db.update(coupons)
         .set({ usedCount: sql`${coupons.usedCount} + 1` })
@@ -183,7 +195,11 @@ export async function POST(req: NextRequest) {
     if (userEmail) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://dnvites.com";
       // Format a professional brand order ID: #DNV + first 8 chars of razorpay ID
-      const displayOrderId = `#DNV${razorpay_order_id.replace('order_', '').substring(0, 8).toUpperCase()}`;
+      // Fallback for FREE orders
+      const orderSuffix = razorpay_order_id 
+        ? razorpay_order_id.replace('order_', '').substring(0, 8).toUpperCase()
+        : Math.random().toString(36).substring(2, 10).toUpperCase();
+      const displayOrderId = `#DNV${orderSuffix}`;
       
       sendPurchaseReceipt({
         to: userEmail,
