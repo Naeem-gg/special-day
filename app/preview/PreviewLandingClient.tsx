@@ -95,9 +95,12 @@ export default function PreviewLandingClient({ initialParams, error: errorParam 
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handlePreview = async () => {
+  const handlePreview = async (templateSlug?: string) => {
+    const slugToUse = templateSlug || selectedTemplate;
     if (!brideName || !groomName || !weddingDate) {
-      setError("Please fill in all fields to preview your invitation.");
+      setError("Please fill in your names and date above first! ✨");
+      // Scroll to top to show form
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     setLoading(true);
@@ -106,14 +109,18 @@ export default function PreviewLandingClient({ initialParams, error: errorParam 
       const res = await fetch("/api/preview/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brideName, groomName, dateStr: weddingDate, template: selectedTemplate }),
+        body: JSON.stringify({ 
+          brideName, 
+          groomName, 
+          dateStr: weddingDate, 
+          template: slugToUse 
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      router.push(`/preview/${selectedTemplate}?token=${data.token}`);
+      router.push(`/preview/${slugToUse}?token=${data.token}`);
     } catch (e: any) {
       setError(e.message || "Failed to start preview");
-    } finally {
       setLoading(false);
     }
   };
@@ -176,31 +183,31 @@ export default function PreviewLandingClient({ initialParams, error: errorParam 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {TEMPLATES.map((t, i) => (
             <motion.div key={t.slug} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }}>
-              <TemplateThumbnail template={t} selected={selectedTemplate === t.slug} onSelect={() => setSelectedTemplate(t.slug)} brideName={brideName} groomName={groomName} weddingDate={weddingDate} />
+              <TemplateThumbnail 
+                template={t} 
+                selected={selectedTemplate === t.slug} 
+                onSelect={() => {
+                  setSelectedTemplate(t.slug);
+                  handlePreview(t.slug);
+                }} 
+                brideName={brideName} 
+                groomName={groomName} 
+                weddingDate={weddingDate} 
+              />
             </motion.div>
           ))}
         </div>
 
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2">
-          {error && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="px-4 py-2 bg-red-100 text-red-600 rounded-full text-xs font-bold shadow-lg border border-red-200">
-              {error}
-            </motion.div>
-          )}
-          <motion.button
-            onClick={handlePreview}
-            disabled={loading}
-            whileHover={{ scale: 1.04, boxShadow: "0 20px 50px rgba(244,63,143,0.4)" }}
-            whileTap={{ scale: 0.97 }}
-            className="relative overflow-hidden flex items-center gap-3 px-10 py-4 rounded-2xl font-sans font-bold text-base text-white disabled:opacity-70 shadow-2xl"
-            style={{ background: "linear-gradient(90deg, #F43F8F, #c73272)" }}>
-            <Sparkles className="w-5 h-5" />
-            {loading ? "Generating Preview..." : `Preview: ${TEMPLATES.find(t => t.slug === selectedTemplate)?.name}`}
-            <motion.div animate={{ x: ["-100%", "200%"] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
-              className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none" />
-          </motion.button>
-        </div>
+        {loading && (
+          <div className="fixed inset-0 bg-white/60 backdrop-blur-sm z-[100] flex flex-col items-center justify-center">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              className="w-12 h-12 border-4 border-rose-200 border-t-[#F43F8F] rounded-full mb-4"
+            />
+            <p className="font-serif text-lg text-gray-900 animate-pulse">Generating your custom preview...</p>
+          </div>
+        )}
       </div>
     </div>
   );

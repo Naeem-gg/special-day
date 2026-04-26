@@ -30,23 +30,60 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
 import React from "react";
 import Link from "next/link";
 import EnvelopeIntro from "../invitation/EnvelopeIntro";
+import DoorIntro from "../invitation/DoorIntro";
+import CurtainIntro from "../invitation/CurtainIntro";
 
 export default function TemplateRouter({ template, ...props }: TemplateProps & { template: string }) {
   const Component = TEMPLATE_MAP[template] ?? RoseGoldTemplate;
   const meta = TEMPLATES.find(t => t.slug === template);
   const isPremium = meta?.tier === "premium";
 
-  return (
-    <>
-      {isPremium && !props.isThumbnail && (
-        <EnvelopeIntro 
+  const renderIntro = () => {
+    if (!isPremium || props.isThumbnail) return null;
+
+    // Assign different animations to different themes
+    const doorThemes = ["royal-gold", "midnight-noir", "sacred-ivory"];
+    const curtainThemes = ["sakura", "azure-ocean", "botanical"];
+    
+    if (doorThemes.includes(template)) {
+      return (
+        <DoorIntro 
           brideName={props.brideName} 
           groomName={props.groomName} 
           variant={template} 
           autoOpen={props.autoOpen} 
           inline={props.inline}
         />
-      )}
+      );
+    }
+
+    if (curtainThemes.includes(template)) {
+      return (
+        <CurtainIntro 
+          brideName={props.brideName} 
+          groomName={props.groomName} 
+          variant={template} 
+          autoOpen={props.autoOpen} 
+          inline={props.inline}
+        />
+      );
+    }
+
+    // Default to Envelope for others
+    return (
+      <EnvelopeIntro 
+        brideName={props.brideName} 
+        groomName={props.groomName} 
+        variant={template} 
+        autoOpen={props.autoOpen} 
+        inline={props.inline}
+      />
+    );
+  };
+
+  return (
+    <>
+      {renderIntro()}
       <Component {...props} tier={meta?.tier} />
       
       {/* ── Brand Promotional Footer ────────────── */}

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { tiers } from "@/lib/db/schema";
-import { getSession } from "@/lib/auth-utils";
+import { getUserSession } from "@/lib/auth-utils";
 import DashboardClient from "./DashboardClient";
 import { Metadata } from "next";
 
@@ -14,20 +14,20 @@ export const dynamic = "force-dynamic";
 
 async function getData() {
   try {
-    const [allTiers, session] = await Promise.all([
+    const [allTiers, userSession] = await Promise.all([
       db.select().from(tiers),
-      getSession()
+      getUserSession()
     ]);
 
     return {
       allTiers,
-      session
+      session: userSession ? { authenticated: true, user: userSession } : { authenticated: false }
     };
   } catch (err) {
     console.error("Dashboard: Failed to fetch initial data:", err);
     return {
       allTiers: [],
-      session: null
+      session: { authenticated: false }
     };
   }
 }

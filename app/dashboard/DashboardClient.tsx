@@ -874,12 +874,25 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
         className="sticky top-0 z-40 glass border-b border-rose-100/60 px-6 h-16 flex items-center justify-between"
       >
         <DNvitesLogo />
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
           <Link href="/">
-            <Button variant="outline" size="sm" className="border-rose-200 hover:border-[#F43F8F] hover:text-[#F43F8F]">
-              ← Back Home
+            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#F43F8F]">
+              ← Home
             </Button>
           </Link>
+          {session?.authenticated ? (
+            <Link href="/account">
+              <Button size="sm" className="bg-rose-50 text-[#F43F8F] hover:bg-rose-100 border-rose-100 font-bold">
+                My Account
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button variant="outline" size="sm" className="border-rose-200 text-gray-600 hover:border-[#F43F8F] hover:text-[#F43F8F]">
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
       </motion.header>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,21 @@ export default function LoginPage() {
   const [resendCount, setResendCount] = useState(0);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        if (data.authenticated) {
+          router.push("/account");
+        }
+      } catch (err) {
+        console.error("Failed to check session:", err);
+      }
+    };
+    checkSession();
+  }, [router]);
 
   const validatePassword = (pass: string) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;

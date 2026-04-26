@@ -5,19 +5,23 @@ import { NextRequest } from "next/server";
 const secretKey = "secret"; // In production, use process.env.JWT_SECRET
 const key = new TextEncoder().encode(secretKey);
 
-export async function encrypt(payload: any) {
+export async function encrypt(payload: any, expireTime: string = "2h") {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("2h")
+    .setExpirationTime(expireTime)
     .sign(key);
 }
 
 export async function decrypt(input: string): Promise<any> {
-  const { payload } = await jwtVerify(input, key, {
-    algorithms: ["HS256"],
-  });
-  return payload;
+  try {
+    const { payload } = await jwtVerify(input, key, {
+      algorithms: ["HS256"],
+    });
+    return payload;
+  } catch (err) {
+    return null;
+  }
 }
 
 export async function login(username: string) {
@@ -57,7 +61,7 @@ export async function updateSession(request: NextRequest) {
 
 export async function userLogin(userId: number, email: string) {
   const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-  const session = await encrypt({ userId, email, role: "user", expires });
+  const session = await encrypt({ userId, email, role: "user", expires }, "30d");
   (await cookies()).set("user_session", session, { expires, httpOnly: true });
 }
 

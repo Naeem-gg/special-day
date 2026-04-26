@@ -234,7 +234,7 @@ function ProgressBar() {
 import { detectCurrency, getDisplayPrice, Currency } from "@/lib/currency";
 
 /* ════════ MAIN HOME CLIENT ══════════════ */
-export default function HomeClient({ testimonials }: { testimonials: any[] }) {
+export default function HomeClient({ testimonials, session }: { testimonials: any[]; session: any }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currency, setCurrency] = useState<Currency>("INR");
 
@@ -308,9 +308,15 @@ export default function HomeClient({ testimonials }: { testimonials: any[] }) {
                   <Gift className="w-4 h-4" /> Gift an Invite
                 </Button>
               </Link>
-              <Link href="/login">
-                <Button variant="ghost" className="text-sm hover:text-[#F43F8F]">Sign In</Button>
-              </Link>
+              {!session ? (
+                <Link href="/login">
+                  <Button variant="ghost" className="text-sm hover:text-[#F43F8F]">Sign In</Button>
+                </Link>
+              ) : (
+                <Link href="/account">
+                  <Button variant="ghost" className="text-sm text-[#F43F8F] font-bold">My Account</Button>
+                </Link>
+              )}
             </motion.div>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.7 }}
@@ -367,9 +373,15 @@ export default function HomeClient({ testimonials }: { testimonials: any[] }) {
                   <Gift className="w-5 h-5" /> Gift an Invite
                 </Link>
                 <div className="h-px bg-rose-100/50 w-full my-2" />
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-[#F43F8F]">
-                  Sign In
-                </Link>
+                {!session ? (
+                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-gray-800 hover:text-[#F43F8F]">
+                    Sign In
+                  </Link>
+                ) : (
+                  <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-[#F43F8F]">
+                    My Account
+                  </Link>
+                )}
                 <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
                   <button className="w-full bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white rounded-xl px-6 py-3.5 text-base font-bold shadow-lg shadow-rose-300/40 active:scale-[0.98] transition-transform">
                     Create Your Invitation ✨
