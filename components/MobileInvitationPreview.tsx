@@ -3,14 +3,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Wifi, Battery, Signal, Lock, RotateCcw, Volume2, VolumeX } from 'lucide-react'
-import TemplateRouter from './templates/TemplateRouter'
-import { TemplateProps } from './templates/types'
+import StyleRouter from './templates/TemplateRouter'
+import { StyleProps } from './templates/types'
 
 // Use a stable future date to avoid hydration mismatch
 // We'll set this dynamically in the component via useEffect
 const STATIC_FUTURE = new Date('2026-06-15T10:00:00')
 
-const BASE_MOCK_PROPS: Omit<TemplateProps, 'date'> = {
+const BASE_MOCK_PROPS: Omit<StyleProps, 'date'> = {
   brideName: 'Ayesha',
   groomName: 'Abdullah',
   venue: 'The Grand Imperial Ballroom, Pearl Continental · Lahore',
@@ -109,8 +109,8 @@ export default function MobileInvitationPreview() {
 
           {/* Scrollable Template Content */}
           <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth relative bg-[#1A0008]">
-            <TemplateRouter
-              template="royal-gold"
+            <StyleRouter
+              style="royal-gold"
               {...BASE_MOCK_PROPS}
               date={STATIC_FUTURE}
               autoOpen={hasOpened}

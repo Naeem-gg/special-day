@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { TEMPLATES, type TemplateProps } from './types'
+import { STYLES, type StyleProps } from './types'
 
 const RoseGoldTemplate = dynamic(() => import('./RoseGoldTemplate'))
 const BotanicalTemplate = dynamic(() => import('./BotanicalTemplate'))
@@ -14,17 +14,47 @@ const RoyalGoldTemplate = dynamic(() => import('./RoyalGoldTemplate'))
 const CelestialTemplate = dynamic(() => import('./CelestialTemplate'))
 const SacredIvoryTemplate = dynamic(() => import('./SacredIvoryTemplate'))
 
-const TEMPLATE_MAP: Record<string, React.ComponentType<TemplateProps>> = {
+// New Basic
+const MinimalModernTemplate = dynamic(() => import('./MinimalModernTemplate'))
+const LavenderMistTemplate = dynamic(() => import('./LavenderMistTemplate'))
+const SunsetBreezeTemplate = dynamic(() => import('./SunsetBreezeTemplate'))
+const ClassicScriptTemplate = dynamic(() => import('./ClassicScriptTemplate'))
+
+// New Standard
+const VintageChicTemplate = dynamic(() => import('./VintageChicTemplate'))
+const DesertSandTemplate = dynamic(() => import('./DesertSandTemplate'))
+const AmethystGlanceTemplate = dynamic(() => import('./AmethystGlanceTemplate'))
+const ArcticFrostTemplate = dynamic(() => import('./ArcticFrostTemplate'))
+
+// New Premium
+const DiamondRegalTemplate = dynamic(() => import('./DiamondRegalTemplate'))
+const EnchantedGardenTemplate = dynamic(() => import('./EnchantedGardenTemplate'))
+const OpulentRubyTemplate = dynamic(() => import('./OpulentRubyTemplate'))
+
+const STYLE_MAP: Record<string, React.ComponentType<StyleProps>> = {
   'rose-gold': RoseGoldTemplate,
   botanical: BotanicalTemplate,
   sakura: SakuraDreamTemplate,
+  'minimal-modern': MinimalModernTemplate,
+  'lavender-mist': LavenderMistTemplate,
+  'sunset-breeze': SunsetBreezeTemplate,
+  'classic-script': ClassicScriptTemplate,
+
   'azure-ocean': AzureOceanTemplate,
   'emerald-forest': EmeraldForestTemplate,
   cinematic: CinematicFilmTemplate,
+  'vintage-chic': VintageChicTemplate,
+  'desert-sand': DesertSandTemplate,
+  'amethyst-glance': AmethystGlanceTemplate,
+  'arctic-frost': ArcticFrostTemplate,
+
   'midnight-noir': MidnightNoirTemplate,
   'royal-gold': RoyalGoldTemplate,
   celestial: CelestialTemplate,
   'sacred-ivory': SacredIvoryTemplate,
+  'diamond-regal': DiamondRegalTemplate,
+  'enchanted-garden': EnchantedGardenTemplate,
+  'opulent-ruby': OpulentRubyTemplate,
 }
 
 import React from 'react'
@@ -33,39 +63,55 @@ import EnvelopeIntro from '../invitation/EnvelopeIntro'
 import DoorIntro from '../invitation/DoorIntro'
 import CurtainIntro from '../invitation/CurtainIntro'
 
-export default function TemplateRouter({
-  template,
+export default function StyleRouter({
+  style,
   ...props
-}: TemplateProps & { template: string }) {
-  const Component = TEMPLATE_MAP[template] ?? RoseGoldTemplate
-  const meta = TEMPLATES.find((t) => t.slug === template)
+}: StyleProps & { style: string }) {
+  const Component = STYLE_MAP[style] ?? RoseGoldTemplate
+  const meta = STYLES.find((t) => t.slug === style)
   const isPremium = meta?.tier === 'premium'
 
   const renderIntro = () => {
     if (!isPremium || props.isThumbnail) return null
 
     // Assign different animations to different themes
-    const doorThemes = ['royal-gold', 'midnight-noir', 'sacred-ivory']
-    const curtainThemes = ['sakura', 'azure-ocean', 'botanical']
+    const doorThemes = [
+      'royal-gold',
+      'midnight-noir',
+      'sacred-ivory',
+      'diamond-regal',
+      'opulent-ruby',
+      'minimal-modern',
+      'cinematic',
+    ]
+    const curtainThemes = [
+      'sakura',
+      'azure-ocean',
+      'botanical',
+      'enchanted-garden',
+      'lavender-mist',
+      'rose-gold',
+      'amethyst-glance',
+    ]
 
-    if (doorThemes.includes(template)) {
+    if (doorThemes.includes(style)) {
       return (
         <DoorIntro
           brideName={props.brideName}
           groomName={props.groomName}
-          variant={template}
+          variant={style}
           autoOpen={props.autoOpen}
           inline={props.inline}
         />
       )
     }
 
-    if (curtainThemes.includes(template)) {
+    if (curtainThemes.includes(style)) {
       return (
         <CurtainIntro
           brideName={props.brideName}
           groomName={props.groomName}
-          variant={template}
+          variant={style}
           autoOpen={props.autoOpen}
           inline={props.inline}
         />
@@ -77,7 +123,7 @@ export default function TemplateRouter({
       <EnvelopeIntro
         brideName={props.brideName}
         groomName={props.groomName}
-        variant={template}
+        variant={style}
         autoOpen={props.autoOpen}
         inline={props.inline}
       />
@@ -113,4 +159,5 @@ export default function TemplateRouter({
   )
 }
 
-export { TEMPLATE_MAP }
+export { STYLE_MAP }
+

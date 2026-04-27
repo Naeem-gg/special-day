@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import Script from 'next/script'
 import { motion, AnimatePresence, Variants, useInView } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,7 @@ import {
   X,
   ChevronDown,
 } from 'lucide-react'
-import { TEMPLATES, TIER_TEMPLATES } from '@/components/templates/types'
+import { STYLES, TIER_STYLES } from '@/components/templates/types'
 import { TestimonialForm } from '@/components/testimonials/TestimonialForm'
 import { detectCurrency, getDisplayPrice, Currency } from '@/lib/currency'
 
@@ -45,7 +45,7 @@ const shakeVariants = {
   },
 }
 
-import TemplateRouter from '@/components/templates/TemplateRouter'
+import StyleRouter from '@/components/templates/TemplateRouter'
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
@@ -57,12 +57,12 @@ const cardVariants: Variants = {
 }
 
 /* ── Optimized Template Card ─────────────────── */
-const TemplateCard = ({
+const StyleCard = ({
   tmpl,
   formData,
   isSelected,
-  handleTemplatePreview,
-  handleTemplateSelect,
+  handleStylePreview,
+  handleStyleSelect,
 }: any) => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '200px' })
@@ -72,7 +72,7 @@ const TemplateCard = ({
       ref={ref}
       whileHover={{ scale: 1.03, y: -3 }}
       whileTap={{ scale: 0.97 }}
-      onClick={() => handleTemplateSelect(tmpl.slug)}
+      onClick={() => handleStyleSelect(tmpl.slug)}
       className={`group relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all select-none flex flex-col ${isSelected ? 'border-[#F43F8F] shadow-lg shadow-rose-200/50' : 'border-gray-100 hover:border-rose-200'}`}
     >
       <div
@@ -88,30 +88,36 @@ const TemplateCard = ({
               transform: 'translate(-50%, -50%) scale(var(--preview-scale))',
             }}
           >
-            <TemplateRouter
-              template={tmpl.slug}
-              brideName={formData.brideName || 'Anjali'}
-              groomName={formData.groomName || 'Arjun'}
-              date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
-              venue={formData.venue || 'The Taj Mahal Palace, Mumbai'}
-              events={
-                formData.events[0]?.name
-                  ? formData.events
-                  : [
-                      {
-                        name: 'Sangeet',
-                        time: '6:00 PM',
-                        location: 'Crystal Ballroom',
-                        description: 'Music & Dance',
-                      },
-                    ]
-              }
-              gallery={formData.gallery}
-              ourStory={formData.ourStory}
-              mapUrl={formData.mapUrl}
-              isPreview={true}
-              isThumbnail={true}
-            />
+            <Suspense fallback={
+              <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+                <span className="text-4xl animate-pulse">{tmpl.emoji}</span>
+              </div>
+            }>
+              <StyleRouter
+                style={tmpl.slug}
+                brideName={formData.brideName || 'Anjali'}
+                groomName={formData.groomName || 'Arjun'}
+                date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
+                venue={formData.venue || 'The Taj Mahal Palace, Mumbai'}
+                events={
+                  formData.events[0]?.name
+                    ? formData.events
+                    : [
+                        {
+                          name: 'Sangeet',
+                          time: '6:00 PM',
+                          location: 'Crystal Ballroom',
+                          description: 'Music & Dance',
+                        },
+                      ]
+                }
+                gallery={formData.gallery}
+                ourStory={formData.ourStory}
+                mapUrl={formData.mapUrl}
+                isPreview={true}
+                isThumbnail={true}
+              />
+            </Suspense>
           </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -134,7 +140,7 @@ const TemplateCard = ({
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
-              handleTemplatePreview(tmpl.slug)
+              handleStylePreview(tmpl.slug)
             }}
             className="h-7 px-2 text-[10px] rounded-lg bg-rose-50 text-[#F43F8F] hover:bg-rose-100 border-none font-bold transition-all"
           >
@@ -218,7 +224,7 @@ export default function DashboardClient({
     slug: '',
     musicUrl: '',
     tier: 'basic',
-    template: 'rose-gold',
+    style: 'rose-gold',
     ourStory: '',
     mapUrl: '',
     events: [{ name: '', time: '', location: '', description: '' }],
@@ -239,10 +245,10 @@ export default function DashboardClient({
           if (brideName) newForm.brideName = brideName
           if (groomName) newForm.groomName = groomName
           if (dateStr) newForm.date = dateStr
-          if (template) {
-            newForm.template = template
-            if (TIER_TEMPLATES.premium?.includes(template)) newForm.tier = 'premium'
-            else if (TIER_TEMPLATES.standard?.includes(template)) newForm.tier = 'standard'
+          if (style) {
+            newForm.style = style
+            if (TIER_STYLES.premium?.includes(style)) newForm.tier = 'premium'
+            else if (TIER_STYLES.standard?.includes(style)) newForm.tier = 'standard'
           }
           return newForm
         })
@@ -314,14 +320,14 @@ export default function DashboardClient({
     }
   }, [formData.brideName, formData.groomName, formData.tier])
 
-  const handleTemplatePreview = (slug: string) => {
+  const handleStylePreview = (slug: string) => {
     setPreviewTemplate(slug)
   }
 
-  const handleTemplateSelect = (slug: string) => {
-    const tmpl = TEMPLATES.find((t) => t.slug === slug)
+  const handleStyleSelect = (slug: string) => {
+    const tmpl = STYLES.find((t) => t.slug === slug)
     if (!tmpl) return
-    setFormData({ ...formData, template: slug, tier: tmpl.tier })
+    setFormData({ ...formData, style: slug, tier: tmpl.tier })
   }
 
   const handleAddEvent = () => {
@@ -602,10 +608,10 @@ export default function DashboardClient({
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="text-[10px] font-bold uppercase tracking-widest text-[#F43F8F]">
-                            Template
+                            Style
                           </p>
                           <p className="text-lg font-serif text-gray-900">
-                            {TEMPLATES.find((t) => t.slug === formData.template)?.name}
+                            {STYLES.find((t) => t.slug === formData.style)?.name}
                           </p>
                         </div>
                         <div className="px-2 py-1 bg-white rounded-lg border border-rose-100 text-[10px] font-bold uppercase tracking-wider text-rose-400">
@@ -923,7 +929,7 @@ export default function DashboardClient({
         )}
       </AnimatePresence>
 
-      {/* Template Preview Modal */}
+      {/* Style Preview Modal */}
       <AnimatePresence>
         {previewTemplate && (
           <motion.div
@@ -980,33 +986,40 @@ export default function DashboardClient({
               </div>
             </div>
 
-            {/* Full Space Template Container */}
+            {/* Full Space Style Container */}
             <div className="relative flex-1 w-full overflow-hidden">
-              {/* Scrollable Template Content */}
+              {/* Scrollable Style Content */}
               <div className="absolute inset-0 overflow-y-auto scrollbar-hide">
-                <TemplateRouter
-                  template={previewTemplate}
-                  brideName={formData.brideName || 'Ayesha'}
-                  groomName={formData.groomName || 'Abdullah'}
-                  date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
-                  venue={formData.venue || 'The Grand Ballroom'}
-                  events={
-                    formData.events[0]?.name
-                      ? formData.events
-                      : [
-                          {
-                            name: 'Main Event',
-                            time: '6:00 PM',
-                            location: 'Royal Hall',
-                            description: 'Join us for dinner.',
-                          },
-                        ]
-                  }
-                  gallery={formData.gallery}
-                  ourStory={formData.ourStory}
-                  mapUrl={formData.mapUrl}
-                  isPreview={true}
-                />
+                <Suspense fallback={
+                  <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+                    <Loader2 className="w-12 h-12 text-[#F43F8F] animate-spin mb-4" />
+                    <p className="text-gray-500 font-serif italic">Loading Style...</p>
+                  </div>
+                }>
+                  <StyleRouter
+                    style={previewTemplate}
+                    brideName={formData.brideName || 'Ayesha'}
+                    groomName={formData.groomName || 'Abdullah'}
+                    date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
+                    venue={formData.venue || 'The Grand Ballroom'}
+                    events={
+                      formData.events[0]?.name
+                        ? formData.events
+                        : [
+                            {
+                              name: 'Main Event',
+                              time: '6:00 PM',
+                              location: 'Royal Hall',
+                              description: 'Join us for dinner.',
+                            },
+                          ]
+                    }
+                    gallery={formData.gallery}
+                    ourStory={formData.ourStory}
+                    mapUrl={formData.mapUrl}
+                    isPreview={true}
+                  />
+                </Suspense>
               </div>
 
               {/* Fixed High-Security Watermark Overlay */}
@@ -1535,16 +1548,16 @@ export default function DashboardClient({
             </Card>
           </motion.div>
 
-          {/* Template Picker */}
+          {/* Style Picker */}
           <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible">
             <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
               <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
                 <CardTitle className="flex items-center gap-2 font-serif text-xl">
                   <Sparkles className="w-5 h-5 text-[#D4AF37]" />
-                  Choose Your Invitation Design
+                  Choose Your Invitation Style
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Hold down on any template to preview it instantly with your details!
+                  Hold down on any style to preview it instantly with your details!
                 </p>
               </CardHeader>
               <CardContent className="pt-6">
@@ -1558,14 +1571,14 @@ export default function DashboardClient({
                   }
                 `}</style>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {TEMPLATES.map((tmpl) => (
-                    <TemplateCard
+                  {STYLES.map((tmpl) => (
+                    <StyleCard
                       key={tmpl.slug}
                       tmpl={tmpl}
                       formData={formData}
-                      isSelected={formData.template === tmpl.slug}
-                      handleTemplatePreview={handleTemplatePreview}
-                      handleTemplateSelect={handleTemplateSelect}
+                      isSelected={formData.style === tmpl.slug}
+                      handleStylePreview={handleStylePreview}
+                      handleStyleSelect={handleStyleSelect}
                     />
                   ))}
                 </div>
@@ -1599,7 +1612,7 @@ export default function DashboardClient({
                             </Label>
                             <p className="text-sm text-muted-foreground mt-0.5 capitalize">
                               For the {formData.tier} plan (
-                              {TEMPLATES.find((t) => t.slug === formData.template)?.name ||
+                              {STYLES.find((t) => t.slug === formData.style)?.name ||
                                 'Template'}
                               )
                             </p>

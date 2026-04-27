@@ -662,7 +662,7 @@ export default function HomeClient({
             <FeatureCard
               icon={<Layout className="w-6 h-6 text-[#F43F8F]" />}
               title="Gorgeous, Ready-Made Designs"
-              description="Pick from stunning templates — no design skills needed. Just add your names and you're done!"
+              description="Pick from stunning Styles — no design skills needed. Just add your names and you're done!"
               delay={0}
             />
             <FeatureCard
