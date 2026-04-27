@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Clock, ChevronDown, Map as MapIcon } from 'lucide-react'
-import type { TemplateProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import { motion } from 'framer-motion'
+import { ChevronDown, Clock, Map as MapIcon, MapPin } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import type { StyleProps } from './types'
 
 function SakuraPetal({ style }: { style: React.CSSProperties }) {
   return (
@@ -30,7 +30,7 @@ export default function SakuraDreamTemplate({
   musicUrl,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([])
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 

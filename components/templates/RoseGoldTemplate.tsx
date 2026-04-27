@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Heart, Share2, ExternalLink } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 /* ── Petal ─────────────────────────────────────────────── */
@@ -65,7 +65,7 @@ export default function RoseGoldTemplate({
   musicUrl,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([])
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 

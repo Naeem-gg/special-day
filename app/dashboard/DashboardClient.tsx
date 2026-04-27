@@ -45,7 +45,7 @@ const shakeVariants = {
   },
 }
 
-import StyleRouter from '@/components/templates/TemplateRouter'
+import StyleRouter from '@/components/templates/StyleRouter'
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 40 },
@@ -237,9 +237,9 @@ export default function DashboardClient({
       const brideName = params.get('brideName')
       const groomName = params.get('groomName')
       const dateStr = params.get('dateStr')
-      const template = params.get('template')
+      const style = params.get('template')
 
-      if (brideName || groomName || dateStr || template) {
+      if (brideName || groomName || dateStr || style) {
         setFormData((prev) => {
           const newForm = { ...prev }
           if (brideName) newForm.brideName = brideName
@@ -271,7 +271,7 @@ export default function DashboardClient({
                 slug: data.slug,
                 musicUrl: data.musicUrl || '',
                 tier: data.tier,
-                template: data.template,
+                style: data.template,
                 ourStory: data.ourStory || '',
                 mapUrl: data.mapUrl || '',
                 events: data.events || [{ name: '', time: '', location: '', description: '' }],
@@ -403,7 +403,10 @@ export default function DashboardClient({
       const res = await fetch(`/api/invitations/${editSlug}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          template: formData.style,
+        }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -441,12 +444,13 @@ export default function DashboardClient({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             bypassPayment: true,
-            invitationData: {
-              ...formData,
-              couponId: couponData?.id,
-              discountApplied: originalPrice,
-              paidAmount: 0,
-            },
+              invitationData: {
+                ...formData,
+                template: formData.style,
+                couponId: couponData?.id,
+                discountApplied: originalPrice,
+                paidAmount: 0,
+              },
           }),
         })
 
@@ -521,6 +525,7 @@ export default function DashboardClient({
                 razorpay_signature: response.razorpay_signature,
                 invitationData: {
                   ...formData,
+                  template: formData.style,
                   couponId: couponData?.id,
                   discountApplied: originalPrice - finalPrice,
                   paidAmount: finalPrice,
@@ -968,7 +973,7 @@ export default function DashboardClient({
                 <Button
                   size="sm"
                   onClick={() => {
-                    handleTemplateSelect(previewTemplate)
+                    handleStyleSelect(previewTemplate)
                     setPreviewTemplate(null)
                   }}
                   className="relative overflow-hidden bg-[#FFD700] hover:bg-[#FFC800] text-black font-bold px-4 h-7 text-[11px] rounded-lg shadow-sm transition-all active:scale-95 group"

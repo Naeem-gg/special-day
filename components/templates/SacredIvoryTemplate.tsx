@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Feather, Map as MapIcon } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 /* ── Gold leaf floating particle ────────────────────────── */
@@ -70,7 +70,7 @@ export default function SacredIvoryTemplate({
   inline,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [goldLeaves, setGoldLeaves] = useState<React.CSSProperties[]>([])
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 

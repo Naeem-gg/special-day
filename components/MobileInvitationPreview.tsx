@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Wifi, Battery, Signal, Lock, RotateCcw, Volume2, VolumeX } from 'lucide-react'
-import StyleRouter from './templates/TemplateRouter'
+import StyleRouter from './templates/StyleRouter'
 import { StyleProps } from './templates/types'
 
 // Use a stable future date to avoid hydration mismatch

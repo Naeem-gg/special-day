@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Star, Diamond, Crown, ChevronDown } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 function DiamondSparkle() {
@@ -52,7 +52,7 @@ export default function DiamondRegalTemplate({
   isThumbnail,
   invitationId,
   ourStory,
-}: TemplateProps) {
+}: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 

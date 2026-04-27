@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Clock, Calendar, Heart } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 export default function MinimalModernTemplate({
@@ -18,7 +18,7 @@ export default function MinimalModernTemplate({
   invitationId,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 

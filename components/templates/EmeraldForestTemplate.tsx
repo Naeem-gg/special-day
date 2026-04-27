@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Map as MapIcon } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 function Firefly({ style }: { style: React.CSSProperties }) {
@@ -78,7 +78,7 @@ export default function EmeraldForestTemplate({
   musicUrl,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [fireflies, setFireflies] = useState<React.CSSProperties[]>([])
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 

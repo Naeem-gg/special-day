@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Clock, Wind, Sun } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 export default function DesertSandTemplate({
@@ -17,7 +17,7 @@ export default function DesertSandTemplate({
   isThumbnail,
   invitationId,
   ourStory,
-}: TemplateProps) {
+}: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Sparkles, Map as MapIcon } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 function CosmosCanvas() {
@@ -182,7 +182,7 @@ export default function CelestialTemplate({
   inline,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {

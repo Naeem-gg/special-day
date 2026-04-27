@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { invitations } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
-import TemplateRouter from '@/components/templates/TemplateRouter'
+import StyleRouter from '@/components/templates/StyleRouter'
 import BackgroundMusic from '@/components/invitation/BackgroundMusic'
 
 import { Metadata } from 'next'
@@ -65,8 +65,8 @@ export default async function InvitationPage({ params }: PageProps) {
   return (
     <main>
       {invitation.musicUrl && <BackgroundMusic url={invitation.musicUrl} />}
-      <TemplateRouter
-        template={invitation.template || 'rose-gold'}
+      <StyleRouter
+        style={invitation.template || 'rose-gold'}
         brideName={invitation.brideName}
         groomName={invitation.groomName}
         date={invitation.date}

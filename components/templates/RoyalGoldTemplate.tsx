@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Crown, ChevronDown, Map as MapIcon } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
 function OrnateBorder() {
@@ -229,7 +229,7 @@ export default function RoyalGoldTemplate({
   inline,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {

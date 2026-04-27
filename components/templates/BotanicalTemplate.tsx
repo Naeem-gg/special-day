@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Clock, ExternalLink, Share2, ChevronDown, Map as MapIcon } from 'lucide-react'
-import type { TemplateProps } from './types'
+import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 import BackgroundMusic from '@/components/invitation/BackgroundMusic'
 
@@ -83,7 +83,7 @@ export default function BotanicalTemplate({
   musicUrl,
   ourStory,
   mapUrl,
-}: TemplateProps) {
+}: StyleProps) {
   const [leaves, setLeaves] = useState<React.CSSProperties[]>([])
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
