@@ -289,13 +289,13 @@ export default function HomeClient({ testimonials, session }: { testimonials: an
                 className="text-gray-400 hover:text-[#F43F8F] transition-colors"
                 title="Follow us on Instagram"
               >
-                <svg 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   className="w-5 h-5"
                 >
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -394,13 +394,13 @@ export default function HomeClient({ testimonials, session }: { testimonials: an
                     target="_blank"
                     className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-[#F43F8F]"
                   >
-                    <svg 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="w-5 h-5"
                     >
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -475,7 +475,7 @@ export default function HomeClient({ testimonials, session }: { testimonials: an
                     </motion.div>
                   </motion.button>
                 </Link>
-                <Link href="/preview">
+                <Link href="/dashboard?guest=true">
                   <motion.button
                     whileHover={{ scale: 1.04, borderColor: "#F43F8F", color: "#F43F8F" }}
                     whileTap={{ scale: 0.96 }}
@@ -620,18 +620,18 @@ export default function HomeClient({ testimonials, session }: { testimonials: an
                 <span className="gradient-text italic">but a digital event</span>
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                We've obsessed over every detail to make sure your guests are wowed 
-                from the second they tap the link. It's the replacement for 
+                We've obsessed over every detail to make sure your guests are wowed
+                from the second they tap the link. It's the replacement for
                 expensive wedding websites and paper cards.
               </p>
-              
+
               <div className="space-y-6">
                 {[
                   { title: "Animated Envelope", desc: "A magical 'tap to open' experience that mimics a real wax-sealed envelope.", icon: "💌" },
                   { title: "Integrated Music", desc: "Your favourite song plays automatically to set the mood.", icon: "🎵" },
                   { title: "One-Tap Maps", desc: "No more lost guests. Every event has a direct link to Google & Apple Maps.", icon: "📍" },
                 ].map((item, i) => (
-                  <motion.div 
+                  <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -657,10 +657,10 @@ export default function HomeClient({ testimonials, session }: { testimonials: an
               viewport={{ once: true }}
               className="relative aspect-square md:aspect-4/5 rounded-[3rem] overflow-hidden shadow-2xl"
             >
-              <Image 
-                src="/images/hero-bg.png" 
-                alt="Guest Experience Preview" 
-                fill 
+              <Image
+                src="/images/hero-bg.png"
+                alt="Guest Experience Preview"
+                fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />
@@ -732,7 +732,7 @@ export default function HomeClient({ testimonials, session }: { testimonials: an
 
       {/* ── Paper vs Digital ──────────── */}
       <section className="py-28 bg-white overflow-hidden relative">
-        <div className="absolute inset-0 bg-[radial-gradient(#f43f8f0a_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(#f43f8f0a_1px,transparent_1px)] bg-size-[32px_32px] pointer-events-none" />
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -877,7 +877,7 @@ export default function HomeClient({ testimonials, session }: { testimonials: an
                     🚀 Exclusive <span className="text-[#F43F8F]">Launch Pricing</span>
                   </p>
                   <p className="text-[11px] text-gray-500 font-medium leading-tight">
-                    Valid only for the <span className="text-[#F43F8F] font-bold">first 20 customers</span>. 
+                    Valid only for the <span className="text-[#F43F8F] font-bold">first 20 customers</span>.
                     Prices will increase by ₹300 soon!
                   </p>
                 </div>

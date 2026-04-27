@@ -51,7 +51,7 @@ function IvoryDivider() {
   );
 }
 
-export default function SacredIvoryTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline }: TemplateProps) {
+export default function SacredIvoryTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline, ourStory, mapUrl }: TemplateProps) {
   const [goldLeaves, setGoldLeaves] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -108,14 +108,14 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
         {/* ── HERO ─────────────────────────────────── */}
         <section className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? "min-h-[812px]" : inline ? "min-h-[700px]" : "min-h-screen"}`}
           style={{ background: "#000" }}>
-          
+
           {/* Full Opacity Video Backdrop */}
           {!isThumbnail && (
             <div className="absolute inset-0 z-0">
               <video
-                autoPlay 
-                muted 
-                loop 
+                autoPlay
+                muted
+                loop
                 playsInline
                 className="w-full h-full object-cover"
                 style={{ opacity: 1 }}
@@ -126,7 +126,7 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
               <div className="absolute inset-0 bg-black/20" style={{ background: "radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%)" }} />
             </div>
           )}
-          
+
           {goldLeaves.map((s, i) => <GoldLeaf key={i} style={s} />)}
 
           {/* Ornamental corner SVGs */}
@@ -148,31 +148,31 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
           </div>
 
           <div className="relative z-20 max-w-3xl drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0, rotate: -45 }} 
-              animate={{ opacity: 1, scale: 1, rotate: 0 }} 
+            <motion.div
+              initial={{ opacity: 0, scale: 0, rotate: -45 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 1.2, delay: 0.8, ease: "backOut" }}
               className="w-16 h-16 mx-auto mb-8 rounded-full flex items-center justify-center shadow-xl"
               style={{ border: "1.5px solid #D4AF37", background: "rgba(255,255,255,0.95)" }}>
               <Feather className="w-7 h-7" style={{ color: "#8B4513" }} />
             </motion.div>
 
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }} 
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.2 }} 
+              transition={{ duration: 1, delay: 1.2 }}
               className="font-sans text-[10px] uppercase mb-10 tracking-[0.5em] font-bold"
               style={{ color: "#FFF", textShadow: "0 2px 10px rgba(0,0,0,0.8)", fontFamily: "'Montserrat', sans-serif" }}>
               Together With Their Families
             </motion.p>
 
-            <motion.h1 
-              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }} 
+            <motion.h1
+              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1.5, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
               className="font-light leading-tight md:leading-none text-white"
-              style={{ 
-                fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", 
+              style={{
+                fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)",
                 letterSpacing: "0.05em",
                 textShadow: "0 4px 20px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.8)"
               }}>
@@ -186,23 +186,23 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
             >
               <div className="flex justify-center items-center gap-4 my-10">
                 <div className="h-px w-20 bg-white/60 shadow-sm" />
-                <motion.p 
-                  initial={{ scale: 0.5, opacity: 0 }} 
-                  animate={{ scale: 1, opacity: 1 }} 
+                <motion.p
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 2.2, duration: 0.8 }}
-                  className="text-3xl font-light italic text-white" 
+                  className="text-3xl font-light italic text-white"
                   style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}>&amp;</motion.p>
                 <div className="h-px w-20 bg-white/60 shadow-sm" />
               </div>
             </motion.div>
 
-            <motion.h1 
-              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }} 
+            <motion.h1
+              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1.5, delay: 1.8, ease: [0.22, 1, 0.36, 1] }}
               className="font-light leading-tight md:leading-none text-white"
-              style={{ 
-                fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)", 
+              style={{
+                fontSize: isThumbnail ? "3.5rem" : inline ? "clamp(2.5rem, 10vw, 4rem)" : "clamp(3.5rem, 12vw, 8rem)",
                 letterSpacing: "0.05em",
                 textShadow: "0 4px 20px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.8)"
               }}>
@@ -223,9 +223,9 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
             </motion.div>
           </div>
 
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 3.5 }}
             className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
             <span className="text-[10px] uppercase tracking-[0.5em] text-white font-bold" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)", fontFamily: "'Montserrat', sans-serif" }}>Scroll</span>
@@ -238,10 +238,10 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
         {/* ── COUNTDOWN ───────────────────────────── */}
         <section className="py-24 text-center relative overflow-hidden" style={{ background: "#FFFDF5" }}>
           {/* Decorative background element */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-[#D4AF37] to-transparent opacity-30" />
-          
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-linear-to-b from-[#D4AF37] to-transparent opacity-30" />
+
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <motion.p 
+            <motion.p
               initial={{ letterSpacing: "0.8em", opacity: 0 }}
               whileInView={{ letterSpacing: "0.4em", opacity: 1 }}
               transition={{ duration: 1.5 }}
@@ -252,8 +252,8 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
 
             <div className="flex gap-4 md:gap-10 justify-center flex-wrap px-4">
               {[{ label: "Days", v: time.days }, { label: "Hours", v: time.hours }, { label: "Minutes", v: time.minutes }, { label: "Seconds", v: time.seconds }].map((i, idx) => (
-                <motion.div 
-                  key={i.label} 
+                <motion.div
+                  key={i.label}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.1, duration: 0.8 }}
@@ -265,12 +265,12 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
                       border: "1px solid rgba(212,175,55,0.4)",
                       boxShadow: "0 10px 40px rgba(212,175,55,0.08)",
                     }}>
-                    
+
                     {/* Shimmer effect */}
-                    <motion.div 
+                    <motion.div
                       animate={{ x: ["-100%", "200%"] }}
                       transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
-                      className="absolute inset-0 z-10 w-1/2 h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg] pointer-events-none"
+                      className="absolute inset-0 z-10 w-1/2 h-full bg-linear-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg] pointer-events-none"
                     />
 
                     {/* Rolling Number Animation */}
@@ -292,7 +292,7 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
                     <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-[#D4AF37]/30" />
                     <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[#D4AF37]/30" />
                   </div>
-                  
+
                   <span className="text-[10px] uppercase tracking-[0.3em] font-bold"
                     style={{ color: "#B8860B", fontFamily: "'Montserrat', sans-serif" }}>
                     {i.label}
@@ -325,7 +325,7 @@ export default function SacredIvoryTemplate({ brideName, groomName, date, venue,
                   {/* Corner accent */}
                   <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none opacity-15"
                     style={{ background: "radial-gradient(circle at top right, #D4AF37, transparent 70%)" }} />
-                  
+
                   <p className="text-[10px] uppercase tracking-[0.5em] mb-2"
                     style={{ color: "#D4AF37", fontFamily: "'Montserrat', sans-serif" }}>✦ Event {i + 1} ✦</p>
                   <h3 className="text-2xl font-light mb-2" style={{ color: "#5C3317" }}>{ev.name}</h3>

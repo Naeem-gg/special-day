@@ -10,13 +10,13 @@ function SakuraPetal({ style }: { style: React.CSSProperties }) {
   return (
     <div className="absolute pointer-events-none select-none" style={style}>
       <svg width="12" height="14" viewBox="0 0 12 14">
-        <ellipse cx="6" cy="7" rx="5" ry="6" fill="#FFB7C5" opacity="0.65" transform={`rotate(${Math.random() * 40 - 20} 6 7)`} />
+        <ellipse cx="6" cy="7" rx="5" ry="6" fill="#FFB7C5" opacity="0.65" />
       </svg>
     </div>
   );
 }
 
-export default function SakuraDreamTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
+export default function SakuraDreamTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, ourStory, mapUrl }: TemplateProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -133,6 +133,56 @@ export default function SakuraDreamTemplate({ brideName, groomName, date, venue,
             </div>
           </motion.div>
         </section>
+
+        {/* ── OUR STORY ───────────────────────────── */}
+        {ourStory && (
+          <section className="py-24 px-6 text-center" style={{ background: "#FFF0F8" }}>
+            <div className="max-w-2xl mx-auto relative">
+              {/* Sakura Branch Decoration */}
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-4xl opacity-40">🌸</div>
+              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <p className="font-sans text-[10px] uppercase tracking-[0.5em] mb-6" style={{ color: "#C4A0C8" }}>私たちの物語 · Our Story</p>
+                <h2 className="text-4xl font-light mb-8 italic" style={{ color: "#4A2060" }}>A Beautiful Beginning</h2>
+                <div className="w-16 h-0.5 mx-auto mb-10" style={{ background: "linear-gradient(to right, transparent, #FFB7C5, transparent)" }} />
+                <p className="text-lg leading-relaxed font-serif italic" style={{ color: "#6A4A6B" }}>
+                  {ourStory}
+                </p>
+                <div className="mt-10 flex justify-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#FFB7C5]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#D4B4FD]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#FFB7C5]" />
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* ── MAP / LOCATION ───────────────────────── */}
+        {mapUrl && (
+          <section className="py-24 px-6 text-center" style={{ background: "white" }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+              className="max-w-4xl mx-auto p-12 rounded-[3rem] border border-[#F0D8FF] bg-[#FFF0F8]/20">
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg shadow-[#FFB7C5]/10">
+                  <MapIcon className="w-10 h-10 text-[#D4B4FD]" />
+                </div>
+                <div className="space-y-2">
+                  <p className="font-sans text-[10px] uppercase tracking-[0.5em]" style={{ color: "#D4B4FD" }}>会場所在地 · Venue Location</p>
+                  <h3 className="text-3xl font-light text-[#4A2060]">{venue}</h3>
+                  <p className="text-muted-foreground mt-2 max-w-sm mx-auto">Find your way to our celebration with ease.</p>
+                </div>
+                <a 
+                  href={mapUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-4 px-10 py-4 bg-linear-to-r from-[#D4B4FD] to-[#FFB7C5] text-white rounded-full font-sans text-xs font-bold uppercase tracking-widest shadow-lg shadow-[#FFB7C5]/20 hover:scale-105 transition-transform flex items-center gap-2"
+                >
+                  <MapPin className="w-4 h-4" /> Open in Google Maps
+                </a>
+              </div>
+            </motion.div>
+          </section>
+        )}
 
         {/* ── EVENTS ──────────────────────────────── */}
         <section className="py-24 px-4" style={{ background: "#FAF5FF" }}>

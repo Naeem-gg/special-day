@@ -35,7 +35,7 @@ function Bubble({ style }: { style: React.CSSProperties }) {
   return <div className="absolute rounded-full pointer-events-none" style={{ ...style, background: "radial-gradient(circle, rgba(78,205,196,0.2), transparent)", border: "1px solid rgba(78,205,196,0.15)" }} />;
 }
 
-export default function AzureOceanTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
+export default function AzureOceanTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, ourStory, mapUrl }: TemplateProps) {
   const [bubbles, setBubbles] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 

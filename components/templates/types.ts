@@ -21,6 +21,8 @@ export interface TemplateProps {
   isPreview?: boolean;
   isThumbnail?: boolean;
   invitationId?: number;
+  ourStory?: string;
+  mapUrl?: string;
   tier?: "basic" | "standard" | "premium";
   autoOpen?: boolean;
   inline?: boolean;

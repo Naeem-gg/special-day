@@ -57,7 +57,7 @@ export default function CurtainIntro({
       {!isFinished && (
         <motion.div
           exit={{ opacity: 0, transition: { duration: 1 } }}
-          className={`${inline ? "absolute" : "fixed"} inset-0 z-[100] flex items-center justify-center overflow-hidden bg-white`}
+          className={`${inline ? "absolute" : "fixed"} inset-0 z-100 flex items-center justify-center overflow-hidden bg-white`}
         >
           {/* Left Curtain */}
           <motion.div
@@ -65,7 +65,7 @@ export default function CurtainIntro({
             animate={isOpen ? { x: "-100%" } : { x: 0 }}
             transition={{ duration: 2, ease: [0.45, 0.05, 0.55, 0.95] }}
             className="absolute left-0 top-0 w-1/2 h-full z-20"
-            style={{ 
+            style={{
               backgroundColor: theme.curtainColor,
               boxShadow: "10px 0 30px rgba(0,0,0,0.3)",
               backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 10%, rgba(0,0,0,0.1) 20%, transparent 30%, rgba(0,0,0,0.1) 40%, transparent 50%, rgba(0,0,0,0.1) 60%, transparent 70%, rgba(0,0,0,0.1) 80%, transparent 90%, rgba(0,0,0,0.1) 100%)`
@@ -81,7 +81,7 @@ export default function CurtainIntro({
             animate={isOpen ? { x: "100%" } : { x: 0 }}
             transition={{ duration: 2, ease: [0.45, 0.05, 0.55, 0.95] }}
             className="absolute right-0 top-0 w-1/2 h-full z-20"
-            style={{ 
+            style={{
               backgroundColor: theme.curtainColor,
               boxShadow: "-10px 0 30px rgba(0,0,0,0.3)",
               backgroundImage: `linear-gradient(-90deg, rgba(0,0,0,0.1) 0%, transparent 10%, rgba(0,0,0,0.1) 20%, transparent 30%, rgba(0,0,0,0.1) 40%, transparent 50%, rgba(0,0,0,0.1) 60%, transparent 70%, rgba(0,0,0,0.1) 80%, transparent 90%, rgba(0,0,0,0.1) 100%)`
@@ -93,12 +93,12 @@ export default function CurtainIntro({
 
           {/* Interaction Hint */}
           {!isOpen && !autoOpen && (
-            <motion.div 
+            <motion.div
               onClick={handleOpen}
               className="absolute inset-0 z-30 cursor-pointer flex flex-col items-center justify-center text-white"
             >
               <div className="bg-black/20 backdrop-blur-sm px-8 py-4 rounded-full border border-white/30">
-                <motion.p 
+                <motion.p
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                   className="text-lg font-serif tracking-[0.2em] uppercase"

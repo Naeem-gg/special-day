@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://dnvites.com"
 
   // Static routes
-  const routes = ['', '/login', '/preview', '/create'].map((route) => ({
+  const routes = ['', '/login', '/dashboard', '/create'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
     changeFrequency: 'monthly' as const,

@@ -12,7 +12,7 @@ import Link from "next/link";
 import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
 import { Footer } from "@/components/Footer";
 import confetti from "canvas-confetti";
-import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock, Info, X } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Sparkles, Heart, Plus, Trash2, Ticket, Eye, Lock, Info, X, ChevronDown } from "lucide-react";
 import { TEMPLATES, TIER_TEMPLATES } from "@/components/templates/types";
 import { TestimonialForm } from "@/components/testimonials/TestimonialForm";
 import { detectCurrency, getDisplayPrice, Currency } from "@/lib/currency";
@@ -43,17 +43,13 @@ const cardVariants: Variants = {
 };
 
 /* ── Optimized Template Card ─────────────────── */
-const TemplateCard = ({ tmpl, formData, isSelected, handlePointerDown, handlePointerUpOrLeave, handleTemplateSelect }: any) => {
+const TemplateCard = ({ tmpl, formData, isSelected, handleTemplatePreview, handleTemplateSelect }: any) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "200px" });
 
   return (
     <motion.div
       ref={ref}
-      onPointerDown={(e) => handlePointerDown(tmpl.slug, e)}
-      onPointerUp={handlePointerUpOrLeave}
-      onPointerLeave={handlePointerUpOrLeave}
-      onContextMenu={(e) => e.preventDefault()}
       whileHover={{ scale: 1.03, y: -3 }}
       whileTap={{ scale: 0.97 }}
       onClick={() => handleTemplateSelect(tmpl.slug)}
@@ -74,6 +70,8 @@ const TemplateCard = ({ tmpl, formData, isSelected, handlePointerDown, handlePoi
               venue={formData.venue || "The Taj Mahal Palace, Mumbai"}
               events={formData.events[0]?.name ? formData.events : [{ name: "Sangeet", time: "6:00 PM", location: "Crystal Ballroom", description: "Music & Dance" }]}
               gallery={formData.gallery}
+              ourStory={formData.ourStory}
+              mapUrl={formData.mapUrl}
               isPreview={true}
               isThumbnail={true}
             />
@@ -94,10 +92,17 @@ const TemplateCard = ({ tmpl, formData, isSelected, handlePointerDown, handlePoi
       <div className="p-3 bg-white border-t border-gray-100 z-20 relative">
         <p className="font-serif text-sm text-gray-900 truncate">{tmpl.name}</p>
         <div className="flex items-center justify-between mt-1">
-          <span className="text-[10px] font-sans uppercase tracking-wider text-gray-400">{tmpl.tier} plan</span>
-          <span className="text-[10px] font-sans font-bold uppercase tracking-wider flex items-center gap-0.5" style={{ color: "#F43F8F" }}>
-            <Eye className="w-3 h-3" />Hold
-          </span>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleTemplatePreview(tmpl.slug);
+            }}
+            className="h-7 px-2 text-[10px] rounded-lg bg-rose-50 text-[#F43F8F] hover:bg-rose-100 border-none font-bold transition-all"
+          >
+            <Eye className="w-3 h-3 mr-1" />Preview
+          </Button>
         </div>
       </div>
     </motion.div>
@@ -131,8 +136,8 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   const [showAdditional, setShowAdditional] = useState(false);
-  const [longPressTemplate, setLongPressTemplate] = useState<string | null>(null);
-  const pressTimer = useRef<NodeJS.Timeout | null>(null);
+  const [previewTemplate, setPreviewTemplate] = useState<string | null>(null);
+  const [previewTimeLeft, setPreviewTimeLeft] = useState(300);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [tiers, setTiers] = useState<any[]>(initialTiers);
   const [couponCode, setCouponCode] = useState("");
@@ -166,6 +171,8 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
     musicUrl: "",
     tier: "basic",
     template: "rose-gold",
+    ourStory: "",
+    mapUrl: "",
     events: [{ name: "", time: "", location: "", description: "" }],
     gallery: [] as { url: string; publicId: string }[],
   });
@@ -211,6 +218,8 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
                 musicUrl: data.musicUrl || "",
                 tier: data.tier,
                 template: data.template,
+                ourStory: data.ourStory || "",
+                mapUrl: data.mapUrl || "",
                 events: data.events || [{ name: "", time: "", location: "", description: "" }],
                 gallery: data.gallery || [],
               });
@@ -219,6 +228,31 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
       }
     }
   }, []);
+
+  // ── Preview Timer ───────────────────
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (previewTemplate && previewTimeLeft > 0) {
+      timer = setInterval(() => {
+        setPreviewTimeLeft((prev) => {
+          if (prev <= 1) {
+            setPreviewTemplate(null);
+            return 300;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else if (!previewTemplate) {
+      setPreviewTimeLeft(300);
+    }
+    return () => clearInterval(timer);
+  }, [previewTemplate, previewTimeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   // ── Auto-generate slug for basic tier ──────────
   useEffect(() => {
@@ -232,18 +266,8 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
     }
   }, [formData.brideName, formData.groomName, formData.tier]);
 
-  const handlePointerDown = (slug: string, e: React.PointerEvent) => {
-    // Only trigger for primary pointer (left click or touch)
-    if (e.button !== 0 && e.button !== undefined) return;
-    if (pressTimer.current) clearTimeout(pressTimer.current);
-    pressTimer.current = setTimeout(() => {
-      setLongPressTemplate(slug);
-    }, 400); // 400ms long press
-  };
-
-  const handlePointerUpOrLeave = () => {
-    if (pressTimer.current) clearTimeout(pressTimer.current);
-    setLongPressTemplate(null);
+  const handleTemplatePreview = (slug: string) => {
+    setPreviewTemplate(slug);
   };
 
   const handleTemplateSelect = (slug: string) => {
@@ -777,33 +801,91 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
         )}
       </AnimatePresence>
 
-      {/* Long Press Preview Overlay */}
+      {/* Template Preview Modal */}
       <AnimatePresence>
-        {longPressTemplate && (
+        {previewTemplate && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-200 bg-black/90 backdrop-blur-sm flex flex-col justify-center items-center select-none touch-none"
-            onPointerUp={handlePointerUpOrLeave}
-            onPointerLeave={handlePointerUpOrLeave}
+            className="fixed inset-0 z-200 bg-white flex flex-col items-center"
           >
-            <p className="text-white/60 text-sm font-sans mb-4 tracking-widest uppercase animate-pulse">Release to stop previewing</p>
-            <div
-              ref={scrollRef}
-              className="w-[min(90vw,400px)] h-[min(85vh,750px)] bg-white rounded-[2.5rem] overflow-x-hidden overflow-y-auto shadow-2xl pointer-events-none relative"
-            >
-              <div className="absolute inset-0 origin-top pointer-events-none" style={{ transform: "scale(1)" }}>
+            {/* Ultra-Slim Premium Navbar */}
+            <div className="w-full h-10 px-4 flex items-center justify-between border-b border-gray-100 bg-white/70 backdrop-blur-xl z-220 shadow-sm mt-2">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setPreviewTemplate(null)}
+                  className="text-gray-400 hover:text-black transition-colors px-2 h-7"
+                >
+                  <ChevronDown className="w-4 h-4 rotate-90" />
+                </Button>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-rose-50 rounded-full border border-rose-100/50">
+                  <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                  <span className="text-rose-600 font-bold text-[9px] uppercase tracking-wider">Live</span>
+                </div>
+              </div>
+
+              {/* Minimal Centered Timer */}
+              <div className="absolute left-1/2 -translate-x-1/2">
+                <span className="text-black font-mono text-sm font-bold tabular-nums">{formatTime(previewTimeLeft)}</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    handleTemplateSelect(previewTemplate);
+                    setPreviewTemplate(null);
+                  }}
+                  className="relative overflow-hidden bg-[#FFD700] hover:bg-[#FFC800] text-black font-bold px-4 h-7 text-[11px] rounded-lg shadow-sm transition-all active:scale-95 group"
+                >
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    Unlock Now
+                    <Heart className="w-3 h-3 fill-black" />
+                  </span>
+                  <motion.div
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                    className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent skew-x-12"
+                  />
+                </Button>
+              </div>
+            </div>
+
+            {/* Full Space Template Container */}
+            <div className="relative flex-1 w-full overflow-hidden">
+              {/* Scrollable Template Content */}
+              <div className="absolute inset-0 overflow-y-auto scrollbar-hide">
                 <TemplateRouter
-                  template={longPressTemplate}
+                  template={previewTemplate}
                   brideName={formData.brideName || "Ayesha"}
                   groomName={formData.groomName || "Abdullah"}
                   date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
-                  venue={formData.venue || "Grand Ballroom"}
-                  events={formData.events[0]?.name ? formData.events : [{ name: "Ceremony", time: "4:00 PM", location: "Main Hall", description: "Vows and Rings" }]}
+                  venue={formData.venue || "The Grand Ballroom"}
+                  events={formData.events[0]?.name ? formData.events : [{ name: "Main Event", time: "6:00 PM", location: "Royal Hall", description: "Join us for dinner." }]}
                   gallery={formData.gallery}
+                  ourStory={formData.ourStory}
+                  mapUrl={formData.mapUrl}
                   isPreview={true}
                 />
+              </div>
+
+              {/* Fixed High-Security Watermark Overlay */}
+              <div className="absolute inset-0 pointer-events-none z-215 overflow-hidden opacity-[0.12] mix-blend-multiply">
+                <div className="absolute -inset-full flex flex-col justify-center items-center rotate-[-30deg]">
+                  {Array.from({ length: 40 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="whitespace-nowrap text-gray-400 font-serif text-sm py-6 tracking-[0.6em]"
+                    >
+                      {Array.from({ length: 10 }).map((_, j) => (
+                        <span key={j} className="mx-10 uppercase">DNvites Security Preview •</span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
@@ -1306,8 +1388,7 @@ export default function DashboardClient({ initialTiers, initialSession }: { init
                       tmpl={tmpl}
                       formData={formData}
                       isSelected={formData.template === tmpl.slug}
-                      handlePointerDown={handlePointerDown}
-                      handlePointerUpOrLeave={handlePointerUpOrLeave}
+                      handleTemplatePreview={handleTemplatePreview}
                       handleTemplateSelect={handleTemplateSelect}
                     />
                   ))}

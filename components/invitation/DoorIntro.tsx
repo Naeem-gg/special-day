@@ -63,7 +63,7 @@ export default function DoorIntro({
       {!isFinished && (
         <motion.div
           exit={{ opacity: 0, transition: { duration: 1 } }}
-          className={`${inline ? "absolute" : "fixed"} inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black`}
+          className={`${inline ? "absolute" : "fixed"} inset-0 z-100 flex items-center justify-center overflow-hidden bg-black`}
         >
           {/* Background behind the doors */}
           <div className="absolute inset-0 bg-white" />
@@ -76,16 +76,16 @@ export default function DoorIntro({
             style={{ transformOrigin: "left", transformStyle: "preserve-3d" }}
             className="absolute left-0 top-0 w-1/2 h-full z-20 border-r border-black/20"
           >
-            <div 
+            <div
               className="w-full h-full relative"
               style={{ background: theme.gradient }}
             >
               {/* Ornate Panels */}
               <div className="absolute inset-8 border-4 border-double" style={{ borderColor: theme.ornamentColor + "33" }} />
               <div className="absolute inset-16 border-2" style={{ borderColor: theme.ornamentColor + "22" }} />
-              
+
               {/* Handle/Knob */}
-              <div 
+              <div
                 className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-24 rounded-full shadow-2xl flex items-center justify-center"
                 style={{ background: theme.knobColor }}
               >
@@ -102,7 +102,7 @@ export default function DoorIntro({
             style={{ transformOrigin: "right", transformStyle: "preserve-3d" }}
             className="absolute right-0 top-0 w-1/2 h-full z-20 border-l border-black/20"
           >
-            <div 
+            <div
               className="w-full h-full relative"
               style={{ background: theme.gradient }}
             >
@@ -111,7 +111,7 @@ export default function DoorIntro({
               <div className="absolute inset-16 border-2" style={{ borderColor: theme.ornamentColor + "22" }} />
 
               {/* Handle/Knob */}
-              <div 
+              <div
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-24 rounded-full shadow-2xl flex items-center justify-center"
                 style={{ background: theme.knobColor }}
               >
@@ -129,11 +129,11 @@ export default function DoorIntro({
 
           {/* Interaction Hint */}
           {!isOpen && !autoOpen && (
-            <motion.div 
+            <motion.div
               onClick={handleOpen}
               className="absolute inset-0 z-30 cursor-pointer flex flex-col items-center justify-center text-white"
             >
-              <motion.p 
+              <motion.p
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="text-xl font-serif tracking-[0.3em] uppercase"
@@ -147,7 +147,7 @@ export default function DoorIntro({
           {/* Center Initials (floating in middle before opening) */}
           {!isOpen && (
             <div className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center">
-              <div 
+              <div
                 className="w-24 h-24 rounded-full border-2 flex items-center justify-center bg-black/40 backdrop-blur-md"
                 style={{ borderColor: theme.ornamentColor }}
               >

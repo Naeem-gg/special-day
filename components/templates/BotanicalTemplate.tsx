@@ -39,7 +39,7 @@ function Leaf({ style }: { style: React.CSSProperties }) {
   );
 }
 
-export default function BotanicalTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
+export default function BotanicalTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, ourStory, mapUrl }: TemplateProps) {
   const [leaves, setLeaves] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -138,6 +138,54 @@ export default function BotanicalTemplate({ brideName, groomName, date, venue, e
           </div>
         </motion.div>
       </section>
+
+      {/* ── OUR STORY ───────────────────────────── */}
+      {ourStory && (
+        <section className="py-24 px-6 text-center" style={{ background: "#F2F7EE" }}>
+          <div className="max-w-2xl mx-auto">
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <span className="text-3xl mb-4 block">🍃</span>
+              <p className="font-sans text-xs uppercase tracking-[0.4em] mb-6" style={{ color: "#5A8A4A" }}>The Journey of Us</p>
+              <h2 className="text-4xl font-light mb-8" style={{ color: "#1A3A14" }}>Our Love Story</h2>
+              <p className="text-lg leading-relaxed font-serif italic" style={{ color: "#2D5A27" }}>
+                {ourStory}
+              </p>
+              <div className="mt-10 flex justify-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#5A8A4A]" />
+                <div className="w-2 h-2 rounded-full bg-[#8FAF7E]" />
+                <div className="w-2 h-2 rounded-full bg-[#5A8A4A]" />
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* ── MAP / LOCATION ───────────────────────── */}
+      {mapUrl && (
+        <section className="py-24 px-6 text-center" style={{ background: "white" }}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+            className="max-w-4xl mx-auto p-12 rounded-[3rem] border border-[#C5DEB8] bg-[#F2F7EE]/30">
+            <div className="flex flex-col items-center gap-6">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-md">
+                <MapIcon className="w-8 h-8 text-[#2D5A27]" />
+              </div>
+              <div className="space-y-2">
+                <p className="font-sans text-xs uppercase tracking-[0.4em]" style={{ color: "#5A8A4A" }}>The Venue</p>
+                <h3 className="text-3xl font-light" style={{ color: "#1A3A14" }}>How to Reach Us</h3>
+                <p className="text-muted-foreground mt-2">{venue}</p>
+              </div>
+              <a 
+                href={mapUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mt-4 px-10 py-4 bg-[#2D5A27] text-white rounded-full font-sans text-sm font-bold uppercase tracking-widest shadow-lg shadow-[#2D5A27]/20 hover:bg-[#1A3A14] transition-colors flex items-center gap-2"
+              >
+                <MapPin className="w-4 h-4" /> View Venue on Maps
+              </a>
+            </div>
+          </motion.div>
+        </section>
+      )}
 
       {/* ── EVENTS ──────────────────────────────── */}
       <section className="py-24 px-4" style={{ background: "#F2F7EE" }}>

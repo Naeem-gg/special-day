@@ -22,13 +22,22 @@ export const getDisplayPrice = (inrAmount: number, targetCurrency: Currency): Pr
 
 export const detectCurrency = async (): Promise<Currency> => {
   try {
+    // Fast path: Check timezone first (no network call)
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz && (tz.includes("Asia/Kolkata") || tz.includes("Asia/Calcutta"))) {
+      return "INR";
+    }
+
+    // Network path: Try IP-based detection
     const res = await fetch("https://ipapi.co/json/");
-    const data = await res.json();
-    if (data.country_code && data.country_code !== "IN") {
-      return "USD";
+    if (res.ok) {
+      const data = await res.json();
+      if (data.country_code && data.country_code !== "IN") {
+        return "USD";
+      }
     }
   } catch (e) {
-    console.error("Currency detection failed:", e);
+    // Fail silently to INR
   }
   return "INR";
 };

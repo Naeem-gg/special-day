@@ -19,7 +19,9 @@ export async function POST(req: NextRequest) {
       tier,
       couponId,
       discountApplied,
-      paidAmount
+      paidAmount,
+      ourStory,
+      mapUrl
     } = body;
 
     if (!slug || !brideName || !groomName || !date || !venue) {
@@ -40,7 +42,9 @@ export async function POST(req: NextRequest) {
       tier: tier || "basic",
       couponId: couponId || null,
       discountApplied: discountApplied || 0,
-      paidAmount: paidAmount || 0
+      paidAmount: paidAmount || 0,
+      ourStory: ourStory || null,
+      mapUrl: mapUrl || null
     }).returning();
 
     if (couponId) {

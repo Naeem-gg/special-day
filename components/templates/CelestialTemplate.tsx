@@ -107,7 +107,7 @@ function ConstellationLines({ name1, name2 }: { name1: string; name2: string }) 
 }
 
 export default function CelestialTemplate({ 
-  brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline 
+  brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline, ourStory, mapUrl 
 }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 

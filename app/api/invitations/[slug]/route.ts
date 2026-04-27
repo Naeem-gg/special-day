@@ -38,7 +38,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { brideName, groomName, date, venue, events, gallery, musicUrl, template, language } = body;
+    const { brideName, groomName, date, venue, events, gallery, musicUrl, template, language, ourStory, mapUrl } = body;
 
     // Find invitation
     const invitation = await db.query.invitations.findFirst({
@@ -74,7 +74,9 @@ export async function PATCH(
         gallery,
         musicUrl,
         template,
-        language
+        language,
+        ourStory,
+        mapUrl
       })
       .where(eq(invitations.id, invitation.id));
 

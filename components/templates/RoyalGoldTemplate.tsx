@@ -133,7 +133,7 @@ function FlipDigit({ value, label }: { value: number; label: string }) {
 }
 
 export default function RoyalGoldTemplate({ 
-  brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline 
+  brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, inline, ourStory, mapUrl 
 }: TemplateProps) {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 

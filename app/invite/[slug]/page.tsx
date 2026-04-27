@@ -73,6 +73,8 @@ export default async function InvitationPage({ params }: PageProps) {
         events={(invitation.events as any[]) || []}
         gallery={(invitation.gallery as any[]) || []}
         musicUrl={invitation.musicUrl || undefined}
+        ourStory={invitation.ourStory || undefined}
+        mapUrl={invitation.mapUrl || undefined}
         isPreview={false}
         invitationId={invitation.id}
       />

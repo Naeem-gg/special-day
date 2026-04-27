@@ -84,7 +84,12 @@ export default function TemplateRouter({ template, ...props }: TemplateProps & {
   return (
     <>
       {renderIntro()}
-      <Component {...props} tier={meta?.tier} />
+      <Component 
+        {...props} 
+        tier={meta?.tier} 
+        ourStory={props.ourStory} 
+        mapUrl={props.mapUrl} 
+      />
       
       {/* ── Brand Promotional Footer ────────────── */}
       {!props.isThumbnail && (

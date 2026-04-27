@@ -34,7 +34,7 @@ function FlipDigit({ value, label }: { value: number; label: string }) {
   );
 }
 
-export default function RoseGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl }: TemplateProps) {
+export default function RoseGoldTemplate({ brideName, groomName, date, venue, events, gallery, isPreview, isThumbnail, invitationId, tier, musicUrl, ourStory, mapUrl }: TemplateProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([]);
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -151,6 +151,56 @@ export default function RoseGoldTemplate({ brideName, groomName, date, venue, ev
             </div>
           </motion.div>
         </section>
+
+        {/* ── OUR STORY ───────────────────────────── */}
+        {ourStory && (
+          <section className="py-24 px-6 text-center overflow-hidden" style={{ background: "white" }}>
+            <div className="max-w-2xl mx-auto relative">
+              {/* Decorative Quote Mark */}
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-5 text-8xl font-serif">"</div>
+              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <p className="font-sans text-xs uppercase tracking-[0.4em] mb-6" style={{ color: "#B76E79" }}>Our Journey</p>
+                <h2 className="text-4xl font-light mb-8 italic" style={{ color: "#2C1810" }}>How We Met</h2>
+                <div className="w-12 h-0.5 mx-auto mb-10" style={{ background: "linear-gradient(to right, transparent, #D4AF37, transparent)" }} />
+                <p className="text-lg leading-relaxed italic font-serif" style={{ color: "#6B4A4A" }}>
+                  {ourStory}
+                </p>
+                <div className="mt-12 flex justify-center gap-2">
+                  <Heart className="w-4 h-4 fill-[#B76E79] text-[#B76E79]" />
+                  <Heart className="w-4 h-4 fill-[#D4AF37] text-[#D4AF37]" />
+                  <Heart className="w-4 h-4 fill-[#B76E79] text-[#B76E79]" />
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* ── MAP / LOCATION ───────────────────────── */}
+        {mapUrl && (
+          <section className="py-20 px-6 text-center" style={{ background: "linear-gradient(to bottom, #FFF8F0, white)" }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}
+              className="max-w-4xl mx-auto p-12 rounded-[3rem] border border-rose-100 shadow-xl shadow-rose-200/20 bg-white">
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center shadow-inner">
+                  <MapPin className="w-8 h-8 text-[#B76E79]" />
+                </div>
+                <div className="space-y-2">
+                  <p className="font-sans text-xs uppercase tracking-[0.4em]" style={{ color: "#B76E79" }}>The Destination</p>
+                  <h3 className="text-3xl font-light" style={{ color: "#2C1810" }}>Location & Directions</h3>
+                  <p className="text-muted-foreground mt-2 max-w-sm mx-auto">{venue}</p>
+                </div>
+                <a 
+                  href={mapUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-4 px-10 py-4 bg-linear-to-r from-[#B76E79] to-[#D4AF37] text-white rounded-full font-sans text-sm font-bold uppercase tracking-widest shadow-lg shadow-rose-200 hover:scale-105 transition-transform flex items-center gap-2"
+                >
+                  <MapPin className="w-4 h-4" /> Open in Google Maps
+                </a>
+              </div>
+            </motion.div>
+          </section>
+        )}
 
         {/* ── EVENTS ──────────────────────────────── */}
         <section className="py-24 px-4" style={{ background: "white" }}>

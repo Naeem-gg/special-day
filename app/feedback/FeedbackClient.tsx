@@ -96,7 +96,7 @@ function FeedbackThread({ item }: { item: FeedbackItem }) {
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${reply.isAdmin ? "bg-rose-100 text-[#F43F8F]" : "bg-gray-100 text-gray-500"}`}>
                         {reply.isAdmin ? "DN" : reply.authorName[0]}
                       </div>
-                      <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm ${reply.isAdmin ? "bg-gradient-to-br from-[#F43F8F] to-[#c73272] text-white rounded-tr-sm" : "bg-gray-100 text-gray-700 rounded-tl-sm"}`}>
+                      <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm ${reply.isAdmin ? "bg-linear-to-br from-[#F43F8F] to-[#c73272] text-white rounded-tr-sm" : "bg-gray-100 text-gray-700 rounded-tl-sm"}`}>
                         {reply.isAdmin && (
                           <p className="text-[10px] font-bold uppercase tracking-wider mb-1 text-white/70">DNvites Support</p>
                         )}
