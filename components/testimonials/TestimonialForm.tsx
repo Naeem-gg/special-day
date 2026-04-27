@@ -1,57 +1,57 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Star, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
+import { useState } from 'react'
+import { Star, Send } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
 
-export function TestimonialForm({ 
-  initialName = "", 
-  initialEmail = "",
-  onSuccess
-}: { 
-  initialName?: string; 
-  initialEmail?: string; 
-  onSuccess?: () => void;
+export function TestimonialForm({
+  initialName = '',
+  initialEmail = '',
+  onSuccess,
+}: {
+  initialName?: string
+  initialEmail?: string
+  onSuccess?: () => void
 }) {
-  const [loading, setLoading] = useState(false);
-  const [rating, setRating] = useState(5);
-  const [hover, setHover] = useState(0);
+  const [loading, setLoading] = useState(false)
+  const [rating, setRating] = useState(5)
+  const [hover, setHover] = useState(0)
   const [formData, setFormData] = useState({
     name: initialName,
     email: initialEmail,
-    message: "",
-  });
+    message: '',
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
     try {
-      const res = await fetch("/api/testimonials", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, rating }),
-      });
+      })
 
       if (res.ok) {
-        toast.success("Thank you for your feedback! It will be visible once approved.");
-        setFormData({ ...formData, message: "" });
+        toast.success('Thank you for your feedback! It will be visible once approved.')
+        setFormData({ ...formData, message: '' })
         // Don't reset name/email if they are passed as props
-        setRating(5);
-        if (onSuccess) onSuccess();
+        setRating(5)
+        if (onSuccess) onSuccess()
       } else {
-        const data = await res.json();
-        toast.error(data.error || "Failed to submit. Please try again.");
+        const data = await res.json()
+        toast.error(data.error || 'Failed to submit. Please try again.')
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      toast.error('An error occurred. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="w-full">
@@ -59,7 +59,9 @@ export function TestimonialForm({
         <h3 className="text-xl font-bold text-gray-900 mb-1">Share Your Experience</h3>
         <p className="text-gray-500 text-sm">
           Your feedback helps us grow. <br />
-          <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Verified purchase required</span>
+          <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">
+            Verified purchase required
+          </span>
         </p>
       </div>
 
@@ -73,25 +75,31 @@ export function TestimonialForm({
                 type="button"
                 className="p-2 transition-all hover:scale-110 active:scale-90"
                 onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setRating(star);
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setRating(star)
                 }}
                 onMouseEnter={() => setHover(star)}
                 onMouseLeave={() => setHover(0)}
               >
                 <Star
                   className={`w-10 h-10 sm:w-8 sm:h-8 transition-colors ${
-                    star <= (hover || rating)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-200"
+                    star <= (hover || rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200'
                   }`}
                 />
               </button>
             ))}
           </div>
           <p className="text-xs font-bold text-rose-500">
-            {rating === 5 ? "Excellent!" : rating === 4 ? "Very Good" : rating === 3 ? "Good" : rating === 2 ? "Fair" : "Poor"}
+            {rating === 5
+              ? 'Excellent!'
+              : rating === 4
+                ? 'Very Good'
+                : rating === 3
+                  ? 'Good'
+                  : rating === 2
+                    ? 'Fair'
+                    : 'Poor'}
           </p>
         </div>
 
@@ -138,7 +146,8 @@ export function TestimonialForm({
         >
           {loading ? (
             <span className="flex items-center gap-2">
-              Submitting... <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Submitting...{' '}
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             </span>
           ) : (
             <span className="flex items-center gap-2">
@@ -148,5 +157,5 @@ export function TestimonialForm({
         </Button>
       </form>
     </div>
-  );
+  )
 }

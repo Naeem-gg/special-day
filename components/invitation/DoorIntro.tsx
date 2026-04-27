@@ -1,69 +1,69 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface DoorIntroProps {
-  brideName: string;
-  groomName: string;
-  variant?: string;
-  autoOpen?: boolean;
-  inline?: boolean;
+  brideName: string
+  groomName: string
+  variant?: string
+  autoOpen?: boolean
+  inline?: boolean
 }
 
 const DOOR_THEMES = {
-  "royal-gold": {
-    bg: "#1a050a",
-    doorColor: "#2D0A12",
-    ornamentColor: "#D4AF37",
-    knobColor: "#FFD700",
-    gradient: "linear-gradient(135deg, #3D0E19 0%, #1A050A 100%)",
+  'royal-gold': {
+    bg: '#1a050a',
+    doorColor: '#2D0A12',
+    ornamentColor: '#D4AF37',
+    knobColor: '#FFD700',
+    gradient: 'linear-gradient(135deg, #3D0E19 0%, #1A050A 100%)',
   },
-  "midnight-noir": {
-    bg: "#0a0a0a",
-    doorColor: "#111111",
-    ornamentColor: "#444444",
-    knobColor: "#888888",
-    gradient: "linear-gradient(135deg, #1A1A1A 0%, #050505 100%)",
+  'midnight-noir': {
+    bg: '#0a0a0a',
+    doorColor: '#111111',
+    ornamentColor: '#444444',
+    knobColor: '#888888',
+    gradient: 'linear-gradient(135deg, #1A1A1A 0%, #050505 100%)',
   },
-  "default": {
-    bg: "#0f172a",
-    doorColor: "#1e293b",
-    ornamentColor: "#94a3b8",
-    knobColor: "#cbd5e1",
-    gradient: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
-  }
-};
+  default: {
+    bg: '#0f172a',
+    doorColor: '#1e293b',
+    ornamentColor: '#94a3b8',
+    knobColor: '#cbd5e1',
+    gradient: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+  },
+}
 
 export default function DoorIntro({
   brideName,
   groomName,
-  variant = "default",
+  variant = 'default',
   autoOpen = false,
   inline = false,
 }: DoorIntroProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const theme = DOOR_THEMES[variant as keyof typeof DOOR_THEMES] || DOOR_THEMES.default;
+  const [isOpen, setIsOpen] = useState(false)
+  const [isFinished, setIsFinished] = useState(false)
+  const theme = DOOR_THEMES[variant as keyof typeof DOOR_THEMES] || DOOR_THEMES.default
 
   const handleOpen = () => {
-    setIsOpen(true);
-    setTimeout(() => setIsFinished(true), 2500);
-  };
+    setIsOpen(true)
+    setTimeout(() => setIsFinished(true), 2500)
+  }
 
   useEffect(() => {
     if (autoOpen && !isOpen) {
-      const t = setTimeout(handleOpen, 1000);
-      return () => clearTimeout(t);
+      const t = setTimeout(handleOpen, 1000)
+      return () => clearTimeout(t)
     }
-  }, [autoOpen, isOpen]);
+  }, [autoOpen, isOpen])
 
   return (
     <AnimatePresence>
       {!isFinished && (
         <motion.div
           exit={{ opacity: 0, transition: { duration: 1 } }}
-          className={`${inline ? "absolute" : "fixed"} inset-0 z-100 flex items-center justify-center overflow-hidden bg-black`}
+          className={`${inline ? 'absolute' : 'fixed'} inset-0 z-100 flex items-center justify-center overflow-hidden bg-black`}
         >
           {/* Background behind the doors */}
           <div className="absolute inset-0 bg-white" />
@@ -71,18 +71,21 @@ export default function DoorIntro({
           {/* Left Door */}
           <motion.div
             initial={{ rotateY: 0 }}
-            animate={isOpen ? { rotateY: -110, x: "-20%" } : { rotateY: 0 }}
+            animate={isOpen ? { rotateY: -110, x: '-20%' } : { rotateY: 0 }}
             transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
-            style={{ transformOrigin: "left", transformStyle: "preserve-3d" }}
+            style={{ transformOrigin: 'left', transformStyle: 'preserve-3d' }}
             className="absolute left-0 top-0 w-1/2 h-full z-20 border-r border-black/20"
           >
-            <div
-              className="w-full h-full relative"
-              style={{ background: theme.gradient }}
-            >
+            <div className="w-full h-full relative" style={{ background: theme.gradient }}>
               {/* Ornate Panels */}
-              <div className="absolute inset-8 border-4 border-double" style={{ borderColor: theme.ornamentColor + "33" }} />
-              <div className="absolute inset-16 border-2" style={{ borderColor: theme.ornamentColor + "22" }} />
+              <div
+                className="absolute inset-8 border-4 border-double"
+                style={{ borderColor: theme.ornamentColor + '33' }}
+              />
+              <div
+                className="absolute inset-16 border-2"
+                style={{ borderColor: theme.ornamentColor + '22' }}
+              />
 
               {/* Handle/Knob */}
               <div
@@ -97,18 +100,21 @@ export default function DoorIntro({
           {/* Right Door */}
           <motion.div
             initial={{ rotateY: 0 }}
-            animate={isOpen ? { rotateY: 110, x: "20%" } : { rotateY: 0 }}
+            animate={isOpen ? { rotateY: 110, x: '20%' } : { rotateY: 0 }}
             transition={{ duration: 2, ease: [0.4, 0, 0.2, 1] }}
-            style={{ transformOrigin: "right", transformStyle: "preserve-3d" }}
+            style={{ transformOrigin: 'right', transformStyle: 'preserve-3d' }}
             className="absolute right-0 top-0 w-1/2 h-full z-20 border-l border-black/20"
           >
-            <div
-              className="w-full h-full relative"
-              style={{ background: theme.gradient }}
-            >
+            <div className="w-full h-full relative" style={{ background: theme.gradient }}>
               {/* Ornate Panels */}
-              <div className="absolute inset-8 border-4 border-double" style={{ borderColor: theme.ornamentColor + "33" }} />
-              <div className="absolute inset-16 border-2" style={{ borderColor: theme.ornamentColor + "22" }} />
+              <div
+                className="absolute inset-8 border-4 border-double"
+                style={{ borderColor: theme.ornamentColor + '33' }}
+              />
+              <div
+                className="absolute inset-16 border-2"
+                style={{ borderColor: theme.ornamentColor + '22' }}
+              />
 
               {/* Handle/Knob */}
               <div
@@ -160,5 +166,5 @@ export default function DoorIntro({
         </motion.div>
       )}
     </AnimatePresence>
-  );
+  )
 }

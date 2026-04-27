@@ -1,17 +1,23 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { formatDate, formatTime } from "@/lib/utils"
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { formatDate, formatTime } from '@/lib/utils'
 import { CalendarIcon, Clock, InboxIcon as EnvelopeIcon, HeartIcon, ShareIcon } from 'lucide-react'
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { Confetti } from "./coinfetti"
-import { CountdownTimer } from "./countdown-timer"
-import { FloatingHearts } from "./floating-hearts"
-import { InvitationForm } from "./invitation-form"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { Confetti } from './coinfetti'
+import { CountdownTimer } from './countdown-timer'
+import { FloatingHearts } from './floating-hearts'
+import { InvitationForm } from './invitation-form'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog'
 
 interface CountdownParams {
   id?: string
@@ -58,28 +64,28 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
         //     eventDate: new Date(data.eventDate),
         //   })
         // } else {
-          // Otherwise, try to construct from URL params
-          const countdownTitle = title || "Our Wedding Day"
-          const countdownYourName = yourName || ""
-          const countdownPartnerName = partnerName || ""
-          const countdownMessage = message || "Can't wait to spend forever with you!"
+        // Otherwise, try to construct from URL params
+        const countdownTitle = title || 'Our Wedding Day'
+        const countdownYourName = yourName || ''
+        const countdownPartnerName = partnerName || ''
+        const countdownMessage = message || "Can't wait to spend forever with you!"
 
-          if (yourName && partnerName && date) {
-            setCountdown({
-              id: "shared",
-              title: countdownTitle,
-              yourName: countdownYourName,
-              partnerName: countdownPartnerName,
-              eventDate: new Date(date),
-              message: countdownMessage,
-            })
-          } else {
-            // No valid countdown data
-            throw new Error("No valid countdown data found")
-          }
+        if (yourName && partnerName && date) {
+          setCountdown({
+            id: 'shared',
+            title: countdownTitle,
+            yourName: countdownYourName,
+            partnerName: countdownPartnerName,
+            eventDate: new Date(date),
+            message: countdownMessage,
+          })
+        } else {
+          // No valid countdown data
+          throw new Error('No valid countdown data found')
+        }
         // }
       } catch (error) {
-        console.error("Error fetching countdown:", error)
+        console.error('Error fetching countdown:', error)
       } finally {
         setLoading(false)
       }
@@ -97,32 +103,32 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
 
   // Generate a professional share message based on the countdown details
   const generateShareMessage = () => {
-    if (!countdown) return ""
+    if (!countdown) return ''
 
     const formattedDate = formatDate(countdown.eventDate)
     const formattedTime = formatTime(countdown.eventDate)
-    
+
     // Different messages based on time remaining
     if (timeRemaining.isComplete) {
       return `Today is the day! ${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title.toLowerCase()} is happening now!`
     }
-    
+
     if (timeRemaining.days === 0) {
       return `${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title} is happening today at ${formattedTime}! Join us in the celebration!`
     }
-    
+
     if (timeRemaining.days === 1) {
       return `${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title} is tomorrow! The excitement is building for their special day on ${formattedDate} at ${formattedTime}.`
     }
-    
+
     if (timeRemaining.days <= 7) {
       return `Just ${timeRemaining.days} days until ${countdown.yourName} and ${countdown.partnerName}'s ${countdown.title}! Mark your calendar for ${formattedDate} at ${formattedTime}.`
     }
-    
+
     if (timeRemaining.days <= 30) {
       return `${countdown.yourName} and ${countdown.partnerName} are counting down to their ${countdown.title} on ${formattedDate} at ${formattedTime}. ${timeRemaining.days} days to go!`
     }
-    
+
     // Default message for longer countdowns
     return `${countdown.yourName} and ${countdown.partnerName} invite you to celebrate their ${countdown.title} on ${formattedDate} at ${formattedTime}. Save the date!`
   }
@@ -143,7 +149,7 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
           url,
         })
       } catch (error) {
-        console.error("Error sharing:", error)
+        console.error('Error sharing:', error)
         // Fallback to copy to clipboard
         copyToClipboard(url, shareMessage)
       }
@@ -155,16 +161,16 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
 
   const copyToClipboard = (url: string, message: string) => {
     const textToCopy = `${message}\n\n${url}`
-    
+
     navigator.clipboard
       .writeText(textToCopy)
-      .then(() => alert("Invitation copied to clipboard!"))
-      .catch((err) => console.error("Could not copy text: ", err))
+      .then(() => alert('Invitation copied to clipboard!'))
+      .catch((err) => console.error('Could not copy text: ', err))
   }
 
   // Get message based on time remaining
   const getMessage = () => {
-    if (!countdown) return ""
+    if (!countdown) return ''
 
     if (timeRemaining.isComplete) {
       return `Congratulations ${countdown.yourName} & ${countdown.partnerName}! Today is your BIG DAY! 🎉💍`
@@ -216,7 +222,6 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
 
   // Format time for display
 
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white dark:from-slate-950 dark:to-slate-900 py-12">
       {showConfetti && <Confetti />}
@@ -250,7 +255,9 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
 
           <Card className="p-6 md:p-8 shadow-xl border-pink-100 dark:border-pink-900 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
             <div className="text-center mb-6">
-              <p className="text-xl md:text-2xl italic text-gray-700 dark:text-gray-200">{getMessage()}</p>
+              <p className="text-xl md:text-2xl italic text-gray-700 dark:text-gray-200">
+                {getMessage()}
+              </p>
             </div>
 
             <CountdownTimer targetDate={countdown.eventDate} onTimeUpdate={setTimeRemaining} />
@@ -279,8 +286,8 @@ export function CountdownDisplay({ initialParams }: { initialParams: CountdownPa
                       Invite someone special to join your countdown celebration.
                     </DialogDescription>
                   </DialogHeader>
-                  <InvitationForm 
-                    countdown={countdown} 
+                  <InvitationForm
+                    countdown={countdown}
                     timeRemaining={timeRemaining}
                     onInvitationSent={() => setShowInviteDialog(false)}
                   />

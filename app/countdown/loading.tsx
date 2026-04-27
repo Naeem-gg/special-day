@@ -1,4 +1,4 @@
-import { HeartIcon } from "lucide-react"
+import { HeartIcon } from 'lucide-react'
 
 export default function CountdownLoading() {
   return (

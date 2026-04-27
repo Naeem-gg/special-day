@@ -1,45 +1,52 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { Footer } from "@/components/Footer";
-import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
-import Link from "next/link";
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { motion } from 'framer-motion'
+import { Footer } from '@/components/Footer'
+import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
+import Link from 'next/link'
+import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 
 const faqs = [
   {
-    question: "How does the digital invitation work?",
-    answer: "Our platform allows you to create beautiful, animated digital wedding invitations in minutes. Simply choose a plan, enter your wedding details, upload your photos, and you'll instantly get a personalized link to share with your guests."
+    question: 'How does the digital invitation work?',
+    answer:
+      "Our platform allows you to create beautiful, animated digital wedding invitations in minutes. Simply choose a plan, enter your wedding details, upload your photos, and you'll instantly get a personalized link to share with your guests.",
   },
   {
-    question: "How do guests receive the invitation?",
-    answer: "You simply share your unique, personalized link (e.g., dnvites.com/invite/your-names) with your guests via WhatsApp, SMS, Instagram, or email. There is no app for them to download, and they can open it instantly on any device."
+    question: 'How do guests receive the invitation?',
+    answer:
+      'You simply share your unique, personalized link (e.g., dnvites.com/invite/your-names) with your guests via WhatsApp, SMS, Instagram, or email. There is no app for them to download, and they can open it instantly on any device.',
   },
   {
-    question: "Can I track RSVPs from my guests?",
-    answer: "Yes! Our Premium tiers include a fully integrated RSVP system. Guests can RSVP directly through your invitation link, and you can track all responses and guest counts in real-time through your personal dashboard."
+    question: 'Can I track RSVPs from my guests?',
+    answer:
+      'Yes! Our Premium tiers include a fully integrated RSVP system. Guests can RSVP directly through your invitation link, and you can track all responses and guest counts in real-time through your personal dashboard.',
   },
   {
-    question: "Can I add my own background music?",
-    answer: "Absolutely! Our Silver and Gold plans allow you to provide a link to your favorite song (via YouTube, SoundCloud, or MP3), which will play automatically and set the mood when guests open your invitation."
+    question: 'Can I add my own background music?',
+    answer:
+      'Absolutely! Our Silver and Gold plans allow you to provide a link to your favorite song (via YouTube, SoundCloud, or MP3), which will play automatically and set the mood when guests open your invitation.',
   },
   {
-    question: "Is there a limit on how many photos I can upload?",
-    answer: "The photo limit depends on your chosen tier. The Basic plan allows 1 feature photo, Silver allows up to 5 photos, and our Gold tier allows you to upload up to 10 photos to create a stunning, swipeable gallery."
+    question: 'Is there a limit on how many photos I can upload?',
+    answer:
+      'The photo limit depends on your chosen tier. The Basic plan allows 1 feature photo, Silver allows up to 5 photos, and our Gold tier allows you to upload up to 10 photos to create a stunning, swipeable gallery.',
   },
   {
-    question: "How long does the invitation stay active online?",
-    answer: "Every invitation is securely hosted and remains fully active for a full 1 year from the date of creation. Your family and friends can revisit your special moments anytime during this period."
+    question: 'How long does the invitation stay active online?',
+    answer:
+      'Every invitation is securely hosted and remains fully active for a full 1 year from the date of creation. Your family and friends can revisit your special moments anytime during this period.',
   },
   {
-    question: "Can I edit the invitation after paying?",
-    answer: "Yes! If you create a free account before checking out, you can log in to your dashboard anytime to update event timings, venue details, or swap out photos without any extra cost."
-  }
-];
+    question: 'Can I edit the invitation after paying?',
+    answer:
+      'Yes! If you create a free account before checking out, you can log in to your dashboard anytime to update event timings, venue details, or swap out photos without any extra cost.',
+  },
+]
 
 export default function FAQPage() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
     <div className="min-h-screen bg-[#FFF9F4]">
@@ -52,8 +59,12 @@ export default function FAQPage() {
       <main className="pt-32 pb-24 px-6">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4">Frequently Asked Questions</h1>
-            <p className="text-muted-foreground text-lg">Everything you need to know about your digital invitations.</p>
+            <h1 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
+              Frequently Asked Questions
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Everything you need to know about your digital invitations.
+            </p>
           </div>
 
           <motion.div
@@ -82,9 +93,9 @@ export default function FAQPage() {
                   <motion.div
                     initial={false}
                     animate={{
-                      height: openIndex === index ? "auto" : 0,
+                      height: openIndex === index ? 'auto' : 0,
                       opacity: openIndex === index ? 1 : 0,
-                      marginTop: openIndex === index ? 16 : 0
+                      marginTop: openIndex === index ? 16 : 0,
                     }}
                     className="overflow-hidden"
                   >
@@ -110,5 +121,5 @@ export default function FAQPage() {
 
       <Footer />
     </div>
-  );
+  )
 }

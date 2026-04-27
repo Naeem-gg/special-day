@@ -1,81 +1,79 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useRef } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Wifi, Battery, Signal, Lock, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import TemplateRouter from "./templates/TemplateRouter";
-import { TemplateProps } from "./templates/types";
+import { useState, useEffect, useRef } from 'react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { Wifi, Battery, Signal, Lock, RotateCcw, Volume2, VolumeX } from 'lucide-react'
+import TemplateRouter from './templates/TemplateRouter'
+import { TemplateProps } from './templates/types'
 
 // Use a stable future date to avoid hydration mismatch
 // We'll set this dynamically in the component via useEffect
-const STATIC_FUTURE = new Date("2026-06-15T10:00:00");
+const STATIC_FUTURE = new Date('2026-06-15T10:00:00')
 
-const BASE_MOCK_PROPS: Omit<TemplateProps, "date"> = {
-  brideName: "Ayesha",
-  groomName: "Abdullah",
-  venue: "The Grand Imperial Ballroom, Pearl Continental · Lahore",
+const BASE_MOCK_PROPS: Omit<TemplateProps, 'date'> = {
+  brideName: 'Ayesha',
+  groomName: 'Abdullah',
+  venue: 'The Grand Imperial Ballroom, Pearl Continental · Lahore',
   events: [
     {
-      name: "Nikah Ceremony",
-      time: "10:00 AM",
-      location: "Faisal Mosque, Islamabad",
-      description: "Join us as we unite in the sacred bond of Nikah, followed by a light brunch.",
+      name: 'Nikah Ceremony',
+      time: '10:00 AM',
+      location: 'Faisal Mosque, Islamabad',
+      description: 'Join us as we unite in the sacred bond of Nikah, followed by a light brunch.',
     },
     {
-      name: "Mehndi Night",
-      time: "05:00 PM",
-      location: "Royal Gardens, Islamabad",
-      description: "An evening of color, music and dance under the stars.",
+      name: 'Mehndi Night',
+      time: '05:00 PM',
+      location: 'Royal Gardens, Islamabad',
+      description: 'An evening of color, music and dance under the stars.',
     },
     {
-      name: "Grand Walima",
-      time: "07:00 PM",
-      location: "Pearl Continental Ballroom",
-      description: "A regal dinner celebrating our union. Formal attire requested.",
+      name: 'Grand Walima',
+      time: '07:00 PM',
+      location: 'Pearl Continental Ballroom',
+      description: 'A regal dinner celebrating our union. Formal attire requested.',
     },
   ],
   gallery: [],
   isPreview: false,
   isThumbnail: false,
   invitationId: 1,
-  tier: "premium",
-};
+  tier: 'premium',
+}
 
 export default function MobileInvitationPreview() {
-  const [currentTime, setCurrentTime] = useState("");
-  const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, amount: 0.3 });
-  const [hasOpened, setHasOpened] = useState(false);
-  const [musicOn, setMusicOn] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
+  const [currentTime, setCurrentTime] = useState('')
+  const containerRef = useRef(null)
+  const isInView = useInView(containerRef, { once: true, amount: 0.3 })
+  const [hasOpened, setHasOpened] = useState(false)
+  const [musicOn, setMusicOn] = useState(false)
+  const [hasScrolled, setHasScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 100) {
-        setHasScrolled(true);
+        setHasScrolled(true)
       }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      );
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 60000);
-    return () => clearInterval(interval);
-  }, []);
+      const now = new Date()
+      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))
+    }
+    updateTime()
+    const interval = setInterval(updateTime, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     if (isInView && hasScrolled && !hasOpened) {
-      setHasOpened(true);
+      setHasOpened(true)
     }
-  }, [isInView, hasScrolled, hasOpened]);
+  }, [isInView, hasScrolled, hasOpened])
 
   return (
     <div
@@ -132,13 +130,14 @@ export default function MobileInvitationPreview() {
           <motion.button
             whileTap={{ scale: 0.85 }}
             onClick={(e) => {
-              e.stopPropagation();
-              setMusicOn(!musicOn);
+              e.stopPropagation()
+              setMusicOn(!musicOn)
             }}
-            className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-xl border transition-all duration-300 ${musicOn
-                ? "bg-[#D4AF37]/30 border-[#D4AF37]/50 text-[#D4AF37]"
-                : "bg-black/40 border-white/10 text-white/70"
-              }`}
+            className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-xl border transition-all duration-300 ${
+              musicOn
+                ? 'bg-[#D4AF37]/30 border-[#D4AF37]/50 text-[#D4AF37]'
+                : 'bg-black/40 border-white/10 text-white/70'
+            }`}
           >
             <AnimatePresence mode="wait">
               {musicOn ? (
@@ -186,11 +185,11 @@ export default function MobileInvitationPreview() {
                   <motion.div
                     key={i}
                     className="w-0.5 bg-[#D4AF37]"
-                    animate={{ height: ["20%", "100%", "40%", "80%", "20%"] }}
+                    animate={{ height: ['20%', '100%', '40%', '80%', '20%'] }}
                     transition={{
                       duration: 0.6 + i * 0.1,
                       repeat: Infinity,
-                      ease: "easeInOut"
+                      ease: 'easeInOut',
                     }}
                   />
                 ))}
@@ -229,5 +228,5 @@ export default function MobileInvitationPreview() {
       {/* Decorative shadows */}
       <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-10 bg-black/20 blur-2xl rounded-full" />
     </div>
-  );
+  )
 }

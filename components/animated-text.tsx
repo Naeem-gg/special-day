@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
+import { useEffect, useState } from 'react'
+import { cn } from '@/lib/utils'
 
 interface AnimatedTextProps {
   text: string
@@ -10,7 +10,7 @@ interface AnimatedTextProps {
 }
 
 export function AnimatedText({ text, className, delay = 50 }: AnimatedTextProps) {
-  const [displayedText, setDisplayedText] = useState("")
+  const [displayedText, setDisplayedText] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function AnimatedText({ text, className, delay = 50 }: AnimatedTextProps)
   }, [currentIndex, text, delay])
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
       {displayedText}
       <span className="animate-pulse">|</span>
     </div>

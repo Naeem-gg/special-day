@@ -1,42 +1,42 @@
-import { render } from "react-email";
-import PurchaseReceiptEmail from "@/components/emails/PurchaseReceiptEmail";
-import GiftCouponEmail from "@/components/emails/GiftCouponEmail";
-import FeedbackNotificationEmail from "@/components/emails/FeedbackNotificationEmail";
-import React from "react";
-import { Resend } from "resend";
+import { render } from 'react-email'
+import PurchaseReceiptEmail from '@/components/emails/PurchaseReceiptEmail'
+import GiftCouponEmail from '@/components/emails/GiftCouponEmail'
+import FeedbackNotificationEmail from '@/components/emails/FeedbackNotificationEmail'
+import React from 'react'
+import { Resend } from 'resend'
 
 export async function sendEmail({
   to,
   subject,
   htmlContent,
 }: {
-  to: string;
-  subject: string;
-  htmlContent: string;
+  to: string
+  subject: string
+  htmlContent: string
 }) {
-  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  const RESEND_API_KEY = process.env.RESEND_API_KEY
 
   if (!RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY is not set. Email not sent.");
-    return false;
+    console.warn('RESEND_API_KEY is not set. Email not sent.')
+    return false
   }
 
   try {
-    const resend = new Resend(RESEND_API_KEY);
-    const fromEmail = process.env.RESEND_FROM_EMAIL || "DNvites <noreply@dnvites.app>";
+    const resend = new Resend(RESEND_API_KEY)
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'DNvites <noreply@dnvites.app>'
 
     const data = await resend.emails.send({
       from: fromEmail,
       to: [to],
       subject: subject,
       html: htmlContent,
-    });
+    })
 
-    console.log("Email sent via Resend:", data.data?.id);
-    return true;
+    console.log('Email sent via Resend:', data.data?.id)
+    return true
   } catch (error) {
-    console.error("Error sending email via Resend:", error);
-    return false;
+    console.error('Error sending email via Resend:', error)
+    return false
   }
 }
 
@@ -49,13 +49,13 @@ export async function sendPurchaseReceipt({
   orderId,
   invitationLink,
 }: {
-  to: string;
-  brideName: string;
-  groomName: string;
-  planName: string;
-  amountPaid: number;
-  orderId: string;
-  invitationLink: string;
+  to: string
+  brideName: string
+  groomName: string
+  planName: string
+  amountPaid: number
+  orderId: string
+  invitationLink: string
 }) {
   // @ts-ignore
   const htmlContent = await render(
@@ -67,13 +67,13 @@ export async function sendPurchaseReceipt({
       orderId,
       invitationLink,
     })
-  );
+  )
 
   return sendEmail({
     to,
-    subject: "Your DNvites Invitation is Ready! 🎉",
+    subject: 'Your DNvites Invitation is Ready! 🎉',
     htmlContent,
-  });
+  })
 }
 
 export async function sendGiftCoupon({
@@ -82,10 +82,10 @@ export async function sendGiftCoupon({
   couponCode,
   senderName,
 }: {
-  to: string;
-  planName: string;
-  couponCode: string;
-  senderName?: string;
+  to: string
+  planName: string
+  couponCode: string
+  senderName?: string
 }) {
   // @ts-ignore
   const htmlContent = await render(
@@ -94,13 +94,13 @@ export async function sendGiftCoupon({
       couponCode,
       senderName,
     })
-  );
+  )
 
   return sendEmail({
     to,
     subject: "You've received a gifted invitation! 🎁",
     htmlContent,
-  });
+  })
 }
 
 export async function sendFeedbackNotification({
@@ -111,12 +111,12 @@ export async function sendFeedbackNotification({
   message,
   feedbackId,
 }: {
-  name: string;
-  email: string;
-  type: string;
-  subject: string;
-  message: string;
-  feedbackId: number;
+  name: string
+  email: string
+  type: string
+  subject: string
+  message: string
+  feedbackId: number
 }) {
   // @ts-ignore
   const htmlContent = await render(
@@ -128,11 +128,11 @@ export async function sendFeedbackNotification({
       message,
       feedbackId,
     })
-  );
+  )
 
   return sendEmail({
-    to: "dnvites@duck.com",
+    to: 'dnvites@duck.com',
     subject: `[${type.toUpperCase()}] ${subject} — from ${name}`,
     htmlContent,
-  });
+  })
 }

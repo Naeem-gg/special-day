@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { Footer } from "@/components/Footer";
-import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
-import Link from "next/link";
+import { motion } from 'framer-motion'
+import { Footer } from '@/components/Footer'
+import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
+import Link from 'next/link'
 
 export default function PrivacyPage() {
   return (
@@ -22,12 +22,15 @@ export default function PrivacyPage() {
             className="prose prose-rose max-w-none"
           >
             <h1 className="text-4xl font-serif text-gray-900 mb-8">Privacy Policy</h1>
-            <p className="text-sm text-muted-foreground mb-8 text-right italic">Last updated: April 2026</p>
+            <p className="text-sm text-muted-foreground mb-8 text-right italic">
+              Last updated: April 2026
+            </p>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">1. Information We Collect</h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                We collect information you provide directly to us when you create an invitation, such as:
+                We collect information you provide directly to us when you create an invitation,
+                such as:
               </p>
               <ul className="list-disc pl-6 text-gray-600 space-y-2">
                 <li>Names of the couple</li>
@@ -40,28 +43,33 @@ export default function PrivacyPage() {
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">2. How We Use Information</h2>
               <p className="text-gray-600 leading-relaxed">
-                We use the information we collect to create and host your digital invitation, process payments, and provide customer support. We do not sell your personal data to third parties.
+                We use the information we collect to create and host your digital invitation,
+                process payments, and provide customer support. We do not sell your personal data to
+                third parties.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">3. Data Security</h2>
               <p className="text-gray-600 leading-relaxed">
-                We use industry-standard security measures to protect your information and photos. Photos are stored securely using Cloudinary.
+                We use industry-standard security measures to protect your information and photos.
+                Photos are stored securely using Cloudinary.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">4. Cookies</h2>
               <p className="text-gray-600 leading-relaxed">
-                We use cookies to improve your experience on our site, such as keeping you logged in to your dashboard.
+                We use cookies to improve your experience on our site, such as keeping you logged in
+                to your dashboard.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">5. Third-Party Services</h2>
               <p className="text-gray-600 leading-relaxed">
-                We use third-party services like Razorpay for payments and Cloudinary for image hosting. These services have their own privacy policies.
+                We use third-party services like Razorpay for payments and Cloudinary for image
+                hosting. These services have their own privacy policies.
               </p>
             </section>
 
@@ -74,5 +82,5 @@ export default function PrivacyPage() {
 
       <Footer />
     </div>
-  );
+  )
 }

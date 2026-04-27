@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { Card } from "@/components/ui/card"
+import { useEffect, useState } from 'react'
+import { Card } from '@/components/ui/card'
 
 interface CountdownTimerProps {
   targetDate: Date
@@ -70,10 +70,10 @@ export function CountdownTimer({ targetDate, onTimeUpdate }: CountdownTimerProps
   }, [targetDate, onTimeUpdate])
 
   const timeUnits = [
-    { label: "Days", value: timeRemaining.days },
-    { label: "Hours", value: timeRemaining.hours },
-    { label: "Minutes", value: timeRemaining.minutes },
-    { label: "Seconds", value: timeRemaining.seconds },
+    { label: 'Days', value: timeRemaining.days },
+    { label: 'Hours', value: timeRemaining.hours },
+    { label: 'Minutes', value: timeRemaining.minutes },
+    { label: 'Seconds', value: timeRemaining.seconds },
   ]
 
   return (

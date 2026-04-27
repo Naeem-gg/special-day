@@ -1,21 +1,26 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion'
 
 interface InvitationHeroProps {
-  brideName: string;
-  groomName: string;
-  date: Date;
-  tier?: string;
+  brideName: string
+  groomName: string
+  date: Date
+  tier?: string
 }
 
 const letterAnimation = {
   initial: { y: 400, opacity: 0 },
   animate: { y: 0, opacity: 1 },
-};
+}
 
-export default function InvitationHero({ brideName, groomName, date, tier = "basic" }: InvitationHeroProps) {
-  const isPremium = tier === "premium" || tier === "standard";
+export default function InvitationHero({
+  brideName,
+  groomName,
+  date,
+  tier = 'basic',
+}: InvitationHeroProps) {
+  const isPremium = tier === 'premium' || tier === 'standard'
 
   return (
     <section className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-[#faf9f6]">
@@ -27,29 +32,32 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
           transition={{ duration: 2, delay: 0.5 }}
           className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
         >
-          <svg width="600" height="600" viewBox="0 0 100 100" className="opacity-10 stroke-primary fill-none">
+          <svg
+            width="600"
+            height="600"
+            viewBox="0 0 100 100"
+            className="opacity-10 stroke-primary fill-none"
+          >
             <motion.path
               d="M10,50 Q50,0 90,50 Q50,100 10,50"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 3, ease: "easeInOut" }}
+              transition={{ duration: 3, ease: 'easeInOut' }}
             />
             <motion.path
               d="M30,50 Q50,20 70,50 Q50,80 30,50"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 4, ease: "easeInOut", delay: 1 }}
+              transition={{ duration: 4, ease: 'easeInOut', delay: 1 }}
             />
           </svg>
         </motion.div>
       )}
 
-      <motion.div
-        className="z-10 px-4"
-      >
+      <motion.div className="z-10 px-4">
         <motion.span
-          initial={{ opacity: 0, letterSpacing: "0.5em" }}
-          animate={{ opacity: 1, letterSpacing: "0.3em" }}
+          initial={{ opacity: 0, letterSpacing: '0.5em' }}
+          animate={{ opacity: 1, letterSpacing: '0.3em' }}
           transition={{ duration: 1.5 }}
           className="text-sm uppercase text-gray-500 mb-8 block font-medium"
         >
@@ -64,9 +72,13 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
               transition={{ staggerChildren: 0.05, delayChildren: 0.5 }}
               className="text-[15vw] md:text-9xl font-serif font-light text-gray-900 leading-tight flex flex-wrap justify-center"
             >
-              {brideName.split("").map((char, i) => (
-                <motion.span key={i} variants={letterAnimation} transition={{ duration: 1, ease: [0.6, 0.01, -0.05, 0.95] }}>
-                  {char === " " ? "\u00A0" : char}
+              {brideName.split('').map((char, i) => (
+                <motion.span
+                  key={i}
+                  variants={letterAnimation}
+                  transition={{ duration: 1, ease: [0.6, 0.01, -0.05, 0.95] }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
                 </motion.span>
               ))}
             </motion.h1>
@@ -75,7 +87,7 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
           <motion.span
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.5, duration: 1, type: "spring" }}
+            transition={{ delay: 1.5, duration: 1, type: 'spring' }}
             className="text-4xl md:text-6xl font-serif text-gray-300 italic"
           >
             &
@@ -88,9 +100,13 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
               transition={{ staggerChildren: 0.05, delayChildren: 1 }}
               className="text-[15vw] md:text-9xl font-serif font-light text-gray-900 leading-tight flex flex-wrap justify-center"
             >
-              {groomName.split("").map((char, i) => (
-                <motion.span key={i} variants={letterAnimation} transition={{ duration: 1, ease: [0.6, 0.01, -0.05, 0.95] }}>
-                  {char === " " ? "\u00A0" : char}
+              {groomName.split('').map((char, i) => (
+                <motion.span
+                  key={i}
+                  variants={letterAnimation}
+                  transition={{ duration: 1, ease: [0.6, 0.01, -0.05, 0.95] }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
                 </motion.span>
               ))}
             </motion.h1>
@@ -100,7 +116,7 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ delay: 2, duration: 1.5, ease: "easeInOut" }}
+          transition={{ delay: 2, duration: 1.5, ease: 'easeInOut' }}
           className="h-px w-48 bg-gray-300 mx-auto mb-10"
         />
 
@@ -120,16 +136,20 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
           style={{ y: 0 }}
           animate={{
             y: [0, -20, 0],
-            rotate: [0, 1, 0]
+            rotate: [0, 1, 0],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: 'easeInOut',
           }}
           className="absolute top-10 right-10 w-64 h-64 opacity-5 pointer-events-none"
         >
-          <img src="https://www.transparenttextures.com/patterns/natural-paper.png" alt="" className="w-full h-full mix-blend-multiply" />
+          <img
+            src="https://www.transparenttextures.com/patterns/natural-paper.png"
+            alt=""
+            className="w-full h-full mix-blend-multiply"
+          />
         </motion.div>
       )}
 
@@ -140,7 +160,9 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
       >
         <div className="flex flex-col items-center gap-2">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold">Explore</span>
+          <span className="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold">
+            Explore
+          </span>
           <motion.div
             animate={{ scaleY: [0, 1, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
@@ -149,5 +171,5 @@ export default function InvitationHero({ brideName, groomName, date, tier = "bas
         </div>
       </motion.div>
     </section>
-  );
+  )
 }

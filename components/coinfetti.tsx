@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import confetti from "canvas-confetti"
+import { useEffect, useState } from 'react'
+import confetti from 'canvas-confetti'
 
 export function Confetti() {
   const [isActive, setIsActive] = useState(true)

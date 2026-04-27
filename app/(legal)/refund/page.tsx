@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { Footer } from "@/components/Footer";
-import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
-import Link from "next/link";
+import { motion } from 'framer-motion'
+import { Footer } from '@/components/Footer'
+import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
+import Link from 'next/link'
 
 export default function RefundPage() {
   return (
@@ -22,33 +22,45 @@ export default function RefundPage() {
             className="prose prose-rose max-w-none"
           >
             <h1 className="text-4xl font-serif text-gray-900 mb-8">Refund & Cancellation Policy</h1>
-            <p className="text-sm text-muted-foreground mb-8 text-right italic">Last updated: April 2026</p>
+            <p className="text-sm text-muted-foreground mb-8 text-right italic">
+              Last updated: April 2026
+            </p>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">1. No Refunds</h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Due to the digital nature of our service (instant link generation and hosting activation upon payment), we generally **do not offer refunds** once an invitation has been created and the payment has been processed.
+                Due to the digital nature of our service (instant link generation and hosting
+                activation upon payment), we generally **do not offer refunds** once an invitation
+                has been created and the payment has been processed.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">2. Cancellation</h2>
               <p className="text-gray-600 leading-relaxed">
-                You can choose to delete your invitation or stop sharing the link at any time from your dashboard. However, since the service provided is a "pay-once" model for a set duration (1 year), the fee is non-refundable upon cancellation.
+                You can choose to delete your invitation or stop sharing the link at any time from
+                your dashboard. However, since the service provided is a "pay-once" model for a set
+                duration (1 year), the fee is non-refundable upon cancellation.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">3. Technical Issues</h2>
               <p className="text-gray-600 leading-relaxed">
-                If you encounter a technical issue that prevents your invitation from loading or functioning correctly, please contact our support team. We will work to resolve the issue within 48 hours. If the issue cannot be resolved, a partial or full refund may be considered on a case-by-case basis.
+                If you encounter a technical issue that prevents your invitation from loading or
+                functioning correctly, please contact our support team. We will work to resolve the
+                issue within 48 hours. If the issue cannot be resolved, a partial or full refund may
+                be considered on a case-by-case basis.
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-serif text-gray-900 mb-4">4. Process for Refunds (If Eligible)</h2>
+              <h2 className="text-2xl font-serif text-gray-900 mb-4">
+                4. Process for Refunds (If Eligible)
+              </h2>
               <p className="text-gray-600 leading-relaxed">
-                In rare cases where a refund is approved, it will be processed through Razorpay and will typically reflect in your original payment method within 5-7 business days.
+                In rare cases where a refund is approved, it will be processed through Razorpay and
+                will typically reflect in your original payment method within 5-7 business days.
               </p>
             </section>
 
@@ -61,5 +73,5 @@ export default function RefundPage() {
 
       <Footer />
     </div>
-  );
+  )
 }

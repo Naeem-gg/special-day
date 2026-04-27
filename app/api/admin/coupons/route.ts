@@ -1,26 +1,26 @@
-import { db } from "@/lib/db";
-import { coupons } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { db } from '@/lib/db'
+import { coupons } from '@/lib/db/schema'
+import { desc, eq } from 'drizzle-orm'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET() {
   try {
     const allCoupons = await db.query.coupons.findMany({
       orderBy: [desc(coupons.createdAt)],
-    });
-    return NextResponse.json(allCoupons);
+    })
+    return NextResponse.json(allCoupons)
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch coupons" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch coupons' }, { status: 500 })
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { code, discountType, discountValue, expiresAt, usageLimit, active } = body;
+    const body = await req.json()
+    const { code, discountType, discountValue, expiresAt, usageLimit, active } = body
 
     if (!code || !discountType || discountValue === undefined) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     const insertData: any = {
@@ -29,31 +29,32 @@ export async function POST(req: NextRequest) {
       discountValue,
       usageLimit,
       active: active !== undefined ? active : true,
-    };
-
-    if (expiresAt) {
-      insertData.expiresAt = new Date(expiresAt);
     }
 
-    const [newCoupon] = await db.insert(coupons).values(insertData).returning();
+    if (expiresAt) {
+      insertData.expiresAt = new Date(expiresAt)
+    }
 
-    return NextResponse.json(newCoupon);
+    const [newCoupon] = await db.insert(coupons).values(insertData).returning()
+
+    return NextResponse.json(newCoupon)
   } catch (error) {
-    console.error("Create Coupon Error:", error);
-    return NextResponse.json({ error: "Failed to create coupon" }, { status: 500 });
+    console.error('Create Coupon Error:', error)
+    return NextResponse.json({ error: 'Failed to create coupon' }, { status: 500 })
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { id, code, discountType, discountValue, expiresAt, usageLimit, active } = body;
+    const body = await req.json()
+    const { id, code, discountType, discountValue, expiresAt, usageLimit, active } = body
 
     if (!id || !code || !discountType || discountValue === undefined) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const [updatedCoupon] = await db.update(coupons)
+    const [updatedCoupon] = await db
+      .update(coupons)
       .set({
         code: code.toUpperCase(),
         discountType,
@@ -63,24 +64,23 @@ export async function PATCH(req: NextRequest) {
         active: active !== undefined ? active : true,
       })
       .where(eq(coupons.id, id))
-      .returning();
+      .returning()
 
-    return NextResponse.json(updatedCoupon);
+    return NextResponse.json(updatedCoupon)
   } catch (error) {
-    console.error("Update Coupon Error:", error);
-    return NextResponse.json({ error: "Failed to update coupon" }, { status: 500 });
+    console.error('Update Coupon Error:', error)
+    return NextResponse.json({ error: 'Failed to update coupon' }, { status: 500 })
   }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { id } = await req.json();
-    if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
+    const { id } = await req.json()
+    if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
 
-    await db.delete(coupons).where(eq(coupons.id, id));
-    return NextResponse.json({ success: true });
+    await db.delete(coupons).where(eq(coupons.id, id))
+    return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to delete coupon" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete coupon' }, { status: 500 })
   }
 }
-

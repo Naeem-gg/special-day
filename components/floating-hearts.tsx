@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { HeartIcon } from "lucide-react"
+import { useEffect, useState } from 'react'
+import { HeartIcon } from 'lucide-react'
 
 interface Heart {
   id: number
@@ -48,7 +48,7 @@ export function FloatingHearts() {
               // Add slight horizontal movement
               x: heart.x + Math.sin(time * 0.001 + heart.id) * 0.5,
             }
-          }),
+          })
         )
       }
 
@@ -64,7 +64,7 @@ export function FloatingHearts() {
 
   // Create a new heart with random properties
   const createHeart = (id: number): Heart => {
-    const colors = ["#ff6b6b", "#ff8e8e", "#ffb8b8", "#ff4757", "#ff6b81"]
+    const colors = ['#ff6b6b', '#ff8e8e', '#ffb8b8', '#ff4757', '#ff6b81']
 
     return {
       id,
@@ -88,7 +88,7 @@ export function FloatingHearts() {
             top: `${heart.y}px`,
             opacity: heart.opacity,
             transform: `rotate(${Math.sin(heart.id) * 20}deg)`,
-            transition: "transform 2s ease-in-out",
+            transition: 'transform 2s ease-in-out',
             color: heart.color,
             width: `${heart.size}px`,
             height: `${heart.size}px`,

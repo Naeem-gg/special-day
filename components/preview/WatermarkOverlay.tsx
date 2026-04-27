@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 export default function WatermarkOverlay() {
   return (
@@ -12,24 +12,25 @@ export default function WatermarkOverlay() {
         <div
           key={i}
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: `${i * 14}%`,
-            left: "-10%",
-            width: "120%",
-            transform: "rotate(-25deg)",
-            whiteSpace: "nowrap",
-            color: "rgba(180, 120, 140, 0.06)",
-            fontSize: "0.95rem",
-            fontFamily: "sans-serif",
-            fontWeight: "700",
-            letterSpacing: "0.6em",
-            textTransform: "uppercase",
-            userSelect: "none",
+            left: '-10%',
+            width: '120%',
+            transform: 'rotate(-25deg)',
+            whiteSpace: 'nowrap',
+            color: 'rgba(180, 120, 140, 0.06)',
+            fontSize: '0.95rem',
+            fontFamily: 'sans-serif',
+            fontWeight: '700',
+            letterSpacing: '0.6em',
+            textTransform: 'uppercase',
+            userSelect: 'none',
           }}
         >
-          DNvites Preview — Not for Sharing &nbsp;&nbsp;·&nbsp;&nbsp; DNvites Preview — Not for Sharing &nbsp;&nbsp;·&nbsp;&nbsp; DNvites Preview — Not for Sharing
+          DNvites Preview — Not for Sharing &nbsp;&nbsp;·&nbsp;&nbsp; DNvites Preview — Not for
+          Sharing &nbsp;&nbsp;·&nbsp;&nbsp; DNvites Preview — Not for Sharing
         </div>
       ))}
     </div>
-  );
+  )
 }

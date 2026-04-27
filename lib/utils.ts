@@ -1,5 +1,5 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -7,19 +7,19 @@ export function cn(...inputs: ClassValue[]) {
 
 // Format date for display
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   })
 }
-  export const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  }
+export const formatTime = (date: Date) => {
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 // Calculate time remaining between two dates
 export function calculateTimeRemaining(targetDate: Date): {
   days: number
@@ -55,43 +55,42 @@ export function calculateTimeRemaining(targetDate: Date): {
   }
 }
 
-
 export function xorEncryptDecrypt(input: string, key: string): string {
-    let output = '';
-    for (let i = 0; i < input.length; i++) {
-        output += String.fromCharCode(input.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-    }
-    return output;
+  let output = ''
+  for (let i = 0; i < input.length; i++) {
+    output += String.fromCharCode(input.charCodeAt(i) ^ key.charCodeAt(i % key.length))
+  }
+  return output
 }
 
 export function base64Encode(input: string): string {
-    return btoa(String.fromCharCode(...new TextEncoder().encode(input)));
+  return btoa(String.fromCharCode(...new TextEncoder().encode(input)))
 }
 
 export function base64Decode(input: string): string {
-    return new TextDecoder().decode(Uint8Array.from(atob(input), c => c.charCodeAt(0)));
+  return new TextDecoder().decode(Uint8Array.from(atob(input), (c) => c.charCodeAt(0)))
 }
 
 export function encryptURL(url: string): string {
-    const urlObj = new URL(url);
-    const searchParams = urlObj.searchParams;
+  const urlObj = new URL(url)
+  const searchParams = urlObj.searchParams
 
-    searchParams.forEach((value, key) => {
-        const encryptedValue = base64Encode(xorEncryptDecrypt(value, key));
-        searchParams.set(key, encryptedValue);
-    });
+  searchParams.forEach((value, key) => {
+    const encryptedValue = base64Encode(xorEncryptDecrypt(value, key))
+    searchParams.set(key, encryptedValue)
+  })
 
-    return urlObj.toString();
+  return urlObj.toString()
 }
 
 export function decryptURL(url: string): string {
-    const urlObj = new URL(url);
-    const searchParams = urlObj.searchParams;
+  const urlObj = new URL(url)
+  const searchParams = urlObj.searchParams
 
-    searchParams.forEach((value, key) => {
-        const decryptedValue = xorEncryptDecrypt(base64Decode(value), key);
-        searchParams.set(key, decryptedValue);
-    });
+  searchParams.forEach((value, key) => {
+    const decryptedValue = xorEncryptDecrypt(base64Decode(value), key)
+    searchParams.set(key, decryptedValue)
+  })
 
-    return urlObj.toString();
+  return urlObj.toString()
 }

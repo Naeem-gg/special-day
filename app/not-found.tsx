@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { Home, ArrowLeft, Heart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import Link from 'next/link'
+import { Home, ArrowLeft, Heart } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
 
 export default function NotFound() {
   const [mounted, setMounted] = useState(false)
@@ -27,7 +27,7 @@ export default function NotFound() {
                 animationDelay: `${Math.random() * 5}s`,
               }}
             >
-              {i % 2 === 0 ? "🌸" : "✨"}
+              {i % 2 === 0 ? '🌸' : '✨'}
             </div>
           ))}
         </div>
@@ -37,12 +37,15 @@ export default function NotFound() {
         <div className="mb-8 relative inline-block">
           <div className="absolute inset-0 blur-3xl bg-(--dn-rose) opacity-10 rounded-full animate-glow-pulse" />
           <div className="relative glass p-8 rounded-4xl border-(--dn-rose)/10">
-            <h1 className="text-8xl font-serif font-black gradient-text tracking-tighter mb-2">404</h1>
+            <h1 className="text-8xl font-serif font-black gradient-text tracking-tighter mb-2">
+              404
+            </h1>
             <div className="w-16 h-1 bg-linear-to-r from-transparent via-(--dn-rose) to-transparent mx-auto mb-6" />
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-(--dn-dark)">Where's the party?</h2>
               <p className="text-muted-foreground leading-relaxed">
-                This invitation seems to have lost its way. The page you're looking for doesn't exist or has been moved to a different celebration.
+                This invitation seems to have lost its way. The page you're looking for doesn't
+                exist or has been moved to a different celebration.
               </p>
             </div>
           </div>

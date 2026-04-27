@@ -1,41 +1,41 @@
-"use client";
+'use client'
 
-import { useState, useRef, useEffect } from "react";
-import { Volume2, VolumeX, Music } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from 'react'
+import { Volume2, VolumeX, Music } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface BackgroundMusicProps {
-  url: string;
+  url: string
 }
 
 export default function BackgroundMusic({ url }: BackgroundMusicProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [hasInteracted, setHasInteracted] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current) return
     if (isPlaying) {
-      audioRef.current.pause();
+      audioRef.current.pause()
     } else {
-      audioRef.current.play().catch(err => console.log("Autoplay blocked or failed", err));
+      audioRef.current.play().catch((err) => console.log('Autoplay blocked or failed', err))
     }
-    setIsPlaying(!isPlaying);
-    setHasInteracted(true);
-  };
+    setIsPlaying(!isPlaying)
+    setHasInteracted(true)
+  }
 
   // Attempt to auto-play after first interaction on the page if needed
   useEffect(() => {
     const handleFirstInteraction = () => {
       if (!hasInteracted && audioRef.current && !isPlaying) {
-        // We don't auto-play here to respect user preference, 
+        // We don't auto-play here to respect user preference,
         // but we could if we wanted the wooowinvites experience.
         // For now, let's just show the button clearly.
       }
-    };
-    window.addEventListener('click', handleFirstInteraction);
-    return () => window.removeEventListener('click', handleFirstInteraction);
-  }, [hasInteracted, isPlaying]);
+    }
+    window.addEventListener('click', handleFirstInteraction)
+    return () => window.removeEventListener('click', handleFirstInteraction)
+  }, [hasInteracted, isPlaying])
 
   return (
     <div className="fixed bottom-6 left-6 md:bottom-10 md:left-10 z-60">
@@ -55,11 +55,12 @@ export default function BackgroundMusic({ url }: BackgroundMusicProps) {
           whileHover={{ scale: 1.1, y: -2 }}
           whileTap={{ scale: 0.9 }}
           onClick={togglePlay}
-          style={{ willChange: "transform" }}
-          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 border ${isPlaying
-              ? "bg-white text-rose-500 border-rose-100"
-              : "bg-black/80 text-white border-white/10 backdrop-blur-xl"
-            }`}
+          style={{ willChange: 'transform' }}
+          className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-500 border ${
+            isPlaying
+              ? 'bg-white text-rose-500 border-rose-100'
+              : 'bg-black/80 text-white border-white/10 backdrop-blur-xl'
+          }`}
         >
           <AnimatePresence mode="wait">
             {isPlaying ? (
@@ -73,7 +74,7 @@ export default function BackgroundMusic({ url }: BackgroundMusicProps) {
                 <Volume2 className="w-6 h-6" />
                 <motion.div
                   animate={{ height: [4, 12, 6, 14, 8] }}
-                  transition={{ duration: 0.6, repeat: Infinity, repeatType: "mirror" }}
+                  transition={{ duration: 0.6, repeat: Infinity, repeatType: 'mirror' }}
                   className="absolute -right-1 -top-1 w-0.5 bg-rose-400"
                 />
               </motion.div>
@@ -101,5 +102,5 @@ export default function BackgroundMusic({ url }: BackgroundMusicProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

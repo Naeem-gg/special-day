@@ -1,45 +1,45 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Lock } from "lucide-react";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Lock } from 'lucide-react'
 
 export default function AdminLogin() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
-      });
+      })
 
-      const data = await res.json();
+      const data = await res.json()
 
       if (res.ok) {
-        window.location.href = "/adminn";
+        window.location.href = '/adminn'
       } else {
-        setError(data.error || "Invalid credentials");
+        setError(data.error || 'Invalid credentials')
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError('An error occurred. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -76,19 +76,17 @@ export default function AdminLogin() {
                 required
               />
             </div>
-            {error && (
-              <p className="text-sm text-red-500 text-center font-medium">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-500 text-center font-medium">{error}</p>}
             <Button
               type="submit"
               className="w-full bg-gray-900 hover:bg-gray-800"
               disabled={loading}
             >
-              {loading ? "Authenticating..." : "Sign In"}
+              {loading ? 'Authenticating...' : 'Sign In'}
             </Button>
           </form>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

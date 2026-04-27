@@ -64,7 +64,7 @@ export async function getCroppedImg(
   return new Promise((resolve) => {
     croppedCanvas.toBlob((file) => {
       if (file) {
-        resolve(new File([file], "cropped.jpg", { type: "image/jpeg" }))
+        resolve(new File([file], 'cropped.jpg', { type: 'image/jpeg' }))
       } else {
         resolve(null)
       }

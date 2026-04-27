@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, MessageSquare } from "lucide-react";
-import { Footer } from "@/components/Footer";
-import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
-import Link from "next/link";
+import { motion } from 'framer-motion'
+import { Mail, MapPin, Phone, MessageSquare } from 'lucide-react'
+import { Footer } from '@/components/Footer'
+import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
+import Link from 'next/link'
 
 export default function ContactPage() {
   return (
@@ -23,7 +23,9 @@ export default function ContactPage() {
             className="text-center mb-16"
           >
             <h1 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4">Contact Us</h1>
-            <p className="text-muted-foreground text-lg">We're here to help you make your special day perfect.</p>
+            <p className="text-muted-foreground text-lg">
+              We're here to help you make your special day perfect.
+            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -50,7 +52,11 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="font-bold text-gray-900">Our Address</p>
-                    <p className="text-muted-foreground">Siddiq Nagar, Hitec city,<br />Hyderabad, Telangana 500081</p>
+                    <p className="text-muted-foreground">
+                      Siddiq Nagar, Hitec city,
+                      <br />
+                      Hyderabad, Telangana 500081
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -59,7 +65,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="font-bold text-gray-900">Social Support</p>
-                    <p className="text-muted-foreground">Direct Message us on Instagram for quickest response.</p>
+                    <p className="text-muted-foreground">
+                      Direct Message us on Instagram for quickest response.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -73,7 +81,8 @@ export default function ContactPage() {
             >
               <h2 className="text-2xl font-serif mb-6">Support Hours</h2>
               <p className="text-white/80 mb-8 leading-relaxed">
-                Our team is available to assist you with any questions about your digital invitations.
+                Our team is available to assist you with any questions about your digital
+                invitations.
               </p>
               <div className="space-y-4">
                 <div className="flex justify-between border-b border-white/20 pb-2">
@@ -101,5 +110,5 @@ export default function ContactPage() {
 
       <Footer />
     </div>
-  );
+  )
 }

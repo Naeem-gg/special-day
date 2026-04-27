@@ -1,32 +1,33 @@
-"use client";
+'use client'
 
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { X, ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react'
+import { X, ChevronLeft, ChevronRight, Heart } from 'lucide-react'
 
 interface Photo {
-  url: string;
-  publicId: string;
+  url: string
+  publicId: string
 }
 
 export default function PhotoGallery({ photos }: { photos: Photo[] }) {
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set());
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set())
 
-  if (!photos || photos.length === 0) return null;
+  if (!photos || photos.length === 0) return null
 
   const toggleLike = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     setLikedPhotos((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
-  const goNext = () => setLightboxIndex((i) => (i != null ? (i + 1) % photos.length : null));
-  const goPrev = () => setLightboxIndex((i) => (i != null ? (i - 1 + photos.length) % photos.length : null));
+  const goNext = () => setLightboxIndex((i) => (i != null ? (i + 1) % photos.length : null))
+  const goPrev = () =>
+    setLightboxIndex((i) => (i != null ? (i - 1 + photos.length) % photos.length : null))
 
   return (
     <section className="py-28 bg-white relative overflow-hidden">
@@ -42,8 +43,12 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
           transition={{ duration: 0.8 }}
           className="text-center mb-20"
         >
-          <p className="text-sm font-bold uppercase tracking-widest text-[#F43F8F] mb-3">📸 Our Memories</p>
-          <h2 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4">Beautiful Moments Together</h2>
+          <p className="text-sm font-bold uppercase tracking-widest text-[#F43F8F] mb-3">
+            📸 Our Memories
+          </p>
+          <h2 className="text-4xl md:text-5xl font-serif text-gray-900 mb-4">
+            Beautiful Moments Together
+          </h2>
           <p className="text-muted-foreground text-lg">Click any photo to see it up close 💛</p>
           <motion.div
             initial={{ scaleX: 0 }}
@@ -61,7 +66,7 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
               key={photo.publicId}
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "-60px" }}
+              viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.8, delay: (index % 6) * 0.08, ease: [0.22, 1, 0.36, 1] }}
               whileHover={{ scale: 1.02, zIndex: 10 }}
               onClick={() => setLightboxIndex(index)}
@@ -94,7 +99,7 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
                 >
                   <Heart
                     className={`w-6 h-6 transition-colors ${
-                      likedPhotos.has(photo.publicId) ? "fill-rose-400 text-rose-400" : "text-white"
+                      likedPhotos.has(photo.publicId) ? 'fill-rose-400 text-rose-400' : 'text-white'
                     }`}
                   />
                 </motion.button>
@@ -134,14 +139,20 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
             <motion.button
               whileHover={{ scale: 1.15 }}
               className="absolute left-4 text-white z-10"
-              onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              onClick={(e) => {
+                e.stopPropagation()
+                goPrev()
+              }}
             >
               <ChevronLeft className="w-10 h-10" />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.15 }}
               className="absolute right-4 text-white z-10"
-              onClick={(e) => { e.stopPropagation(); goNext(); }}
+              onClick={(e) => {
+                e.stopPropagation()
+                goNext()
+              }}
             >
               <ChevronRight className="w-10 h-10" />
             </motion.button>
@@ -165,7 +176,9 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
                   className="object-contain max-h-[85vh] w-auto"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/50 to-transparent p-5 flex items-center justify-between">
-                  <span className="text-white font-serif">Photo {lightboxIndex + 1} of {photos.length}</span>
+                  <span className="text-white font-serif">
+                    Photo {lightboxIndex + 1} of {photos.length}
+                  </span>
                   <motion.button
                     whileHover={{ scale: 1.3 }}
                     whileTap={{ scale: 0.8 }}
@@ -175,8 +188,8 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
                     <Heart
                       className={`w-6 h-6 ${
                         likedPhotos.has(photos[lightboxIndex].publicId)
-                          ? "fill-rose-400 text-rose-400"
-                          : "text-white"
+                          ? 'fill-rose-400 text-rose-400'
+                          : 'text-white'
                       }`}
                     />
                   </motion.button>
@@ -187,5 +200,5 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
         )}
       </AnimatePresence>
     </section>
-  );
+  )
 }

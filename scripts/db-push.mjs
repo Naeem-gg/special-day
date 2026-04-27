@@ -8,38 +8,38 @@
  * Usage:  node scripts/db-push.mjs
  */
 
-import { readFileSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
-import { createRequire } from "module";
+import { readFileSync } from 'fs'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { createRequire } from 'module'
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const projectRoot = resolve(__dirname, "..");
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const projectRoot = resolve(__dirname, '..')
 
 // ── 1. Load .env.local ─────────────────────────────────────────────────────
-const envPath = resolve(projectRoot, ".env.local");
-const envContent = readFileSync(envPath, "utf8");
-for (const line of envContent.split("\n")) {
-  const trimmed = line.trim();
-  if (!trimmed || trimmed.startsWith("#")) continue;
-  const eq = trimmed.indexOf("=");
-  if (eq === -1) continue;
-  const key = trimmed.slice(0, eq).trim();
-  const val = trimmed.slice(eq + 1).trim();
-  if (!process.env[key]) process.env[key] = val;
+const envPath = resolve(projectRoot, '.env.local')
+const envContent = readFileSync(envPath, 'utf8')
+for (const line of envContent.split('\n')) {
+  const trimmed = line.trim()
+  if (!trimmed || trimmed.startsWith('#')) continue
+  const eq = trimmed.indexOf('=')
+  if (eq === -1) continue
+  const key = trimmed.slice(0, eq).trim()
+  const val = trimmed.slice(eq + 1).trim()
+  if (!process.env[key]) process.env[key] = val
 }
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL
 if (!DATABASE_URL) {
-  console.error("❌  DATABASE_URL is not set in .env.local");
-  process.exit(1);
+  console.error('❌  DATABASE_URL is not set in .env.local')
+  process.exit(1)
 }
 
 // ── 2. Dynamically import runtime deps ─────────────────────────────────────
-const require = createRequire(import.meta.url);
+const require = createRequire(import.meta.url)
 
-const { neon } = await import("@neondatabase/serverless");
-const { drizzle } = await import("drizzle-orm/neon-http");
+const { neon } = await import('@neondatabase/serverless')
+const { drizzle } = await import('drizzle-orm/neon-http')
 
 // Import schema using ts-node / tsx won't work here for .ts files directly,
 // so we read the SQL we need to run manually.  A safer approach is to use
@@ -48,17 +48,17 @@ const { drizzle } = await import("drizzle-orm/neon-http");
 // does, using the schema definition converted to SQL statements.
 
 // ── 3. Connect via HTTP (port 443 — always open) ───────────────────────────
-console.log("🔌  Connecting to Neon via HTTPS (port 443)…");
-const sql = neon(DATABASE_URL);
+console.log('🔌  Connecting to Neon via HTTPS (port 443)…')
+const sql = neon(DATABASE_URL)
 
 // ── 4. Run a connectivity check ────────────────────────────────────────────
 try {
-  const result = await sql`SELECT current_database(), version()`;
-  console.log(`✅  Connected to: ${result[0].current_database}`);
-  console.log(`    PG version:    ${result[0].version.split(" ").slice(0, 2).join(" ")}`);
+  const result = await sql`SELECT current_database(), version()`
+  console.log(`✅  Connected to: ${result[0].current_database}`)
+  console.log(`    PG version:    ${result[0].version.split(' ').slice(0, 2).join(' ')}`)
 } catch (err) {
-  console.error("❌  Connection failed:", err.message);
-  process.exit(1);
+  console.error('❌  Connection failed:', err.message)
+  process.exit(1)
 }
 
 // ── 5. Apply schema DDL ─────────────────────────────────────────────────────
@@ -181,39 +181,39 @@ const statements = [
     author_name   TEXT         NOT NULL DEFAULT 'DNvites Support',
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
   )`,
-];
+]
 
 // New columns that may not exist yet (idempotent ALTER TABLE)
 const alterStatements = [
   // Add any newly added columns here so re-runs are safe:
   // `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS new_col TEXT`,
-];
+]
 
-const allStatements = [...statements, ...alterStatements];
+const allStatements = [...statements, ...alterStatements]
 
-console.log(`\n🛠   Applying ${allStatements.length} DDL statement(s)…\n`);
+console.log(`\n🛠   Applying ${allStatements.length} DDL statement(s)…\n`)
 
-let ok = 0;
-let failed = 0;
+let ok = 0
+let failed = 0
 for (const stmt of allStatements) {
-  const label = stmt.trim().split("\n")[0].slice(0, 80);
+  const label = stmt.trim().split('\n')[0].slice(0, 80)
   try {
-    await sql.unsafe(stmt);
-    console.log(`  ✅  ${label}`);
-    ok++;
+    await sql.unsafe(stmt)
+    console.log(`  ✅  ${label}`)
+    ok++
   } catch (err) {
     // Already exists errors are fine; print others as warnings
-    if (err.message?.includes("already exists")) {
-      console.log(`  ℹ️   ${label}  (already exists, skipped)`);
-      ok++;
+    if (err.message?.includes('already exists')) {
+      console.log(`  ℹ️   ${label}  (already exists, skipped)`)
+      ok++
     } else {
-      console.error(`  ❌  ${label}`);
-      console.error(`      ${err.message}`);
-      failed++;
+      console.error(`  ❌  ${label}`)
+      console.error(`      ${err.message}`)
+      failed++
     }
   }
 }
 
-console.log(`\n${"─".repeat(60)}`);
-console.log(`Done. ${ok} succeeded, ${failed} failed.`);
-if (failed > 0) process.exit(1);
+console.log(`\n${'─'.repeat(60)}`)
+console.log(`Done. ${ok} succeeded, ${failed} failed.`)
+if (failed > 0) process.exit(1)

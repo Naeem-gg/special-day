@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { Footer } from "@/components/Footer";
-import { DNvitesLogo } from "@/components/branding/DNvitesLogo";
-import Link from "next/link";
+import { motion } from 'framer-motion'
+import { Footer } from '@/components/Footer'
+import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
+import Link from 'next/link'
 
 export default function TermsPage() {
   return (
@@ -22,47 +22,57 @@ export default function TermsPage() {
             className="prose prose-rose max-w-none"
           >
             <h1 className="text-4xl font-serif text-gray-900 mb-8">Terms of Service</h1>
-            <p className="text-sm text-muted-foreground mb-8 text-right italic">Last updated: April 2026</p>
+            <p className="text-sm text-muted-foreground mb-8 text-right italic">
+              Last updated: April 2026
+            </p>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">1. Acceptance of Terms</h2>
               <p className="text-gray-600 leading-relaxed">
-                By accessing and using DNvites (the "Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.
+                By accessing and using DNvites (the "Service"), you agree to be bound by these Terms
+                of Service. If you do not agree to these terms, please do not use our Service.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">2. Description of Service</h2>
               <p className="text-gray-600 leading-relaxed">
-                DNvites provides digital wedding invitation services, allowing users to create, host, and share personalized event invitations online.
+                DNvites provides digital wedding invitation services, allowing users to create,
+                host, and share personalized event invitations online.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">3. User Responsibility</h2>
               <p className="text-gray-600 leading-relaxed">
-                You are responsible for the content you upload, including photos and text. You must ensure you have the rights to use any media uploaded to our platform. We reserve the right to remove any content that violates our community standards or copyright laws.
+                You are responsible for the content you upload, including photos and text. You must
+                ensure you have the rights to use any media uploaded to our platform. We reserve the
+                right to remove any content that violates our community standards or copyright laws.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">4. Payment Terms</h2>
               <p className="text-gray-600 leading-relaxed">
-                Our services are billed on a per-invitation basis based on the selected tier. Payments are processed securely via our payment partners. All fees are in Indian Rupees (₹) unless stated otherwise.
+                Our services are billed on a per-invitation basis based on the selected tier.
+                Payments are processed securely via our payment partners. All fees are in Indian
+                Rupees (₹) unless stated otherwise.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">5. Intellectual Property</h2>
               <p className="text-gray-600 leading-relaxed">
-                DNvites retains ownership of the design templates, code, and overall brand identity. Users retain ownership of their personal content uploaded to the invitations.
+                DNvites retains ownership of the design templates, code, and overall brand identity.
+                Users retain ownership of their personal content uploaded to the invitations.
               </p>
             </section>
 
             <section className="mb-8 overflow-hidden">
               <h2 className="text-2xl font-serif text-gray-900 mb-4">6. Limitation of Liability</h2>
               <p className="text-gray-600 leading-relaxed">
-                DNvites shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use the service.
+                DNvites shall not be liable for any direct, indirect, incidental, or consequential
+                damages resulting from the use or inability to use the service.
               </p>
             </section>
 
@@ -75,5 +85,5 @@ export default function TermsPage() {
 
       <Footer />
     </div>
-  );
+  )
 }

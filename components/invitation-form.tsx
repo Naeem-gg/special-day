@@ -1,12 +1,12 @@
-"use client"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { formatDate } from "@/lib/utils"
-import { CheckCircle } from "lucide-react"
-import type React from "react"
-import { useState } from "react"
+'use client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { formatDate } from '@/lib/utils'
+import { CheckCircle } from 'lucide-react'
+import type React from 'react'
+import { useState } from 'react'
 
 interface InvitationFormProps {
   countdown: {
@@ -27,9 +27,13 @@ interface InvitationFormProps {
   onInvitationSent: () => void
 }
 
-export function InvitationForm({ countdown, timeRemaining, onInvitationSent }: InvitationFormProps) {
-  const [inviteeName, setInviteeName] = useState("")
-  const [customMessage, setCustomMessage] = useState("")
+export function InvitationForm({
+  countdown,
+  timeRemaining,
+  onInvitationSent,
+}: InvitationFormProps) {
+  const [inviteeName, setInviteeName] = useState('')
+  const [customMessage, setCustomMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,13 +41,16 @@ export function InvitationForm({ countdown, timeRemaining, onInvitationSent }: I
 
   const generateInvitationMessage = () => {
     const formattedDate = formatDate(countdown.eventDate)
-    const formattedTime = countdown.eventDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    const greeting = inviteeName ? `Dear ${inviteeName},` : "Hello,"
+    const formattedTime = countdown.eventDate.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+    const greeting = inviteeName ? `Dear ${inviteeName},` : 'Hello,'
     const baseMessage = `
 ${greeting}
 ${countdown.yourName} and ${countdown.partnerName} would like to invite you to their ${countdown.title} on ${formattedDate} at ${formattedTime}.
-${timeRemaining.days > 0 ? `Only ${timeRemaining.days} days remaining until this special occasion!` : "The big day is today!"}
-${customMessage ? `\n${customMessage}\n` : ""}
+${timeRemaining.days > 0 ? `Only ${timeRemaining.days} days remaining until this special occasion!` : 'The big day is today!'}
+${customMessage ? `\n${customMessage}\n` : ''}
 We hope you can join us in celebrating this momentous occasion.
 Warmest regards,
 ${countdown.yourName} & ${countdown.partnerName}
@@ -67,8 +74,8 @@ ${countdown.yourName} & ${countdown.partnerName}
           onInvitationSent()
         }, 2000)
       } catch (error) {
-        console.error("Error sharing:", error)
-        setError("Failed to share invitation. Please try again.")
+        console.error('Error sharing:', error)
+        setError('Failed to share invitation. Please try again.')
       }
     } else {
       setShowShareDialog(true)
@@ -82,8 +89,8 @@ ${countdown.yourName} & ${countdown.partnerName}
     try {
       await handleShare()
     } catch (error) {
-      console.error("Error sending invitation:", error)
-      setError("Failed to send invitation. Please try again.")
+      console.error('Error sending invitation:', error)
+      setError('Failed to send invitation. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -133,7 +140,7 @@ ${countdown.yourName} & ${countdown.partnerName}
           disabled={isLoading}
           className="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white"
         >
-          {isLoading ? "Sending..." : "Send Invitation"}
+          {isLoading ? 'Sending...' : 'Send Invitation'}
         </Button>
       </div>
       {showShareDialog && (
@@ -145,7 +152,7 @@ ${countdown.yourName} & ${countdown.partnerName}
                 onClick={() => {
                   const message = generateInvitationMessage()
                   const url = window.location.href
-                  const whatsappLink = `https://wa.me/?text=${encodeURIComponent(message + "\n\nView the countdown: " + url)}`
+                  const whatsappLink = `https://wa.me/?text=${encodeURIComponent(message + '\n\nView the countdown: ' + url)}`
                   window.open(whatsappLink)
                   setShowShareDialog(false)
                 }}
@@ -195,7 +202,7 @@ ${countdown.yourName} & ${countdown.partnerName}
                   const url = window.location.href
                   const copyLink = `${message}\n\nView the countdown: ${url}`
                   navigator.clipboard.writeText(copyLink)
-                  alert("Invitation copied to clipboard!")
+                  alert('Invitation copied to clipboard!')
                   setShowShareDialog(false)
                 }}
                 className="w-full"

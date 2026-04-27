@@ -9,7 +9,10 @@ export default function Loading() {
       <div className="z-10 flex flex-col items-center animate-slide-up">
         <div className="relative mb-8">
           {/* Outer glow ring */}
-          <div className="absolute inset-0 rounded-full border-2 border-(--dn-rose) opacity-20 animate-spin-slow" style={{ margin: '-10px' }} />
+          <div
+            className="absolute inset-0 rounded-full border-2 border-(--dn-rose) opacity-20 animate-spin-slow"
+            style={{ margin: '-10px' }}
+          />
 
           <div className="w-24 h-24 bg-white rounded-full shadow-2xl flex items-center justify-center relative z-10 border border-(--dn-rose)/10">
             <div className="text-(--dn-rose) animate-heartbeat">
@@ -31,11 +34,22 @@ export default function Loading() {
         </div>
 
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-serif font-semibold text-(--dn-dark) tracking-wide">Preparing the Magic</h2>
+          <h2 className="text-2xl font-serif font-semibold text-(--dn-dark) tracking-wide">
+            Preparing the Magic
+          </h2>
           <div className="flex gap-1.5 justify-center">
-            <div className="w-2 h-2 rounded-full bg-(--dn-rose) animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 rounded-full bg-(--dn-gold) animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 rounded-full bg-(--dn-rose) animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div
+              className="w-2 h-2 rounded-full bg-(--dn-rose) animate-bounce"
+              style={{ animationDelay: '0ms' }}
+            />
+            <div
+              className="w-2 h-2 rounded-full bg-(--dn-gold) animate-bounce"
+              style={{ animationDelay: '150ms' }}
+            />
+            <div
+              className="w-2 h-2 rounded-full bg-(--dn-rose) animate-bounce"
+              style={{ animationDelay: '300ms' }}
+            />
           </div>
           <p className="text-sm text-muted-foreground font-serif italic pt-4">
             Just a moment while we set the stage...

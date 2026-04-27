@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { Star, CheckCircle } from "lucide-react";
+import { Star, CheckCircle } from 'lucide-react'
 
 interface TestimonialCardProps {
   testimonial: {
-    id: number;
-    name: string;
-    message: string;
-    rating: number;
-    createdAt: string;
-  };
+    id: number
+    name: string
+    message: string
+    rating: number
+    createdAt: string
+  }
 }
 
 export function TestimonialCard({ testimonial }: TestimonialCardProps) {
@@ -20,7 +20,7 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
           <Star
             key={i}
             className={`w-4 h-4 ${
-              i < testimonial.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200"
+              i < testimonial.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200'
             }`}
           />
         ))}
@@ -43,5 +43,5 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,22 +1,22 @@
-import { neon } from '@neondatabase/serverless';
-import * as dotenv from 'dotenv';
+import { neon } from '@neondatabase/serverless'
+import * as dotenv from 'dotenv'
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env.local' })
 
 async function run() {
-  const sql = neon(process.env.DATABASE_URL);
-  
+  const sql = neon(process.env.DATABASE_URL)
+
   try {
     const columns = await sql`
       SELECT column_name 
       FROM information_schema.columns 
       WHERE table_name = 'admins';
-    `;
-    console.log("Current columns in admins table:");
-    console.log(columns.map(c => c.column_name).join(', '));
+    `
+    console.log('Current columns in admins table:')
+    console.log(columns.map((c) => c.column_name).join(', '))
   } catch (err) {
-    console.error("Failed to fetch columns:", err);
+    console.error('Failed to fetch columns:', err)
   }
 }
 
-run();
+run()
