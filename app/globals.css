@@ -61,53 +61,53 @@
 
 /* ── Brand color tokens ───────────────── */
 :root {
-  --dn-rose: #f43f8f;
-  --dn-gold: #d4af37;
-  --dn-ivory: #fff9f4;
-  --dn-blush: #ffe4ef;
-  --dn-dark: #1a0a12;
+  --dn-metallic: #D4AF37;
+  --dn-gold: #C5A059;
+  --dn-ivory: #FFF9F4;
+  --dn-champagne: #F9F0E6;
+  --dn-dark: #1F1B14;
   --radius: 0.625rem;
 
   /* Soft ivory background */
-  --background: #fcfaf8;
-  --foreground: #1f1e1c;
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  /* Rose-pink primary */
-  --primary: #f43f8f;
-  --primary-foreground: #fcfcfc;
+  --background: #FCFAF8;
+  --foreground: #1F1E1C;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  /* Gold primary */
+  --primary: #D4AF37;
+  --primary-foreground: #FFFFFF;
   /* Warm taupe secondary */
-  --secondary: #f2f0ed;
+  --secondary: #F2F0ED;
   --secondary-foreground: #333333;
-  --muted: #f7f5f2;
-  --muted-foreground: #6b6b6b;
-  --accent: #f9f0e6;
+  --muted: #F7F5F2;
+  --muted-foreground: #6B6B6B;
+  --accent: #F9F0E6;
   --accent-foreground: #333333;
-  --destructive: #ef4444;
-  --border: #e5e2df;
-  --input: #e5e2df;
-  --ring: #f43f8f;
-  --sidebar: #fcfcfc;
-  --sidebar-foreground: #1a1a1a;
+  --destructive: #EF4444;
+  --border: #E5E2DF;
+  --input: #E5E2DF;
+  --ring: #D4AF37;
+  --sidebar: #FCFCFC;
+  --sidebar-foreground: #1A1A1A;
   --sidebar-primary: #333333;
-  --sidebar-primary-foreground: #fcfcfc;
-  --sidebar-accent: #f5f5f5;
+  --sidebar-primary-foreground: #FCFCFC;
+  --sidebar-accent: #F5F5F5;
   --sidebar-accent-foreground: #333333;
-  --sidebar-border: #f0f0f0;
-  --sidebar-ring: #a5a5a5;
+  --sidebar-border: #F0F0F0;
+  --sidebar-ring: #A5A5A5;
 }
 
 .dark {
   --background: #121115;
-  --foreground: #fafafa;
-  --card: #1c1b20;
-  --card-foreground: #fafafa;
-  --primary: #f43f8f;
+  --foreground: #FAFAFA;
+  --card: #1C1B20;
+  --card-foreground: #FAFAFA;
+  --primary: #D4AF37;
   --primary-foreground: #121115;
-  --secondary: #1a1a1a;
-  --secondary-foreground: #fafafa;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FAFAFA;
 }
 
 /* ── Base reset ───────────────────────── */
@@ -124,8 +124,8 @@
 
   /* prettier selection */
   ::selection {
-    background: #f43f8f33;
-    color: #1a0a12;
+    background: #D4AF3733;
+    color: #1F1B14;
   }
 }
 
@@ -170,13 +170,13 @@
   0%,
   100% {
     box-shadow:
-      0 0 20px #f43f8f44,
-      0 0 60px #d4af3722;
+      0 0 20px #D4AF3744,
+      0 0 60px #C5A05922;
   }
   50% {
     box-shadow:
-      0 0 60px #f43f8f88,
-      0 0 120px #d4af3755;
+      0 0 60px #D4AF3788,
+      0 0 120px #C5A05955;
   }
 }
 
@@ -260,7 +260,7 @@
 
 /* Vibrant shimmer gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #f43f8f 0%, #d4af37 50%, #f43f8f 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #C5A059 50%, #8E6F3E 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -277,10 +277,10 @@
 }
 
 .glass-dark {
-  background: rgba(26, 10, 18, 0.6);
+  background: rgba(26, 22, 10, 0.6);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(244, 63, 143, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.15);
 }
 
 /* Floating animation */
@@ -305,7 +305,7 @@
 
 /* Skeleton loading shimmer */
 .skeleton {
-  background: linear-gradient(90deg, #f0e6ec 25%, #fce7f3 50%, #f0e6ec 75%);
+  background: linear-gradient(90deg, #F9F0E6 25%, #FFF9F4 50%, #F9F0E6 75%);
   background-size: 300px 100%;
   animation: shimmer 1.5s infinite linear;
   border-radius: 8px;
@@ -323,8 +323,8 @@
 /* Glow ring */
 .glow-ring {
   box-shadow:
-    0 0 30px #f43f8f55,
-    0 0 80px #d4af3733;
+    0 0 30px #D4AF3755,
+    0 0 80px #C5A05933;
 }
 
 /* Card hover lift */
@@ -336,14 +336,14 @@
 .card-hover:hover {
   transform: translateY(-8px) scale(1.015);
   box-shadow:
-    0 24px 64px rgba(244, 63, 143, 0.18),
+    0 24px 64px rgba(212, 175, 55, 0.18),
     0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* divider wave */
 .divider-wave {
   height: 2px;
-  background: linear-gradient(90deg, transparent, #f43f8f, #d4af37, #f43f8f, transparent);
+  background: linear-gradient(90deg, transparent, #D4AF37, #C5A059, #D4AF37, transparent);
   animation: wave 1.2s ease-out forwards;
   transform-origin: left;
   opacity: 0;

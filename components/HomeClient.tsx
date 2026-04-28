@@ -20,12 +20,71 @@ import {
   Menu,
   X,
   Ticket,
+  Percent,
+  MoreHorizontal,
+  ChevronRight,
+  HelpCircle,
 } from 'lucide-react'
 import { FloatingHearts } from '@/components/floating-hearts'
 import { useEffect, useRef, useState } from 'react'
 import { Footer } from '@/components/Footer'
 import MobileInvitationPreview from '@/components/MobileInvitationPreview'
 import { TestimonialsList } from '@/components/testimonials/TestimonialsList'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+
+/* ── Typewriter ───────────────────────── */
+function TypewriterHeading() {
+  const phrases = [
+    "They'll Never Forget",
+    "That Sparkles with Joy",
+    "as Unique as Your Love",
+    "That Tells Your Story",
+    "That Guests Will Cherish",
+  ]
+  const [index, setIndex] = useState(0)
+  const [text, setText] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [speed, setSpeed] = useState(100)
+
+  useEffect(() => {
+    const handleTyping = () => {
+      const fullText = phrases[index]
+      
+      if (!isDeleting) {
+        setText(fullText.substring(0, text.length + 1))
+        setSpeed(100) // Typing speed
+
+        if (text.length === fullText.length) {
+          setIsDeleting(true)
+          setSpeed(2500) // Wait before starting to delete
+        }
+      } else {
+        setText(fullText.substring(0, text.length - 1))
+        setSpeed(50) // Deleting speed
+
+        if (text.length === 0) {
+          setIsDeleting(false)
+          setIndex((prev) => (prev + 1) % phrases.length)
+          setSpeed(500) // Wait before typing next phrase
+        }
+      }
+    }
+
+    const timer = setTimeout(handleTyping, speed)
+    return () => clearTimeout(timer)
+  }, [text, isDeleting, index, speed, phrases])
+
+  return (
+    <span className="gradient-text italic inline-block min-w-[1ch]">
+      {text}
+      <motion.span
+        animate={{ opacity: [1, 0] }}
+        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+        className="inline-block w-[3px] h-[0.9em] bg-[#D4AF37] ml-1 align-middle"
+      />
+    </span>
+  )
+}
 
 /* ── Petal Rain ───────────────────────── */
 function PetalRain() {
@@ -98,15 +157,15 @@ function FeatureCard({
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -8, scale: 1.02 }}
-      className="group relative p-10 bg-white rounded-[2.5rem] border border-rose-100 shadow-sm hover:shadow-2xl hover:shadow-rose-200/40 transition-all duration-500"
+      className="group relative p-10 bg-white rounded-[2.5rem] border border-amber-100 shadow-sm hover:shadow-2xl hover:shadow-amber-200/40 transition-all duration-500"
     >
       {/* soft glow */}
-      <div className="absolute inset-0 rounded-[2.5rem] bg-linear-to-br from-rose-50/60 to-amber-50/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 rounded-[2.5rem] bg-linear-to-br from-amber-50/60 to-amber-50/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <motion.div
         whileHover={{ rotate: [0, -10, 10, -5, 0], scale: 1.15 }}
         transition={{ duration: 0.5 }}
-        className="w-16 h-16 bg-linear-to-br from-rose-100 to-amber-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm relative z-10"
+        className="w-16 h-16 bg-linear-to-br from-amber-100 to-amber-100 rounded-2xl flex items-center justify-center mb-6 shadow-sm relative z-10"
       >
         {icon}
       </motion.div>
@@ -148,10 +207,10 @@ function PricingCard({
       whileHover={{ y: -12, transition: { duration: 0.4 } }}
       className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 group ${
         isPopular
-          ? 'bg-linear-to-br from-[#F43F8F] to-[#c73272] text-white border-transparent shadow-[0_20px_50px_rgba(244,63,143,0.3)] z-10'
+          ? 'bg-linear-to-br from-[#D4AF37] to-[#8E6F3E] text-white border-transparent shadow-[0_20px_50px_rgba(244,63,143,0.3)] z-10'
           : isGold
             ? 'bg-white text-foreground border-amber-100 shadow-[0_15px_40px_rgba(212,175,55,0.1)]'
-            : 'bg-white text-foreground border-rose-100 shadow-[0_15px_40px_rgba(244,63,143,0.06)]'
+            : 'bg-white text-foreground border-amber-100 shadow-[0_15px_40px_rgba(244,63,143,0.06)]'
       }`}
     >
       {isPopular && (
@@ -178,15 +237,15 @@ function PricingCard({
         <div className="space-y-2">
           <div
             className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
-              isPopular ? 'bg-white/20' : isGold ? 'bg-amber-50' : 'bg-rose-50'
+              isPopular ? 'bg-white/20' : isGold ? 'bg-amber-50' : 'bg-amber-50'
             }`}
           >
             {isBasic ? (
-              <Heart className={isPopular ? 'text-white' : 'text-[#F43F8F]'} />
+              <Heart className={isPopular ? 'text-white' : 'text-[#D4AF37]'} />
             ) : isGold ? (
               <Star className={isPopular ? 'text-white' : 'text-amber-500'} />
             ) : (
-              <Sparkles className={isPopular ? 'text-white' : 'text-[#F43F8F]'} />
+              <Sparkles className={isPopular ? 'text-white' : 'text-[#D4AF37]'} />
             )}
           </div>
           <h4
@@ -213,7 +272,7 @@ function PricingCard({
           </div>
         </div>
 
-        <div className={`h-px w-full ${isPopular ? 'bg-white/20' : 'bg-rose-100/50'}`} />
+        <div className={`h-px w-full ${isPopular ? 'bg-white/20' : 'bg-amber-100/50'}`} />
 
         <ul className="space-y-4">
           {features.map((feature, idx) => (
@@ -226,10 +285,10 @@ function PricingCard({
               className="flex items-start gap-3 text-sm"
             >
               <div
-                className={`mt-1 rounded-full p-0.5 ${isPopular ? 'bg-white/20' : 'bg-rose-50'}`}
+                className={`mt-1 rounded-full p-0.5 ${isPopular ? 'bg-white/20' : 'bg-amber-50'}`}
               >
                 <CheckCircle2
-                  className={`w-3.5 h-3.5 ${isPopular ? 'text-white' : 'text-[#F43F8F]'}`}
+                  className={`w-3.5 h-3.5 ${isPopular ? 'text-white' : 'text-[#D4AF37]'}`}
                 />
               </div>
               <span className={isPopular ? 'text-white/90' : 'text-gray-600 leading-tight'}>
@@ -245,10 +304,10 @@ function PricingCard({
             whileTap={{ scale: 0.97 }}
             className={`w-full py-4 rounded-2xl text-base font-bold transition-all duration-300 shadow-xl ${
               isPopular
-                ? 'bg-white text-[#F43F8F] hover:shadow-white/20'
+                ? 'bg-white text-[#D4AF37] hover:shadow-white/20'
                 : isGold
                   ? 'bg-linear-to-r from-amber-500 to-[#D4AF37] text-white hover:shadow-amber-200/50'
-                  : 'bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white hover:shadow-rose-200/50'
+                  : 'bg-linear-to-r from-[#D4AF37] to-[#8E6F3E] text-white hover:shadow-amber-200/50'
             }`}
           >
             {isBasic ? 'Start Creating 💌' : isPopular ? 'Get Started ✨' : 'Choose Premium 👑'}
@@ -264,10 +323,10 @@ function ProgressBar() {
   const { scrollYProgress } = useScroll()
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1 z-100 origin-left"
+      className="fixed top-8 left-0 right-0 h-1 z-100 origin-left"
       style={{
         scaleX: scrollYProgress,
-        background: 'linear-gradient(90deg, #F43F8F, #D4AF37)',
+        background: 'linear-gradient(90deg, #D4AF37, #D4AF37)',
       }}
     />
   )
@@ -298,38 +357,84 @@ export default function HomeClient({
   const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0])
 
   return (
-    <main className="relative min-h-screen bg-background font-sans selection:bg-rose-200/60 overflow-x-hidden">
+    <main className="relative min-h-screen bg-background font-sans selection:bg-amber-200/60 overflow-x-hidden">
       <ProgressBar />
       <FloatingHearts />
       <PetalRain />
 
+      {/* ── Announcement Bar ─────────── */}
+      <motion.div
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-0 w-full z-100"
+      >
+        <div className="bg-linear-to-r from-[#D4AF37] via-[#C5A059] to-[#8E6F3E] text-white py-1.5 px-4 text-center text-[10px] md:text-[11px] font-bold uppercase tracking-widest shadow-lg min-h-[32px] flex items-center justify-center">
+          <div className="container mx-auto flex items-center justify-center gap-3">
+            <motion.div
+              animate={{ rotate: [0, 15, -15, 15, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            >
+              <Ticket className="w-3 h-3" />
+            </motion.div>
+            <span className="flex items-center gap-2">
+              <span>✨ Special Offer: Save 5% with code</span>
+              <span className="bg-white text-[#D4AF37] px-1.5 py-0.5 rounded-md font-black">DN5</span>
+              <span className="hidden sm:inline">— Limited Time Only! 💌</span>
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
       {/* ── Navigation ─────────────────── */}
       <motion.nav
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{ y: -130, opacity: 0 }}
+        animate={{ y: 32, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 w-full z-50 glass border-b border-rose-100/50"
+        className="fixed top-0 w-full z-50 glass border-b border-amber-100/50"
       >
         <div className="container relative mx-auto px-6 h-20 flex items-center justify-between">
           <DNvitesLogo />
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            {['Features', 'How it Works', 'Pricing'].map((item, i) => (
-              <motion.div
-                key={item}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-              >
-                <Link
-                  href={`#${item.toLowerCase().replace(/ /g, '-')}`}
-                  className="text-sm font-medium text-muted-foreground hover:text-[#F43F8F] transition-colors duration-300"
-                >
-                  {item}
-                </Link>
-              </motion.div>
-            ))}
+          <div className="hidden md:flex items-center gap-10">
+            <Link
+              href="#features"
+              className="text-sm font-bold text-gray-800 hover:text-[#D4AF37] transition-colors"
+            >
+              Features
+            </Link>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-[#D4AF37] transition-all group">
+                  More
+                  <MoreHorizontal className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-2 rounded-2xl border-amber-100 shadow-2xl shadow-amber-200/50">
+                <div className="grid gap-1">
+                  {[
+                    { name: 'How it Works', icon: <Sparkles className="w-4 h-4" />, href: '#how-it-works' },
+                    { name: 'Pricing', icon: <Ticket className="w-4 h-4" />, href: '#pricing' },
+                    { name: 'Testimonials', icon: <Star className="w-4 h-4" />, href: '#testimonials' },
+                    { name: 'FAQs', icon: <HelpCircle className="w-4 h-4" />, href: '#faqs' },
+                  ].map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-amber-50 hover:text-[#D4AF37] transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-400 group-hover:text-[#D4AF37]">{item.icon}</span>
+                        {item.name}
+                      </div>
+                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                    </Link>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -339,7 +444,7 @@ export default function HomeClient({
               <Link
                 href="https://instagram.com/dnvites"
                 target="_blank"
-                className="text-gray-400 hover:text-[#F43F8F] transition-colors"
+                className="text-gray-400 hover:text-[#D4AF37] transition-colors"
                 title="Follow us on Instagram"
               >
                 <svg
@@ -359,20 +464,20 @@ export default function HomeClient({
               <Link href="/gift">
                 <Button
                   variant="ghost"
-                  className="text-sm text-[#F43F8F] hover:text-[#d82a75] hover:bg-rose-50 flex items-center gap-1.5 font-bold"
+                  className="text-sm text-[#D4AF37] hover:text-[#B8860B] hover:bg-amber-50 flex items-center gap-1.5 font-bold"
                 >
                   <Gift className="w-4 h-4" /> Gift an Invite
                 </Button>
               </Link>
               {!session ? (
                 <Link href="/login">
-                  <Button variant="ghost" className="text-sm hover:text-[#F43F8F]">
+                  <Button variant="ghost" className="text-sm hover:text-[#D4AF37]">
                     Sign In
                   </Button>
                 </Link>
               ) : (
                 <Link href="/account">
-                  <Button variant="ghost" className="text-sm text-[#F43F8F] font-bold">
+                  <Button variant="ghost" className="text-sm text-[#D4AF37] font-bold">
                     My Account
                   </Button>
                 </Link>
@@ -387,7 +492,7 @@ export default function HomeClient({
                 <motion.button
                   whileHover={{ scale: 1.06 }}
                   whileTap={{ scale: 0.94 }}
-                  className="bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white rounded-full px-6 py-2.5 text-sm font-semibold shadow-lg shadow-rose-300/40 hover:shadow-rose-400/60 transition-shadow"
+                  className="bg-linear-to-r from-[#D4AF37] to-[#8E6F3E] text-white rounded-full px-6 py-2.5 text-sm font-semibold shadow-lg shadow-amber-300/40 hover:shadow-amber-400/60 transition-shadow"
                 >
                   Create Your Invitation ✨
                 </motion.button>
@@ -399,7 +504,7 @@ export default function HomeClient({
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-gray-600 hover:text-[#F43F8F] transition-colors"
+              className="p-2 text-gray-600 hover:text-[#D4AF37] transition-colors"
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -414,15 +519,15 @@ export default function HomeClient({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white/95 backdrop-blur-xl border-b border-rose-100 overflow-hidden"
+              className="md:hidden bg-white/95 backdrop-blur-xl border-b border-amber-100 overflow-hidden"
             >
               <div className="px-6 py-6 flex flex-col gap-5">
-                {['Features', 'How it Works', 'Pricing'].map((item) => (
+                {['Features', 'How it Works', 'Pricing', 'Testimonials', 'FAQs'].map((item) => (
                   <Link
                     key={item}
                     href={`#${item.toLowerCase().replace(/ /g, '-')}`}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-base font-semibold text-gray-800 hover:text-[#F43F8F] transition-colors"
+                    className="text-base font-semibold text-gray-800 hover:text-[#D4AF37] transition-colors"
                   >
                     {item}
                   </Link>
@@ -430,16 +535,16 @@ export default function HomeClient({
                 <Link
                   href="/gift"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-base font-semibold text-[#F43F8F] flex items-center gap-2"
+                  className="text-base font-semibold text-[#D4AF37] flex items-center gap-2"
                 >
                   <Gift className="w-5 h-5" /> Gift an Invite
                 </Link>
-                <div className="h-px bg-rose-100/50 w-full my-2" />
+                <div className="h-px bg-amber-100/50 w-full my-2" />
                 {!session ? (
                   <Link
                     href="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-base font-semibold text-gray-800 hover:text-[#F43F8F]"
+                    className="text-base font-semibold text-gray-800 hover:text-[#D4AF37]"
                   >
                     Sign In
                   </Link>
@@ -447,7 +552,7 @@ export default function HomeClient({
                   <Link
                     href="/account"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-base font-semibold text-[#F43F8F]"
+                    className="text-base font-semibold text-[#D4AF37]"
                   >
                     My Account
                   </Link>
@@ -457,7 +562,7 @@ export default function HomeClient({
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full"
                 >
-                  <button className="w-full bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white rounded-xl px-6 py-3.5 text-base font-bold shadow-lg shadow-rose-300/40 active:scale-[0.98] transition-transform">
+                  <button className="w-full bg-linear-to-r from-[#D4AF37] to-[#8E6F3E] text-white rounded-xl px-6 py-3.5 text-base font-bold shadow-lg shadow-amber-300/40 active:scale-[0.98] transition-transform">
                     Create Your Invitation ✨
                   </button>
                 </Link>
@@ -468,7 +573,7 @@ export default function HomeClient({
                   <Link
                     href="https://instagram.com/dnvites"
                     target="_blank"
-                    className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-[#F43F8F]"
+                    className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-[#D4AF37]"
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -494,13 +599,13 @@ export default function HomeClient({
       {/* ── Hero Section ──────────────── */}
       <section
         ref={heroRef}
-        className="relative pt-28 pb-24 px-6 min-h-screen flex items-center overflow-hidden"
+        className="relative pt-32 pb-24 px-6 min-h-screen flex items-center overflow-hidden"
       >
         {/* Animated gradient orbs */}
         <motion.div
           animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-20 -left-32 w-[600px] h-[600px] bg-rose-200/30 rounded-full blur-3xl pointer-events-none"
+          className="absolute top-20 -left-32 w-[600px] h-[600px] bg-amber-200/30 rounded-full blur-3xl pointer-events-none"
         />
         <motion.div
           animate={{ x: [0, -40, 0], y: [0, 40, 0] }}
@@ -521,7 +626,7 @@ export default function HomeClient({
                 <motion.div
                   animate={{ scale: [1, 1.04, 1] }}
                   transition={{ duration: 3, repeat: Infinity }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50 border border-rose-200 text-[#F43F8F]"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-[#D4AF37]"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-widest">
@@ -532,10 +637,10 @@ export default function HomeClient({
 
               <motion.h1
                 variants={itemVariants}
-                className="text-5xl md:text-7xl font-serif leading-[1.1]"
+                className="text-5xl md:text-7xl font-serif leading-[1.1] min-h-[2.2em] md:min-h-0"
               >
-                Make a Wedding Invitation{' '}
-                <span className="gradient-text italic">They'll Never Forget</span>
+                Make a Wedding Invitation <br />
+                <TypewriterHeading />
               </motion.h1>
 
               <motion.p
@@ -551,7 +656,7 @@ export default function HomeClient({
                   <motion.button
                     whileHover={{ scale: 1.06 }}
                     whileTap={{ scale: 0.94 }}
-                    className="group flex items-center gap-2 bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white rounded-full px-8 h-14 text-base font-semibold shadow-xl shadow-rose-300/40 hover:shadow-rose-400/60 transition-all"
+                    className="group flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#8E6F3E] text-white rounded-full px-8 h-14 text-base font-semibold shadow-xl shadow-amber-300/40 hover:shadow-amber-400/60 transition-all"
                   >
                     Start for Free
                     <motion.div
@@ -564,9 +669,9 @@ export default function HomeClient({
                 </Link>
                 <Link href="/dashboard?guest=true">
                   <motion.button
-                    whileHover={{ scale: 1.04, borderColor: '#F43F8F', color: '#F43F8F' }}
+                    whileHover={{ scale: 1.04, borderColor: '#D4AF37', color: '#D4AF37' }}
                     whileTap={{ scale: 0.96 }}
-                    className="flex items-center gap-2 border-2 border-border rounded-full px-8 h-14 text-base font-semibold transition-all text-foreground hover:border-rose-300"
+                    className="flex items-center gap-2 border-2 border-border rounded-full px-8 h-14 text-base font-semibold transition-all text-foreground hover:border-amber-300"
                   >
                     👀 Try a Live Preview
                   </motion.button>
@@ -614,7 +719,7 @@ export default function HomeClient({
               <MobileInvitationPreview />
 
               {/* Decorative circle blobs */}
-              <div className="absolute -top-10 -right-10 w-36 h-36 bg-rose-300/20 blur-3xl rounded-full animate-float" />
+              <div className="absolute -top-10 -right-10 w-36 h-36 bg-amber-300/20 blur-3xl rounded-full animate-float" />
               <div className="absolute -bottom-10 -left-10 w-52 h-52 bg-amber-300/20 blur-3xl rounded-full animate-float-delayed" />
             </motion.div>
           </div>
@@ -635,7 +740,7 @@ export default function HomeClient({
       </section>
 
       {/* ── Features ──────────────────── */}
-      <section id="features" className="py-28 bg-linear-to-b from-rose-50/40 to-amber-50/30">
+      <section id="features" className="py-28 bg-linear-to-b from-amber-50/40 to-amber-50/30">
         <div className="container relative mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -643,7 +748,7 @@ export default function HomeClient({
             viewport={{ once: true }}
             className="text-center max-w-2xl mx-auto mb-20 space-y-4"
           >
-            <p className="text-sm font-bold uppercase tracking-widest text-[#F43F8F]">
+            <p className="text-sm font-bold uppercase tracking-widest text-[#D4AF37]">
               ✨ What You'll Love
             </p>
             <h2 className="text-4xl md:text-5xl font-serif">
@@ -660,37 +765,37 @@ export default function HomeClient({
 
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard
-              icon={<Layout className="w-6 h-6 text-[#F43F8F]" />}
+              icon={<Layout className="w-6 h-6 text-[#D4AF37]" />}
               title="Gorgeous, Ready-Made Designs"
               description="Pick from stunning Styles — no design skills needed. Just add your names and you're done!"
               delay={0}
             />
             <FeatureCard
-              icon={<Send className="w-6 h-6 text-[#F43F8F]" />}
+              icon={<Send className="w-6 h-6 text-[#D4AF37]" />}
               title="Share in One Tap"
               description="Send your invite through WhatsApp, Instagram, or Email in seconds. No printing, no postage!"
               delay={0.15}
             />
             <FeatureCard
-              icon={<ImageIcon className="w-6 h-6 text-[#F43F8F]" />}
+              icon={<ImageIcon className="w-6 h-6 text-[#D4AF37]" />}
               title="Show Off Your Photos"
               description="Create a beautiful photo gallery so your guests can relive your most precious moments."
               delay={0.3}
             />
             <FeatureCard
-              icon={<Music className="w-6 h-6 text-[#F43F8F]" />}
+              icon={<Music className="w-6 h-6 text-[#D4AF37]" />}
               title="Set the Mood with Music"
               description="Add your favourite song so guests feel the love the moment they open the invitation."
               delay={0.15}
             />
             <FeatureCard
-              icon={<Gift className="w-6 h-6 text-[#F43F8F]" />}
+              icon={<Gift className="w-6 h-6 text-[#D4AF37]" />}
               title="Track Who's Coming"
               description="Your guests can RSVP with a click and you can see the list in real time - no spreadsheets needed!"
               delay={0.3}
             />
             <FeatureCard
-              icon={<Star className="w-6 h-6 text-[#F43F8F]" />}
+              icon={<Star className="w-6 h-6 text-[#D4AF37]" />}
               title="Live for One Full Year"
               description="Your invitation stays online for a whole year. Family can revisit it any time they want."
               delay={0.45}
@@ -748,7 +853,7 @@ export default function HomeClient({
                     transition={{ delay: i * 0.1 }}
                     className="flex gap-4"
                   >
-                    <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-xl shrink-0 shadow-sm">
+                    <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-xl shrink-0 shadow-sm">
                       {item.icon}
                     </div>
                     <div>
@@ -793,7 +898,7 @@ export default function HomeClient({
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] border border-rose-100/40 rounded-full pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] border border-amber-100/40 rounded-full pointer-events-none"
         />
         <div className="container mx-auto px-6 max-w-4xl relative z-10">
           <motion.h2
@@ -835,17 +940,17 @@ export default function HomeClient({
               >
                 <motion.div
                   whileHover={{ scale: 1.15, rotate: 5 }}
-                  className="relative w-20 h-20 rounded-full bg-linear-to-br from-[#F43F8F] to-[#c73272] text-white flex items-center justify-center text-3xl font-serif shrink-0 shadow-xl shadow-rose-300/50"
+                  className="relative w-20 h-20 rounded-full bg-linear-to-br from-[#D4AF37] to-[#8E6F3E] text-white flex items-center justify-center text-3xl font-serif shrink-0 shadow-xl shadow-amber-300/50"
                 >
                   {step.icon}
                   <motion.div
                     animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                    className="absolute inset-0 rounded-full bg-rose-400/30"
+                    className="absolute inset-0 rounded-full bg-amber-400/30"
                   />
                 </motion.div>
                 <div className="space-y-2 text-center md:text-left">
-                  <span className="text-xs font-bold text-[#F43F8F] uppercase tracking-widest">
+                  <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">
                     Step {step.num}
                   </span>
                   <h4 className="text-2xl font-serif">{step.title}</h4>
@@ -870,7 +975,7 @@ export default function HomeClient({
             viewport={{ once: true }}
             className="text-center max-w-2xl mx-auto mb-16 space-y-4"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50 border border-rose-100 text-[#F43F8F] text-xs font-bold uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-100 text-[#D4AF37] text-xs font-bold uppercase tracking-widest">
               📄 Paper vs ✨ Digital
             </div>
             <h2 className="text-4xl md:text-5xl font-serif text-gray-900">Why choose digital?</h2>
@@ -885,7 +990,7 @@ export default function HomeClient({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-4xl mx-auto rounded-[2.5rem] overflow-hidden shadow-2xl shadow-rose-100/60 border border-rose-100"
+            className="max-w-4xl mx-auto rounded-[2.5rem] overflow-hidden shadow-2xl shadow-amber-100/60 border border-amber-100"
           >
             <div className="grid grid-cols-3 bg-slate-900 text-white">
               <div className="p-5 text-sm font-bold uppercase tracking-widest text-slate-400">
@@ -894,8 +999,8 @@ export default function HomeClient({
               <div className="p-5 text-center border-l border-white/10">
                 <span className="text-sm font-bold text-slate-300">📄 Paper Invitation</span>
               </div>
-              <div className="p-5 text-center border-l border-white/10 bg-linear-to-br from-[#F43F8F]/20 to-transparent">
-                <span className="text-sm font-bold text-[#F43F8F]">✨ DNvites Digital</span>
+              <div className="p-5 text-center border-l border-white/10 bg-linear-to-br from-[#D4AF37]/20 to-transparent">
+                <span className="text-sm font-bold text-[#D4AF37]">✨ DNvites Digital</span>
               </div>
             </div>
 
@@ -955,7 +1060,7 @@ export default function HomeClient({
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.06, duration: 0.5 }}
-                className={`grid grid-cols-3 border-t border-slate-100 ${row.highlight ? 'bg-slate-50/80' : 'bg-white'} group hover:bg-rose-50/40 transition-colors`}
+                className={`grid grid-cols-3 border-t border-slate-100 ${row.highlight ? 'bg-slate-50/80' : 'bg-white'} group hover:bg-amber-50/40 transition-colors`}
               >
                 <div className="p-5 text-sm font-semibold text-slate-700">{row.feature}</div>
                 <div className="p-5 text-center border-l border-slate-100">
@@ -964,9 +1069,9 @@ export default function HomeClient({
                     {row.paper}
                   </span>
                 </div>
-                <div className="p-5 text-center border-l border-rose-100 bg-rose-50/30 group-hover:bg-rose-50/60">
+                <div className="p-5 text-center border-l border-amber-100 bg-amber-50/30 group-hover:bg-amber-50/60">
                   <span className="text-sm font-semibold text-slate-900 flex items-center justify-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#F43F8F] shrink-0 inline-block" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0 inline-block" />
                     {row.digital}
                   </span>
                 </div>
@@ -981,7 +1086,7 @@ export default function HomeClient({
             transition={{ delay: 0.3 }}
             className="mt-10 max-w-2xl mx-auto text-center"
           >
-            <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-8 py-5 rounded-full bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white shadow-2xl shadow-rose-300/50">
+            <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-8 py-5 rounded-full bg-linear-to-r from-[#D4AF37] to-[#8E6F3E] text-white shadow-2xl shadow-amber-300/50">
               <span className="text-2xl">💸</span>
               <span className="text-base md:text-lg font-bold">
                 Save up to <span className="text-2xl font-extrabold">₹39,000+</span> compared to
@@ -995,7 +1100,7 @@ export default function HomeClient({
       {/* ── Pricing ───────────────────── */}
       <section
         id="pricing"
-        className="py-32 bg-linear-to-b from-rose-50/50 via-white to-amber-50/50 relative overflow-hidden"
+        className="py-32 bg-linear-to-b from-amber-50/50 via-white to-amber-50/50 relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
           <motion.div
@@ -1003,7 +1108,7 @@ export default function HomeClient({
             transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
             className="absolute top-20 left-[10%] opacity-10"
           >
-            <Heart className="w-20 h-20 text-[#F43F8F]" />
+            <Heart className="w-20 h-20 text-[#D4AF37]" />
           </motion.div>
           <motion.div
             animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
@@ -1012,7 +1117,7 @@ export default function HomeClient({
           >
             <Sparkles className="w-24 h-24 text-amber-400" />
           </motion.div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-rose-100/20 rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-amber-100/20 rounded-full blur-[120px]" />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
@@ -1022,7 +1127,7 @@ export default function HomeClient({
             viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto mb-20 space-y-6"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50 border border-rose-100 text-[#F43F8F] text-xs font-bold uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-100 text-[#D4AF37] text-xs font-bold uppercase tracking-widest">
               <Ticket className="w-4 h-4" />
               Transparent Pricing
             </div>
@@ -1042,22 +1147,22 @@ export default function HomeClient({
               viewport={{ once: true }}
               className="relative max-w-lg mx-auto"
             >
-              <div className="absolute -inset-1 bg-linear-to-r from-[#F43F8F] via-amber-400 to-[#F43F8F] rounded-2xl blur-md opacity-30 animate-pulse" />
-              <div className="relative bg-white border border-rose-100 p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-4 shadow-xl shadow-rose-100/40">
-                <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center shrink-0">
-                  <Sparkles className="w-6 h-6 text-[#F43F8F]" />
+              <div className="absolute -inset-1 bg-linear-to-r from-[#D4AF37] via-amber-400 to-[#D4AF37] rounded-2xl blur-md opacity-30 animate-pulse" />
+              <div className="relative bg-white border border-amber-100 p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-4 shadow-xl shadow-amber-100/40">
+                <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center shrink-0">
+                  <Sparkles className="w-6 h-6 text-[#D4AF37]" />
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-black text-gray-900 uppercase tracking-tighter">
-                    🚀 Exclusive <span className="text-[#F43F8F]">Launch Pricing</span>
+                    🚀 Exclusive <span className="text-[#D4AF37]">Launch Pricing</span>
                   </p>
                   <p className="text-[11px] text-gray-500 font-medium leading-tight">
                     Valid only for the{' '}
-                    <span className="text-[#F43F8F] font-bold">first 20 customers</span>. Prices
+                    <span className="text-[#D4AF37] font-bold">first 20 customers</span>. Prices
                     will increase by ₹300 soon!
                   </p>
                 </div>
-                <div className="ml-auto bg-rose-100 text-[#F43F8F] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest hidden sm:block">
+                <div className="ml-auto bg-amber-100 text-[#D4AF37] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest hidden sm:block">
                   Limited
                 </div>
               </div>
@@ -1130,7 +1235,7 @@ export default function HomeClient({
             transition={{ duration: 8, repeat: Infinity }}
             className="relative overflow-hidden rounded-[3rem] p-14 text-center text-white"
             style={{
-              background: 'linear-gradient(135deg, #F43F8F, #c73272, #D4AF37, #F43F8F)',
+              background: 'linear-gradient(135deg, #D4AF37, #8E6F3E, #D4AF37, #D4AF37)',
               backgroundSize: '300% 300%',
             }}
           >
@@ -1156,7 +1261,7 @@ export default function HomeClient({
               <motion.button
                 whileHover={{ scale: 1.07 }}
                 whileTap={{ scale: 0.93 }}
-                className="bg-white text-[#F43F8F] font-bold text-lg px-8 py-4 rounded-full shadow-2xl hover:shadow-white/30 transition-all"
+                className="bg-white text-[#D4AF37] font-bold text-lg px-8 py-4 rounded-full shadow-2xl hover:shadow-white/30 transition-all"
               >
                 Start Creating for Free ✨
               </motion.button>

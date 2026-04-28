@@ -16,6 +16,7 @@ import {
   Loader2,
   Search,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 const TYPES: Record<string, { label: string; color: string; bg: string }> = {
   feedback: { label: 'Feedback', color: '#F43F8F', bg: '#FFF0F6' },
@@ -64,15 +65,21 @@ function FeedbackRow({ item, onUpdate }: { item: FeedbackItem; onUpdate: () => v
     if (!reply.trim()) return
     setSending(true)
     try {
-      await fetch(`/api/feedback/${item.id}/reply`, {
+      const res = await fetch(`/api/feedback/${item.id}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: reply.trim(), status: newStatus }),
       })
-      setReply('')
-      onUpdate()
+      if (res.ok) {
+        toast.success('Reply sent')
+        setReply('')
+        onUpdate()
+      } else {
+        toast.error('Failed to send reply')
+      }
     } catch (err) {
       console.error(err)
+      toast.error('An error occurred')
     } finally {
       setSending(false)
     }
@@ -80,12 +87,17 @@ function FeedbackRow({ item, onUpdate }: { item: FeedbackItem; onUpdate: () => v
 
   const updateStatus = async (status: string) => {
     setNewStatus(status)
-    await fetch(`/api/feedback/${item.id}/reply`, {
+    const res = await fetch(`/api/feedback/${item.id}/reply`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     })
-    onUpdate()
+    if (res.ok) {
+      toast.success(`Status updated to ${status}`)
+      onUpdate()
+    } else {
+      toast.error('Failed to update status')
+    }
   }
 
   return (

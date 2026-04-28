@@ -18,9 +18,11 @@ import {
   Edit,
   Copy,
   Check,
+  Loader2,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 export function AdminOverview({ initialStats }: { initialStats: any }) {
   const [stats, setStats] = useState<any>(initialStats)
@@ -88,15 +90,28 @@ export function AdminOverview({ initialStats }: { initialStats: any }) {
 // --- InvitationManager ---
 export function InvitationManager({ initialInvitations = [] }: { initialInvitations: any[] }) {
   const [invitations, setInvitations] = useState<any[]>(initialInvitations)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this invitation?')) return
-    const res = await fetch('/api/admin/invitations', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    if (res.ok) setInvitations((invs) => invs.filter((i) => i.id !== id))
+    setDeletingId(id)
+    try {
+      const res = await fetch('/api/admin/invitations', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      if (res.ok) {
+        setInvitations((invs) => invs.filter((i) => i.id !== id))
+        toast.success('Invitation deleted successfully')
+      } else {
+        toast.error('Failed to delete invitation')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   return (
@@ -121,9 +136,14 @@ export function InvitationManager({ initialInvitations = [] }: { initialInvitati
                 </div>
                 <button
                   onClick={() => handleDelete(inv.id)}
-                  className="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors"
+                  disabled={deletingId === inv.id}
+                  className="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors disabled:opacity-50"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  {deletingId === inv.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
                 </button>
               </div>
 
@@ -154,6 +174,8 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
   const [coupons, setCoupons] = useState<any[]>(initialCoupons)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
   const [newCoupon, setNewCoupon] = useState({
     code: '',
     discountType: 'percentage',
@@ -165,30 +187,42 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
     const isEditing = editingId !== null
     const url = '/api/admin/coupons'
     const method = isEditing ? 'PATCH' : 'POST'
 
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...newCoupon,
-        id: editingId,
-        discountValue: parseInt(newCoupon.discountValue),
-        usageLimit: newCoupon.usageLimit ? parseInt(newCoupon.usageLimit) : null,
-        expiresAt: newCoupon.expiresAt ? new Date(newCoupon.expiresAt).toISOString() : null,
-      }),
-    })
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newCoupon,
+          id: editingId,
+          discountValue: parseInt(newCoupon.discountValue),
+          usageLimit: newCoupon.usageLimit ? parseInt(newCoupon.usageLimit) : null,
+          expiresAt: newCoupon.expiresAt ? new Date(newCoupon.expiresAt).toISOString() : null,
+        }),
+      })
 
-    if (res.ok) {
-      const data = await res.json()
-      if (isEditing) {
-        setCoupons(coupons.map((c) => (c.id === editingId ? data : c)))
+      if (res.ok) {
+        const data = await res.json()
+        if (isEditing) {
+          setCoupons(coupons.map((c) => (c.id === editingId ? data : c)))
+          toast.success('Coupon updated successfully')
+        } else {
+          setCoupons([data, ...coupons])
+          toast.success('Coupon created successfully')
+        }
+        resetForm()
       } else {
-        setCoupons([data, ...coupons])
+        const err = await res.json()
+        toast.error(err.error || 'Failed to save coupon')
       }
-      resetForm()
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -219,12 +253,25 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
   }
 
   const handleDelete = async (id: number) => {
-    const res = await fetch('/api/admin/coupons', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    if (res.ok) setCoupons((prev) => prev.filter((c) => c.id !== id))
+    if (!confirm('Are you sure you want to delete this coupon?')) return
+    setDeletingId(id)
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      if (res.ok) {
+        setCoupons((prev) => prev.filter((c) => c.id !== id))
+        toast.success('Coupon deleted successfully')
+      } else {
+        toast.error('Failed to delete coupon')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   return (
@@ -309,8 +356,18 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
                   </select>
                 </div>
               )}
-              <Button type="submit" className={editingId ? 'col-span-full md:col-span-1' : ''}>
-                {editingId ? 'Update' : 'Create'}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className={editingId ? 'col-span-full md:col-span-1' : ''}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : editingId ? (
+                  'Update'
+                ) : (
+                  'Create'
+                )}
               </Button>
             </form>
           </CardContent>
@@ -342,9 +399,14 @@ export function CouponManager({ initialCoupons = [] }: { initialCoupons: any[] }
                   </button>
                   <button
                     onClick={() => handleDelete(coupon.id)}
-                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                    disabled={deletingId === coupon.id}
+                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    {deletingId === coupon.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-3.5 w-3.5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -402,11 +464,13 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
       })
       if (res.ok) {
         setTiers((prev) => prev.map((t) => (t.id === id ? { ...t, price } : t)))
-        alert('Price updated successfully!')
+        toast.success('Price updated successfully')
+      } else {
+        toast.error('Failed to update price')
       }
     } catch (err) {
       console.error(err)
-      alert('Failed to update price.')
+      toast.error('An error occurred')
     } finally {
       setUpdatingId(null)
     }
@@ -475,37 +539,50 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
 
 // --- AdminSettings ---
 export function AdminSettings() {
+  const [isSendingOtp, setIsSendingOtp] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
   const [otpSent, setOtpSent] = useState(false)
   const [formData, setFormData] = useState({ otp: '', username: '', password: '' })
-  const [message, setMessage] = useState('')
 
   const handleSendOtp = async () => {
-    setMessage('Sending OTP...')
-    const res = await fetch('/api/admin/otp', { method: 'POST' })
-    const data = await res.json()
-    if (res.ok) {
-      setOtpSent(true)
-      setMessage('OTP sent to your email!')
-    } else {
-      setMessage(data.error || 'Failed to send OTP.')
+    setIsSendingOtp(true)
+    try {
+      const res = await fetch('/api/admin/otp', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) {
+        setOtpSent(true)
+        toast.success('OTP sent to your email!')
+      } else {
+        toast.error(data.error || 'Failed to send OTP')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setIsSendingOtp(false)
     }
   }
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
-    setMessage('Updating...')
-    const res = await fetch('/api/admin/credentials', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-    const data = await res.json()
-    if (res.ok) {
-      setMessage('Credentials updated successfully!')
-      setOtpSent(false)
-      setFormData({ otp: '', username: '', password: '' })
-    } else {
-      setMessage(data.error || 'Failed to update credentials.')
+    setIsUpdating(true)
+    try {
+      const res = await fetch('/api/admin/credentials', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        toast.success('Credentials updated successfully!')
+        setOtpSent(false)
+        setFormData({ otp: '', username: '', password: '' })
+      } else {
+        toast.error(data.error || 'Failed to update credentials')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    } finally {
+      setIsUpdating(false)
     }
   }
 
@@ -517,8 +594,14 @@ export function AdminSettings() {
       </CardHeader>
       <CardContent className="space-y-4">
         {!otpSent ? (
-          <Button onClick={handleSendOtp} className="w-full">
-            Request OTP via Email
+          <Button onClick={handleSendOtp} disabled={isSendingOtp} className="w-full">
+            {isSendingOtp ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...
+              </>
+            ) : (
+              'Request OTP via Email'
+            )}
           </Button>
         ) : (
           <form onSubmit={handleUpdate} className="space-y-4">
@@ -550,12 +633,17 @@ export function AdminSettings() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Update Credentials
+            <Button type="submit" disabled={isUpdating} className="w-full">
+              {isUpdating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Updating...
+                </>
+              ) : (
+                'Update Credentials'
+              )}
             </Button>
           </form>
         )}
-        {message && <p className="text-sm text-center text-gray-600 mt-2">{message}</p>}
       </CardContent>
     </Card>
   )
@@ -596,6 +684,9 @@ export function GiftInviteManager() {
 
     if (res.ok) {
       setGeneratedCode(code)
+      toast.success('Gift code generated!')
+    } else {
+      toast.error('Failed to generate gift code')
     }
     setIsLoading(false)
   }
@@ -636,7 +727,13 @@ export function GiftInviteManager() {
             disabled={isLoading}
             className="w-full bg-[#F43F8F] hover:bg-[#d82a75]"
           >
-            {isLoading ? 'Generating...' : 'Generate Gift Code'}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating...
+              </>
+            ) : (
+              'Generate Gift Code'
+            )}
           </Button>
         </form>
 

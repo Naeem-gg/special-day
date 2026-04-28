@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { coupons } from '@/lib/db/schema'
+import { coupons, invitations } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -78,9 +78,13 @@ export async function DELETE(req: NextRequest) {
     const { id } = await req.json()
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
 
+    // First, set couponId to null in all invitations that use this coupon
+    await db.update(invitations).set({ couponId: null }).where(eq(invitations.couponId, id))
+
     await db.delete(coupons).where(eq(coupons.id, id))
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Delete Coupon Error:', error)
     return NextResponse.json({ error: 'Failed to delete coupon' }, { status: 500 })
   }
 }

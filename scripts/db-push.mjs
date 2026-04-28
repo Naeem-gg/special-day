@@ -186,7 +186,8 @@ const statements = [
 // New columns that may not exist yet (idempotent ALTER TABLE)
 const alterStatements = [
   // Add any newly added columns here so re-runs are safe:
-  // `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS new_col TEXT`,
+  `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS our_story TEXT`,
+  `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS map_url TEXT`,
 ]
 
 const allStatements = [...statements, ...alterStatements]

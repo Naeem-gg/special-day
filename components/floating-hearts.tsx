@@ -64,7 +64,7 @@ export function FloatingHearts() {
 
   // Create a new heart with random properties
   const createHeart = (id: number): Heart => {
-    const colors = ['#ff6b6b', '#ff8e8e', '#ffb8b8', '#ff4757', '#ff6b81']
+    const colors = ['#D4AF37', '#C5A059', '#E5E4E2', '#B8860B', '#8E6F3E']
 
     return {
       id,

@@ -19,7 +19,7 @@ export function Footer() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [router])
   return (
-    <footer className="py-14 border-t border-rose-100 bg-white/50 backdrop-blur-sm">
+    <footer className="py-14 border-t border-amber-100 bg-white/50 backdrop-blur-sm">
       <div className="container mx-auto px-6 max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div className="md:col-span-2 space-y-4">
@@ -32,7 +32,7 @@ export function Footer() {
               <Link
                 href="https://instagram.com/dnvites"
                 target="_blank"
-                className="w-10 h-10 rounded-full bg-white border border-rose-100 flex items-center justify-center text-gray-600 hover:text-[#F43F8F] hover:border-[#F43F8F] hover:shadow-md transition-all group"
+                className="w-10 h-10 rounded-full bg-white border border-amber-100 flex items-center justify-center text-gray-600 hover:text-[#D4AF37] hover:border-[#D4AF37] hover:shadow-md transition-all group"
                 aria-label="Follow DNvites on Instagram"
               >
                 <svg
@@ -55,19 +55,19 @@ export function Footer() {
             <h4 className="font-bold text-gray-900 mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/" className="hover:text-[#F43F8F] transition-colors">
+                <Link href="/" className="hover:text-[#D4AF37] transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-[#F43F8F] transition-colors">
+                <Link href="/dashboard" className="hover:text-[#D4AF37] transition-colors">
                   Dashboard
                 </Link>
               </li>
               <li>
                 <Link
                   href="/feedback"
-                  className="hover:text-[#F43F8F] transition-colors font-semibold text-[#F43F8F]/80"
+                  className="hover:text-[#D4AF37] transition-colors font-semibold text-[#D4AF37]/80"
                 >
                   Feedback & Requests
                 </Link>
@@ -78,36 +78,36 @@ export function Footer() {
             <h4 className="font-bold text-gray-900 mb-4">Legal</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/faq" className="hover:text-[#F43F8F] transition-colors">
+                <Link href="/faq" className="hover:text-[#D4AF37] transition-colors">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-[#F43F8F] transition-colors">
+                <Link href="/terms" className="hover:text-[#D4AF37] transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-[#F43F8F] transition-colors">
+                <Link href="/privacy" className="hover:text-[#D4AF37] transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/refund" className="hover:text-[#F43F8F] transition-colors">
+                <Link href="/refund" className="hover:text-[#D4AF37] transition-colors">
                   Refund Policy
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-[#F43F8F] transition-colors">
+                <Link href="/contact" className="hover:text-[#D4AF37] transition-colors">
                   Contact Us
                 </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="pt-8 border-t border-rose-50 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+        <div className="pt-8 border-t border-amber-50 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
           <p className="text-xs text-muted-foreground font-light">
-            Made with <span className="text-[#F43F8F]">❤️</span> for every couple's special day
+            Made with <span className="text-[#D4AF37]">✨</span> for every couple's special day
           </p>
           <p className="text-xs text-muted-foreground">
             © 2026 DNvites — Dearest Invites. All rights reserved.
