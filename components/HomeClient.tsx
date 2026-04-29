@@ -639,8 +639,10 @@ export default function HomeClient({
                 variants={itemVariants}
                 className="text-5xl md:text-7xl font-serif leading-[1.1] min-h-[2.2em] md:min-h-0"
               >
-                Make a Wedding Invitation <br />
-                <TypewriterHeading />
+                Create a Digital Wedding Invitation <br />
+                <span className="text-3xl md:text-5xl opacity-80 block mt-2">
+                  <TypewriterHeading />
+                </span>
               </motion.h1>
 
               <motion.p
@@ -1221,6 +1223,95 @@ export default function HomeClient({
           </div>
         </div>
       </section>
+
+      {/* ── FAQ Section ────────────────── */}
+      <section id="faqs" className="py-28 bg-amber-50/20">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16 space-y-4"
+          >
+            <h2 className="text-4xl md:text-5xl font-serif">Commonly Asked Questions</h2>
+            <p className="text-muted-foreground text-lg">Everything you need to know about your digital invitation.</p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "How do I share my digital wedding invitation?",
+                a: "Once you create your invitation, you'll get a unique link. You can simply copy this link and send it via WhatsApp, Instagram DM, Email, or even include it on your paper Save the Date cards."
+              },
+              {
+                q: "Can I edit my invitation after I've shared it?",
+                a: "Yes! You can edit the details like venue, time, and photos for up to 48 hours after purchase. The changes will reflect instantly for everyone who opens your link."
+              },
+              {
+                q: "How does the RSVP tracking work?",
+                a: "Your guests will see an RSVP button on your invitation. When they fill it out, their response (Name, Number of Guests, Attending status) is instantly updated in your private dashboard."
+              },
+              {
+                q: "Can I add music to my invitation?",
+                a: "Absolutely! Our Silver and Gold plans allow you to add any song. You can upload an MP3 or provide a link to a song that sets the perfect mood for your guests."
+              },
+              {
+                q: "How long will my invitation stay online?",
+                a: "All invitations stay live for at least one full year from the date of creation. Our Gold plan even offers lifetime access so you can revisit your digital memories forever."
+              }
+            ].map((faq, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white rounded-2xl border border-amber-100 p-6 shadow-sm hover:shadow-md transition-all"
+              >
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Q: {faq.q}</h3>
+                <p className="text-gray-600 leading-relaxed">{faq.a}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Schema for Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How do I share my digital wedding invitation?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Once you create your invitation, you'll get a unique link. You can simply copy this link and send it via WhatsApp, Instagram DM, Email, or even include it on your paper Save the Date cards."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I edit my invitation after I've shared it?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! You can edit the details like venue, time, and photos for up to 48 hours after purchase. The changes will reflect instantly for everyone who opens your link."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does the RSVP tracking work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Your guests will see an RSVP button on your invitation. When they fill it out, their response (Name, Number of Guests, Attending status) is instantly updated in your private dashboard."
+                }
+              }
+            ]
+          })
+        }}
+      />
 
       {/* ── CTA Banner ────────────────── */}
       <section className="py-24 px-6">
