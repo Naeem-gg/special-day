@@ -1,5 +1,5 @@
 {
-  "name": "renew-big-day",
+  "name": "dnvites",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "node scripts/db-push.mjs"
+    "db:push": "node scripts/db-push.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/apply-migrations.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -22,6 +24,7 @@
     "@react-email/render": "^2.0.7",
     "@types/pg": "^8.20.0",
     "bcryptjs": "^3.0.3",
+    "boneyard-js": "^1.8.1",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.10.0",

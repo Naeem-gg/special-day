@@ -1,0 +1,11 @@
+{
+  "out": "./lib/bones",
+  "routes": ["/dashboard"],
+  "breakpoints": [375, 768, 1280],
+  "theme": {
+    "shimmer": true,
+    "color": "#F9F0E6",
+    "highlight": "#FFF9F4"
+  }
+}
+

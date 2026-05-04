@@ -20,6 +20,8 @@ export const users = pgTable('users', {
   loginOtpExpires: timestamp('login_otp_expires'),
   otpCountToday: integer('otp_count_today').default(0).notNull(),
   lastOtpAt: timestamp('last_otp_at'),
+  otpResendCount: integer('otp_resend_count').default(0).notNull(),
+  lastOtpResendAt: timestamp('last_otp_resend_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
@@ -28,6 +30,7 @@ export const tiers = pgTable('tiers', {
   slug: text('slug').unique().notNull(),
   name: text('name').notNull(),
   price: integer('price').notNull(),
+  strikePrice: integer('strike_price'),
   active: boolean('active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })

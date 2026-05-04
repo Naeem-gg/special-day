@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from 'boneyard-js/react'
 import CloudinaryUpload from '@/components/dashboard/CloudinaryUpload'
 import Link from 'next/link'
 import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
@@ -65,7 +66,7 @@ const StyleCard = ({
   handleStyleSelect,
 }: any) => {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '200px' })
+  const isInView = useInView(ref, { once: true, margin: '200px' }) || (typeof window !== 'undefined' && (window as any).__BONEYARD_BUILD)
 
   return (
     <motion.div
@@ -89,34 +90,38 @@ const StyleCard = ({
             }}
           >
             <Suspense fallback={
-              <div className="absolute inset-0 flex items-center justify-center bg-white/50">
-                <span className="text-4xl animate-pulse">{tmpl.emoji}</span>
-              </div>
+              <Skeleton name={`thumb-${tmpl.slug}`} loading={true} className="absolute inset-0">
+                <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+                  <span className="text-4xl animate-pulse">{tmpl.emoji}</span>
+                </div>
+              </Skeleton>
             }>
-              <StyleRouter
-                style={tmpl.slug}
-                brideName={formData.brideName || 'Anjali'}
-                groomName={formData.groomName || 'Arjun'}
-                date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
-                venue={formData.venue || 'The Taj Mahal Palace, Mumbai'}
-                events={
-                  formData.events[0]?.name
-                    ? formData.events
-                    : [
-                        {
-                          name: 'Sangeet',
-                          time: '6:00 PM',
-                          location: 'Crystal Ballroom',
-                          description: 'Music & Dance',
-                        },
-                      ]
-                }
-                gallery={formData.gallery}
-                ourStory={formData.ourStory}
-                mapUrl={formData.mapUrl}
-                isPreview={true}
-                isThumbnail={true}
-              />
+              <Skeleton name={`thumb-${tmpl.slug}`} loading={false} className="absolute inset-0">
+                <StyleRouter
+                  style={tmpl.slug}
+                  brideName={formData.brideName || 'Anjali'}
+                  groomName={formData.groomName || 'Arjun'}
+                  date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
+                  venue={formData.venue || 'The Taj Mahal Palace, Mumbai'}
+                  events={
+                    formData.events[0]?.name
+                      ? formData.events
+                      : [
+                          {
+                            name: 'Sangeet',
+                            time: '6:00 PM',
+                            location: 'Crystal Ballroom',
+                            description: 'Music & Dance',
+                          },
+                        ]
+                  }
+                  gallery={formData.gallery}
+                  ourStory={formData.ourStory}
+                  mapUrl={formData.mapUrl}
+                  isPreview={true}
+                  isThumbnail={true}
+                />
+              </Skeleton>
             </Suspense>
           </div>
         ) : (
@@ -208,6 +213,10 @@ export default function DashboardClient({
   useEffect(() => {
     detectCurrency().then(setCurrency)
   }, [])
+
+  // ── Launch Offer Config ───────────────────
+  const isPromoActive = true // We can toggle this later
+  const promoEndDate = '2026-05-30' // One month from now
 
   // ── Checkout Flow ───────────────────
   const [checkoutStep, setCheckoutStep] = useState<
@@ -381,7 +390,12 @@ export default function DashboardClient({
     }
   }
 
-  const calculateFinalPrice = (originalPrice: number) => {
+  const calculateFinalPrice = (originalPrice: number, tierSlug?: string) => {
+    // Override for Basic tier during promo
+    if (isPromoActive && (tierSlug === 'basic' || formData.tier === 'basic')) {
+      return 0
+    }
+    
     if (!couponData) return originalPrice
     if (couponData.discountType === 'percentage')
       return Math.round(originalPrice * (1 - couponData.discountValue / 100))
@@ -577,7 +591,24 @@ export default function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-rose-50/50 via-white to-amber-50/30">
+    <Skeleton name="dashboard-page" loading={false}>
+      <div className="min-h-screen relative bg-linear-to-br from-rose-50/50 via-white to-amber-50/30">
+      {/* Promo Banner */}
+      {isPromoActive && (
+        <motion.div 
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-linear-to-r from-rose-600 to-[#F43F8F] text-white py-2 px-4 text-center text-xs font-medium tracking-wide shadow-md sticky top-0 z-50"
+        >
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
+            <Sparkles className="w-3 h-3 animate-pulse" />
+            <span>Launch Celebration! Create & Share Digital Invitations for <strong>FREE</strong> this month.</span>
+            <div className="hidden md:block w-px h-3 bg-white/20 mx-2" />
+            <span className="hidden md:inline opacity-80">Valid until {new Date(promoEndDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span>
+          </div>
+        </motion.div>
+      )}
+
       {/* Status Overlay */}
       <AnimatePresence>
         {checkoutStep !== 'idle' && (
@@ -627,9 +658,22 @@ export default function DashboardClient({
                       <div className="space-y-2 pt-2 border-t border-rose-100/30">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-500">Plan Price</span>
-                          <span className="text-gray-900 font-medium">
-                            ₹{tiers.find((t) => t.slug === formData.tier)?.price || 0}
-                          </span>
+                          <div className="flex flex-col items-end">
+                            <div className="flex items-center gap-2">
+                              {/* Show Strike Price from DB if exists */}
+                              {tiers.find((t) => t.slug === formData.tier)?.strikePrice && (
+                                <span className="text-xs text-gray-400 line-through">
+                                  ₹{tiers.find((t) => t.slug === formData.tier)?.strikePrice}
+                                </span>
+                              )}
+                              <span className={isPromoActive && formData.tier === 'basic' ? 'line-through text-xs text-gray-400' : 'text-gray-900 font-medium'}>
+                                ₹{tiers.find((t) => t.slug === formData.tier)?.price || 0}
+                              </span>
+                            </div>
+                            {isPromoActive && formData.tier === 'basic' && (
+                              <span className="text-green-600 font-bold">FREE (Launch Offer)</span>
+                            )}
+                          </div>
                         </div>
 
                         {!couponData ? (
@@ -719,24 +763,32 @@ export default function DashboardClient({
                         )}
                         <div className="flex justify-between items-center pt-2 border-t border-rose-100 font-serif">
                           <span className="text-lg text-gray-900">Total Payable</span>
-                          <span className="text-2xl text-[#F43F8F]">
-                            {
-                              getDisplayPrice(
-                                calculateFinalPrice(
-                                  tiers.find((t) => t.slug === formData.tier)?.price || 0
-                                ),
-                                currency
-                              ).symbol
-                            }
-                            {
-                              getDisplayPrice(
-                                calculateFinalPrice(
-                                  tiers.find((t) => t.slug === formData.tier)?.price || 0
-                                ),
-                                currency
-                              ).amount
-                            }
-                          </span>
+                          <div className="flex flex-col items-end">
+                            {calculateFinalPrice(tiers.find((t) => t.slug === formData.tier)?.price || 0) < (tiers.find((t) => t.slug === formData.tier)?.price || 0) && (
+                              <span className="text-sm text-gray-400 line-through">
+                                {getDisplayPrice(tiers.find((t) => t.slug === formData.tier)?.price || 0, currency).symbol}
+                                {getDisplayPrice(tiers.find((t) => t.slug === formData.tier)?.price || 0, currency).amount}
+                              </span>
+                            )}
+                            <span className="text-2xl text-[#F43F8F]">
+                              {
+                                getDisplayPrice(
+                                  calculateFinalPrice(
+                                    tiers.find((t) => t.slug === formData.tier)?.price || 0
+                                  ),
+                                  currency
+                                ).symbol
+                              }
+                              {
+                                getDisplayPrice(
+                                  calculateFinalPrice(
+                                    tiers.find((t) => t.slug === formData.tier)?.price || 0
+                                  ),
+                                  currency
+                                ).amount
+                              }
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -769,13 +821,22 @@ export default function DashboardClient({
                       </motion.div>
                     )}
 
+                    {isPromoActive && formData.tier === 'basic' && (
+                      <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 flex gap-3 items-start">
+                        <Info className="w-4 h-4 text-[#F43F8F] shrink-0 mt-0.5" />
+                        <p className="text-[10px] text-rose-700 leading-tight">
+                          <strong>Note:</strong> Free invitations include a small "Created with DNvites" watermark at the bottom. Upgrade to Standard or Premium to remove branding.
+                        </p>
+                      </div>
+                    )}
+
                     <div className="space-y-3">
                       <Button
                         onClick={initiatePayment}
                         className="w-full h-14 rounded-2xl bg-linear-to-r from-[#F43F8F] to-[#c73272] text-white font-bold text-lg shadow-xl shadow-rose-200 group"
                       >
                         <span className="flex items-center gap-2">
-                          Confirm & Pay Securely
+                          {calculateFinalPrice(0) === 0 && formData.tier === 'basic' ? 'Publish for Free' : 'Confirm & Pay Securely'}
                           <Lock className="w-4 h-4 transition-transform group-hover:scale-110" />
                         </span>
                       </Button>
@@ -789,8 +850,8 @@ export default function DashboardClient({
                     </div>
 
                     <p className="text-[10px] text-center text-gray-400">
-                      By proceeding, you agree to our Terms of Service. Payments are secured by
-                      256-bit SSL encryption.
+                      By proceeding, you agree to our Terms of Service.
+                      {calculateFinalPrice(0) > 0 && " Payments are secured by 256-bit SSL encryption."}
                     </p>
                   </motion.div>
                 )}
@@ -996,34 +1057,38 @@ export default function DashboardClient({
               {/* Scrollable Style Content */}
               <div className="absolute inset-0 overflow-y-auto scrollbar-hide">
                 <Suspense fallback={
-                  <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-                    <Loader2 className="w-12 h-12 text-[#F43F8F] animate-spin mb-4" />
-                    <p className="text-gray-500 font-serif italic">Loading Style...</p>
-                  </div>
+                  <Skeleton name={`full-${previewTemplate}`} loading={true} className="min-h-screen relative w-full">
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+                      <Loader2 className="w-12 h-12 text-[#F43F8F] animate-spin mb-4" />
+                      <p className="text-gray-500 font-serif italic">Loading Style...</p>
+                    </div>
+                  </Skeleton>
                 }>
-                  <StyleRouter
-                    style={previewTemplate}
-                    brideName={formData.brideName || 'Ayesha'}
-                    groomName={formData.groomName || 'Abdullah'}
-                    date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
-                    venue={formData.venue || 'The Grand Ballroom'}
-                    events={
-                      formData.events[0]?.name
-                        ? formData.events
-                        : [
-                            {
-                              name: 'Main Event',
-                              time: '6:00 PM',
-                              location: 'Royal Hall',
-                              description: 'Join us for dinner.',
-                            },
-                          ]
-                    }
-                    gallery={formData.gallery}
-                    ourStory={formData.ourStory}
-                    mapUrl={formData.mapUrl}
-                    isPreview={true}
-                  />
+                  <Skeleton name={`full-${previewTemplate}`} loading={false} className="min-h-screen relative w-full">
+                    <StyleRouter
+                      style={previewTemplate}
+                      brideName={formData.brideName || 'Ayesha'}
+                      groomName={formData.groomName || 'Abdullah'}
+                      date={formData.date ? new Date(formData.date) : new Date(Date.now() + 86400000)}
+                      venue={formData.venue || 'The Grand Ballroom'}
+                      events={
+                        formData.events[0]?.name
+                          ? formData.events
+                          : [
+                              {
+                                name: 'Main Event',
+                                time: '6:00 PM',
+                                location: 'Royal Hall',
+                                description: 'Join us for dinner.',
+                              },
+                            ]
+                      }
+                      gallery={formData.gallery}
+                      ourStory={formData.ourStory}
+                      mapUrl={formData.mapUrl}
+                      isPreview={true}
+                    />
+                  </Skeleton>
                 </Suspense>
               </div>
 
@@ -1623,11 +1688,19 @@ export default function DashboardClient({
                             </p>
                           </div>
                           <div className="text-right flex flex-col items-end">
-                            {hasDiscount && (
-                              <span className="text-xs text-gray-400 line-through">
-                                ₹{originalPrice}
-                              </span>
-                            )}
+                            <div className="flex items-center gap-2">
+                              {/* Show Strike Price from DB if exists, otherwise show calculated Original Price if discounted */}
+                              {(selectedTier?.strikePrice || (hasDiscount && originalPrice > finalPrice)) && (
+                                <span className="text-xs text-gray-400 line-through">
+                                  ₹{selectedTier?.strikePrice || originalPrice}
+                                </span>
+                              )}
+                              {hasDiscount && finalPrice < originalPrice && (
+                                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full border border-green-100">
+                                  SAVE {Math.round(((selectedTier?.strikePrice || originalPrice) - finalPrice) / (selectedTier?.strikePrice || originalPrice) * 100)}%
+                                </span>
+                              )}
+                            </div>
                             <p className="text-3xl font-serif text-[#F43F8F]">₹{finalPrice}</p>
                           </div>
                         </div>
@@ -1889,5 +1962,7 @@ export default function DashboardClient({
       </div>
       <Footer />
     </div>
+    </Skeleton>
   )
 }
+

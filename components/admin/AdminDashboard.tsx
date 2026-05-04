@@ -451,19 +451,23 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
   const [localPrices, setLocalPrices] = useState<Record<number, string>>(
     initialTiers.reduce((acc, t) => ({ ...acc, [t.id]: t.price.toString() }), {})
   )
+  const [localStrikePrices, setLocalStrikePrices] = useState<Record<number, string>>(
+    initialTiers.reduce((acc, t) => ({ ...acc, [t.id]: (t.strikePrice || '').toString() }), {})
+  )
 
   const handleUpdatePrice = async (id: number) => {
     setUpdatingId(id)
     const price = parseInt(localPrices[id])
+    const strikePrice = localStrikePrices[id] ? parseInt(localStrikePrices[id]) : null
 
     try {
       const res = await fetch('/api/admin/tiers', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, price }),
+        body: JSON.stringify({ id, price, strikePrice }),
       })
       if (res.ok) {
-        setTiers((prev) => prev.map((t) => (t.id === id ? { ...t, price } : t)))
+        setTiers((prev) => prev.map((t) => (t.id === id ? { ...t, price, strikePrice } : t)))
         toast.success('Price updated successfully')
       } else {
         toast.error('Failed to update price')
@@ -515,9 +519,26 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-gray-500 uppercase">
+                  Marketing Strike Price (₹)
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Optional original price"
+                    value={localStrikePrices[tier.id]}
+                    onChange={(e) => setLocalStrikePrices({ ...localStrikePrices, [tier.id]: e.target.value })}
+                    className="font-mono text-sm text-gray-400 line-through focus:border-gray-400 focus:ring-gray-100"
+                  />
+                </div>
+              </div>
               <Button
                 onClick={() => handleUpdatePrice(tier.id)}
-                disabled={updatingId === tier.id || localPrices[tier.id] === tier.price.toString()}
+                disabled={
+                  updatingId === tier.id || 
+                  (localPrices[tier.id] === tier.price.toString() && localStrikePrices[tier.id] === (tier.strikePrice || '').toString())
+                }
                 className="w-full bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all h-11"
               >
                 {updatingId === tier.id ? (

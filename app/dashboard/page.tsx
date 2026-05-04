@@ -35,3 +35,5 @@ export default async function DashboardPage() {
 
   return <DashboardClient initialTiers={allTiers} initialSession={session} />
 }
+
+

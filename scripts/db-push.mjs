@@ -87,6 +87,8 @@ const statements = [
     login_otp_expires TIMESTAMPTZ,
     otp_count_today  INTEGER     NOT NULL DEFAULT 0,
     last_otp_at      TIMESTAMPTZ,
+    otp_resend_count INTEGER     NOT NULL DEFAULT 0,
+    last_otp_resend_at TIMESTAMPTZ,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`,
 
@@ -96,6 +98,7 @@ const statements = [
     slug       TEXT  UNIQUE NOT NULL,
     name       TEXT         NOT NULL,
     price      INTEGER      NOT NULL,
+    strike_price INTEGER,
     active     BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
   )`,
@@ -135,6 +138,8 @@ const statements = [
     razorpay_payment_id TEXT,
     views               INTEGER     NOT NULL DEFAULT 0,
     language            TEXT        NOT NULL DEFAULT 'en',
+    our_story           TEXT,
+    map_url             TEXT,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`,
 
@@ -188,6 +193,9 @@ const alterStatements = [
   // Add any newly added columns here so re-runs are safe:
   `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS our_story TEXT`,
   `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS map_url TEXT`,
+  `ALTER TABLE tiers ADD COLUMN IF NOT EXISTS strike_price INTEGER`,
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_resend_count INTEGER DEFAULT 0 NOT NULL`,
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS last_otp_resend_at TIMESTAMPTZ`,
 ]
 
 const allStatements = [...statements, ...alterStatements]

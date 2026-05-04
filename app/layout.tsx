@@ -2,9 +2,11 @@ import type React from 'react'
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display, Cormorant_Garamond, Montserrat, Cinzel } from 'next/font/google'
 import './globals.css'
+import '@/lib/bones/registry'
 import 'react-loading-skeleton/dist/skeleton.css'
 import Script from 'next/script'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
@@ -44,7 +46,7 @@ export const metadata: Metadata = {
     'e-invites for wedding',
     'paperless wedding invitations',
     'save the date digital card',
-    'indian wedding cards online',
+    'Indian wedding cards online',
   ],
   authors: [{ name: 'DNvites Team' }],
   creator: 'DNvites',
@@ -58,8 +60,6 @@ export const metadata: Metadata = {
     telephone: false,
   },
   manifest: '/manifest.json',
-  themeColor: '#D4AF37',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -104,6 +104,13 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport = {
+  themeColor: '#D4AF37',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+}
+
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -145,8 +152,6 @@ const jsonLd = [
     },
   },
 ]
-
-import { Toaster } from 'sonner'
 
 export default function RootLayout({
   children,

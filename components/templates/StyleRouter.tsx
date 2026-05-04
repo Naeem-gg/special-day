@@ -62,6 +62,7 @@ import Link from 'next/link'
 import EnvelopeIntro from '../invitation/EnvelopeIntro'
 import DoorIntro from '../invitation/DoorIntro'
 import CurtainIntro from '../invitation/CurtainIntro'
+import { Watermark } from '../branding/Watermark'
 
 export default function StyleRouter({
   style,
@@ -137,23 +138,29 @@ export default function StyleRouter({
 
       {/* ── Brand Promotional Footer ────────────── */}
       {!props.isThumbnail && (
-        <footer className="py-12 px-6 text-center bg-transparent relative z-10">
-          <div className="max-w-xs mx-auto">
-            <div className="h-px w-full bg-linear-to-r from-transparent via-gray-200 to-transparent mb-8" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-3">
-              Design Your Journey
-            </p>
-            <Link href="https://dnvites.app" target="_blank" className="group inline-block">
-              <p className="text-sm font-medium text-gray-600 group-hover:text-[#F43F8F] transition-colors duration-300">
-                Create your own digital wedding invite at{' '}
-                <span className="font-bold border-b border-gray-200 group-hover:border-[#F43F8F]">
-                  dnvites.app
-                </span>
-              </p>
-            </Link>
-            <p className="mt-6 text-[10px] italic text-gray-300">Made with love by DNvites</p>
-          </div>
-        </footer>
+        <>
+          {meta?.tier === 'basic' ? (
+            <Watermark />
+          ) : (
+            <footer className="py-12 px-6 text-center bg-transparent relative z-10">
+              <div className="max-w-xs mx-auto">
+                <div className="h-px w-full bg-linear-to-r from-transparent via-gray-200 to-transparent mb-8" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-3">
+                  Design Your Journey
+                </p>
+                <Link href="https://dnvites.app" target="_blank" className="group inline-block">
+                  <p className="text-sm font-medium text-gray-600 group-hover:text-[#F43F8F] transition-colors duration-300">
+                    Create your own digital wedding invite at{' '}
+                    <span className="font-bold border-b border-gray-200 group-hover:border-[#F43F8F]">
+                      dnvites.app
+                    </span>
+                  </p>
+                </Link>
+                <p className="mt-6 text-[10px] italic text-gray-300">Made with love by DNvites</p>
+              </div>
+            </footer>
+          )}
+        </>
       )}
     </>
   )
