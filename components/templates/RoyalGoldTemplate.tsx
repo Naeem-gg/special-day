@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Clock, Crown, ChevronDown, Map as MapIcon } from 'lucide-react'
+import { MapPin, Clock, Crown, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
@@ -514,52 +514,53 @@ export default function RoyalGoldTemplate({
                     border: '1px solid #E8D09A',
                   }}
                 >
-                  <div
-                    className="absolute top-0 right-0 w-12 h-12 pointer-events-none opacity-20"
-                    style={{
-                      backgroundImage: 'radial-gradient(circle, #D4AF37, transparent)',
-                      backgroundSize: '100%',
-                    }}
-                  />
-                  <p
-                    className="font-sans text-[10px] md:text-xs uppercase tracking-widest mb-2"
-                    style={{ color: '#D4AF37' }}
-                  >
-                    ✦ Event {i + 1} ✦
-                  </p>
-                  <h3 className="text-xl md:text-2xl font-light mb-2" style={{ color: '#3A0A14' }}>
-                    {ev.name}
-                  </h3>
-                  {ev.description && (
-                    <p
-                      className="font-sans text-xs md:text-sm mb-4 leading-relaxed"
-                      style={{ color: '#8A6A5A' }}
+                  <div className="flex-1">
+                    {/* Removed Event Numbering */}
+                    <h3 className="text-xl md:text-2xl font-light mb-2" style={{ color: '#3A0A14' }}>
+                      {ev.name}
+                    </h3>
+                    {ev.description && (
+                      <p
+                        className="font-sans text-xs md:text-sm mb-4 leading-relaxed"
+                        style={{ color: '#8A6A5A' }}
+                      >
+                        {ev.description}
+                      </p>
+                    )}
+                    <div
+                      className="flex flex-wrap gap-4 font-sans text-[10px] md:text-xs"
+                      style={{ color: '#B0906A' }}
                     >
-                      {ev.description}
-                    </p>
-                  )}
-                  <div
-                    className="flex flex-wrap gap-4 font-sans text-[10px] md:text-xs"
-                    style={{ color: '#B0906A' }}
-                  >
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {ev.time}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {ev.location}
-                    </span>
+                      {ev.date && !isNaN(new Date(ev.date).getTime()) && (
+                        <span className="flex items-center gap-1 font-bold text-[#D4AF37]">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(ev.date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {ev.time}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {ev.location}
+                      </span>
+                    </div>
+                    <a
+                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 border text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#D4AF37] hover:text-[#3A0A14] hover:border-[#D4AF37]"
+                      style={{ borderColor: '#E8D09A', color: '#D4AF37' }}
+                    >
+                      <MapIcon className="w-3 h-3" /> Open in Maps
+                    </a>
                   </div>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 border text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#D4AF37] hover:text-[#3A0A14] hover:border-[#D4AF37]"
-                    style={{ borderColor: '#E8D09A', color: '#D4AF37' }}
-                  >
-                    <MapIcon className="w-3 h-3" /> Open in Maps
-                  </a>
                 </motion.div>
               ))}
             </div>

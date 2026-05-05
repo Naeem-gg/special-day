@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Clock, ChevronDown, Feather, Map as MapIcon } from 'lucide-react'
+import { MapPin, Clock, ChevronDown, Feather, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
@@ -473,49 +473,57 @@ export default function SacredIvoryTemplate({
                     }}
                   />
 
-                  <p
-                    className="text-[10px] uppercase tracking-[0.5em] mb-2"
-                    style={{ color: '#D4AF37', fontFamily: "'Montserrat', sans-serif" }}
-                  >
-                    ✦ Event {i + 1} ✦
-                  </p>
-                  <h3 className="text-2xl font-light mb-2" style={{ color: '#5C3317' }}>
-                    {ev.name}
-                  </h3>
-                  {ev.description && (
-                    <p
-                      className="text-sm mb-4"
-                      style={{ color: '#8B6914', fontFamily: "'Montserrat', sans-serif" }}
+                  <div className="flex-1">
+                    {/* Removed Event Numbering */}
+                    <h3 className="text-2xl font-light mb-2" style={{ color: '#5C3317' }}>
+                      {ev.name}
+                    </h3>
+                    {ev.description && (
+                      <p
+                        className="text-sm mb-4"
+                        style={{ color: '#8B6914', fontFamily: "'Montserrat', sans-serif" }}
+                      >
+                        {ev.description}
+                      </p>
+                    )}
+                    <div
+                      className="flex flex-wrap gap-4 text-xs"
+                      style={{ color: '#B8860B', fontFamily: "'Montserrat', sans-serif" }}
                     >
-                      {ev.description}
-                    </p>
-                  )}
-                  <div
-                    className="flex flex-wrap gap-4 text-xs"
-                    style={{ color: '#B8860B', fontFamily: "'Montserrat', sans-serif" }}
-                  >
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {ev.time}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {ev.location}
-                    </span>
+                      {ev.date && !isNaN(new Date(ev.date).getTime()) && (
+                        <span className="flex items-center gap-1 font-bold text-[#D4AF37]">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(ev.date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {ev.time}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {ev.location}
+                      </span>
+                    </div>
+                    <a
+                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 border text-[10px] font-bold uppercase tracking-[0.3em] transition-all duration-300 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37]"
+                      style={{
+                        borderColor: 'rgba(212,175,55,0.35)',
+                        color: '#8B4513',
+                        fontFamily: "'Montserrat', sans-serif",
+                      }}
+                    >
+                      <MapIcon className="w-3 h-3" /> Open in Maps
+                    </a>
                   </div>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 border text-[10px] font-bold uppercase tracking-[0.3em] transition-all duration-300 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37]"
-                    style={{
-                      borderColor: 'rgba(212,175,55,0.35)',
-                      color: '#8B4513',
-                      fontFamily: "'Montserrat', sans-serif",
-                    }}
-                  >
-                    <MapIcon className="w-3 h-3" /> Open in Maps
-                  </a>
                 </motion.div>
               ))}
             </div>

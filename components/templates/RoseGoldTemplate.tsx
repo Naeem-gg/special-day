@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Clock, ChevronDown, Heart, Share2, ExternalLink } from 'lucide-react'
+import { MapPin, Clock, ChevronDown, Heart, Share2, ExternalLink, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
@@ -401,12 +401,7 @@ export default function RoseGoldTemplate({
                     style={{ background: 'linear-gradient(to bottom, #B76E79, #D4AF37)' }}
                   />
                   <div className="flex-1">
-                    <p
-                      className="font-sans text-xs uppercase tracking-widest mb-2"
-                      style={{ color: '#B76E79' }}
-                    >
-                      Event {i + 1}
-                    </p>
+                    {/* Removed Event Numbering */}
                     <h3 className="text-2xl font-light mb-2" style={{ color: '#2C1810' }}>
                       {ev.name}
                     </h3>
@@ -419,9 +414,9 @@ export default function RoseGoldTemplate({
                       className="flex flex-wrap gap-4 font-sans text-xs"
                       style={{ color: '#C4A0A0' }}
                     >
-                      {ev.date && (
+                      {ev.date && !isNaN(new Date(ev.date).getTime()) && (
                         <span className="flex items-center gap-1 font-bold text-[#B76E79]">
-                          <Clock className="w-3 h-3" />
+                          <Calendar className="w-3 h-3" />
                           {new Date(ev.date).toLocaleDateString('en-US', {
                             weekday: 'short',
                             month: 'short',

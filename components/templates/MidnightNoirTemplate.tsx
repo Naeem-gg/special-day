@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Clock, Star, ChevronDown, Map as MapIcon } from 'lucide-react'
+import { MapPin, Clock, Star, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
@@ -385,52 +385,66 @@ export default function MidnightNoirTemplate({
               <div className="mx-auto mt-4 h-px" style={{ width: 60, background: '#C9A84C' }} />
             </motion.div>
             <div className="space-y-6">
-              {events.map((ev, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  className="p-8 border border-white/5"
-                  style={{ background: '#111' }}
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h3 className="text-2xl font-light mb-2" style={{ color: '#C9A84C' }}>
-                        {ev.name}
-                      </h3>
-                      {ev.description && (
-                        <p className="font-sans text-sm mb-4" style={{ color: '#888' }}>
-                          {ev.description}
-                        </p>
-                      )}
-                      <div
-                        className="flex flex-wrap gap-4 font-sans text-xs"
-                        style={{ color: '#666' }}
-                      >
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {ev.time}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {ev.location}
-                        </span>
+              {events.map((ev, i) => {
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.15 }}
+                    className="p-8 border border-white/5"
+                    style={{ background: '#111' }}
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        {/* Removed Event Numbering */}
+                        <h3 className="text-2xl font-light mb-2" style={{ color: '#C9A84C' }}>
+                          {ev.name}
+                        </h3>
+                        {ev.description && (
+                          <p className="font-sans text-sm mb-4" style={{ color: '#888' }}>
+                            {ev.description}
+                          </p>
+                        )}
+                        <div
+                          className="flex flex-wrap gap-4 font-sans text-xs"
+                          style={{ color: '#666' }}
+                        >
+                          {ev.date && !isNaN(new Date(ev.date).getTime()) && (
+                            <span className="flex items-center gap-1 font-bold text-[#C9A84C]">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(ev.date).toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
+                            </span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {ev.time}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {ev.location}
+                          </span>
+                        </div>
                       </div>
+                      <a
+                        href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#C9A84C] hover:text-black hover:border-[#C9A84C]"
+                        style={{ borderColor: '#C9A84C', color: '#C9A84C' }}
+                      >
+                        <MapIcon className="w-3 h-3" /> Directions
+                      </a>
                     </div>
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#C9A84C] hover:text-black hover:border-[#C9A84C]"
-                      style={{ borderColor: '#C9A84C', color: '#C9A84C' }}
-                    >
-                      <MapIcon className="w-3 h-3" /> Directions
-                    </a>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                )
+              })}
             </div>
           </div>
         </section>

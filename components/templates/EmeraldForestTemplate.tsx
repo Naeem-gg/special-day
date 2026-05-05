@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Clock, ChevronDown, Map as MapIcon } from 'lucide-react'
+import { MapPin, Clock, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 
@@ -300,63 +300,71 @@ export default function EmeraldForestTemplate({
               </h2>
             </motion.div>
             <div className="space-y-6">
-              {events.map((ev, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -40 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  className="flex gap-5 p-8 rounded-3xl"
-                  style={{
-                    background: 'linear-gradient(135deg, #F5F0E8, #EDE6D8)',
-                    border: '1px solid #D4C8A8',
-                  }}
-                >
-                  <div
-                    className="w-1 rounded-full shrink-0"
-                    style={{ background: 'linear-gradient(to bottom, #1A3C34, #B87333)' }}
-                  />
-                  <div>
-                    <p
-                      className="font-sans text-xs uppercase tracking-widest mb-2"
-                      style={{ color: '#B87333' }}
-                    >
-                      Event {i + 1}
-                    </p>
-                    <h3 className="text-2xl font-light mb-2" style={{ color: '#1A3C34' }}>
-                      {ev.name}
-                    </h3>
-                    {ev.description && (
-                      <p className="font-sans text-sm mb-4" style={{ color: '#5A7A5A' }}>
-                        {ev.description}
-                      </p>
-                    )}
+              {events.map((ev, i) => {
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.15 }}
+                    className="flex gap-5 p-8 rounded-3xl"
+                    style={{
+                      background: 'linear-gradient(135deg, #F5F0E8, #EDE6D8)',
+                      border: '1px solid #D4C8A8',
+                    }}
+                  >
                     <div
-                      className="flex flex-wrap gap-4 font-sans text-xs"
-                      style={{ color: '#8FAF7E' }}
-                    >
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {ev.time}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {ev.location}
-                      </span>
+                      className="w-1 rounded-full shrink-0"
+                      style={{ background: 'linear-gradient(to bottom, #1A3C34, #B87333)' }}
+                    />
+                    <div>
+                      {/* Removed Event Numbering */}
+                      <h3 className="text-2xl font-light mb-2" style={{ color: '#1A3C34' }}>
+                        {ev.name}
+                      </h3>
+                      {ev.description && (
+                        <p className="font-sans text-sm mb-4" style={{ color: '#5A7A5A' }}>
+                          {ev.description}
+                        </p>
+                      )}
+                      <div
+                        className="flex flex-wrap gap-4 font-sans text-xs"
+                        style={{ color: '#8FAF7E' }}
+                      >
+                        {ev.date && !isNaN(new Date(ev.date).getTime()) && (
+                          <span className="flex items-center gap-1 font-bold text-[#B87333]">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(ev.date).toLocaleDateString('en-US', {
+                              weekday: 'short',
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {ev.time}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {ev.location}
+                        </span>
+                      </div>
+                      <a
+                        href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#1A3C34] hover:text-[#B87333] hover:border-[#1A3C34]"
+                        style={{ borderColor: '#D4C8A8', color: '#B87333' }}
+                      >
+                        <MapIcon className="w-3 h-3" /> Open in Maps
+                      </a>
                     </div>
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#1A3C34] hover:text-[#B87333] hover:border-[#1A3C34]"
-                      style={{ borderColor: '#D4C8A8', color: '#B87333' }}
-                    >
-                      <MapIcon className="w-3 h-3" /> Open in Maps
-                    </a>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                )
+              })}
             </div>
           </div>
         </section>

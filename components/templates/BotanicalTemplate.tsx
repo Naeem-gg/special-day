@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Clock, ExternalLink, Share2, ChevronDown, Map as MapIcon } from 'lucide-react'
+import { MapPin, Clock, ExternalLink, Share2, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 import BackgroundMusic from '@/components/invitation/BackgroundMusic'
@@ -385,15 +385,7 @@ export default function BotanicalTemplate({
                 style={{ background: 'white', borderColor: '#C5DEB8' }}
               >
                 <div className="flex items-start gap-5">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                    style={{
-                      background: 'linear-gradient(135deg, #2D5A27, #5A8A4A)',
-                      color: 'white',
-                    }}
-                  >
-                    <span className="font-sans text-sm font-bold">{i + 1}</span>
-                  </div>
+                  {/* Removed Numbering Badge */}
                   <div>
                     <h3 className="text-2xl font-light mb-2" style={{ color: '#1A3A14' }}>
                       {ev.name}
@@ -407,17 +399,17 @@ export default function BotanicalTemplate({
                       className="flex flex-wrap gap-4 font-sans text-xs"
                       style={{ color: '#8FAF7E' }}
                     >
-                      {ev.date && (
-                        <span className="flex items-center gap-1 font-bold text-[#2D5A27]">
-                          <Clock className="w-3 h-3" />
-                          {new Date(ev.date).toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                        </span>
-                      )}
+                    {ev.date && !isNaN(new Date(ev.date).getTime()) && (
+                      <span className="flex items-center gap-1 font-bold text-[#2D5A27]">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(ev.date).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    )}
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {ev.time}

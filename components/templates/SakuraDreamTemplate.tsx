@@ -2,7 +2,7 @@
 
 import RSVPModal from '@/components/invitation/RSVPModal'
 import { motion } from 'framer-motion'
-import { ChevronDown, Clock, Map as MapIcon, MapPin } from 'lucide-react'
+import { ChevronDown, Clock, Map as MapIcon, MapPin, Calendar } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { StyleProps } from './types'
 
@@ -380,12 +380,7 @@ export default function SakuraDreamTemplate({
                     className="absolute -left-2 top-0 w-4 h-4 rounded-full"
                     style={{ background: 'linear-gradient(135deg, #D4B4FD, #FFB7C5)' }}
                   />
-                  <p
-                    className="font-sans text-[10px] uppercase tracking-widest mb-1"
-                    style={{ color: '#D4B4FD' }}
-                  >
-                    Event {i + 1}
-                  </p>
+                  {/* Removed Event Numbering */}
                   <h3 className="text-2xl font-light mb-2" style={{ color: '#4A2060' }}>
                     {ev.name}
                   </h3>
@@ -398,9 +393,9 @@ export default function SakuraDreamTemplate({
                     className="flex flex-wrap gap-4 font-sans text-xs"
                     style={{ color: '#C4A0C8' }}
                   >
-                    {ev.date && (
+                    {ev.date && !isNaN(new Date(ev.date).getTime()) && (
                       <span className="flex items-center gap-1 font-bold text-[#4A2060]">
-                        <Clock className="w-3 h-3" />
+                        <Calendar className="w-3 h-3" />
                         {new Date(ev.date).toLocaleDateString('en-US', {
                           weekday: 'short',
                           month: 'short',

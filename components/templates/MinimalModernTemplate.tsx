@@ -106,10 +106,38 @@ export default function MinimalModernTemplate({
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-medium mb-2">{ev.name}</h3>
-                  <p className="text-zinc-500 text-sm mb-4 leading-relaxed">{ev.description}</p>
-                  <p className="text-zinc-400 text-[10px] uppercase tracking-wider flex items-center gap-2">
-                    <MapPin className="w-3 h-3" /> {ev.location}
-                  </p>
+                  {ev.description && <p className="text-zinc-500 text-sm mb-4 leading-relaxed">{ev.description}</p>}
+                  
+                  <div className="flex flex-wrap gap-4 mb-4">
+                    {ev.date && !isNaN(new Date(ev.date).getTime()) && (
+                      <p className="text-zinc-400 text-[10px] uppercase tracking-wider flex items-center gap-2 font-bold">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(ev.date).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </p>
+                    )}
+                    <p className="text-zinc-400 text-[10px] uppercase tracking-wider flex items-center gap-2">
+                      <Clock className="w-3 h-3" /> {ev.time}
+                    </p>
+                    <p className="text-zinc-400 text-[10px] uppercase tracking-wider flex items-center gap-2">
+                      <MapPin className="w-3 h-3" /> {ev.location}
+                    </p>
+                  </div>
+
+                  {!isPreview && (
+                    <a
+                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 pb-1 hover:text-zinc-900 hover:border-zinc-900 transition-all"
+                    >
+                      View on Map
+                    </a>
+                  )}
                 </div>
               </motion.div>
             ))}
