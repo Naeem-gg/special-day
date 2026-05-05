@@ -3,7 +3,9 @@ import { db } from '@/lib/db'
 import { invitations } from '@/lib/db/schema'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://dnvites.com'
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : 'https://dnvites.com')
 
   // Static routes
   const routes = ['', '/login', '/dashboard', '/create'].map((route) => ({
