@@ -61,6 +61,8 @@ export const invitations = pgTable('invitations', {
         name: string
         time: string
         location: string
+        date?: string
+        googleMapsUrl?: string
         description?: string
       }[]
     >()

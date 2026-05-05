@@ -236,7 +236,7 @@ export default function DashboardClient({
     style: 'rose-gold',
     ourStory: '',
     mapUrl: '',
-    events: [{ name: '', time: '', location: '', description: '' }],
+    events: [{ name: '', time: '', location: '', date: '', googleMapsUrl: '', description: '' }],
     gallery: [] as { url: string; publicId: string }[],
   })
 
@@ -283,7 +283,7 @@ export default function DashboardClient({
                 style: data.template,
                 ourStory: data.ourStory || '',
                 mapUrl: data.mapUrl || '',
-                events: data.events || [{ name: '', time: '', location: '', description: '' }],
+                events: data.events || [{ name: '', time: '', location: '', date: '', googleMapsUrl: '', description: '' }],
                 gallery: data.gallery || [],
               })
             }
@@ -342,7 +342,7 @@ export default function DashboardClient({
   const handleAddEvent = () => {
     setFormData({
       ...formData,
-      events: [...formData.events, { name: '', time: '', location: '', description: '' }],
+      events: [...formData.events, { name: '', time: '', location: '', date: '', googleMapsUrl: '', description: '' }],
     })
   }
 
@@ -1870,6 +1870,29 @@ export default function DashboardClient({
                                 value={event.time}
                                 onChange={(e) => updateEvent(index, 'time', e.target.value)}
                                 required
+                                className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs font-semibold text-gray-600">
+                                Date of this event (Optional) 📅
+                              </Label>
+                              <Input
+                                type="date"
+                                value={event.date || ''}
+                                onChange={(e) => updateEvent(index, 'date', e.target.value)}
+                                className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs font-semibold text-gray-600">
+                                Google Maps Link (Optional) 🗺️
+                              </Label>
+                              <Input
+                                type="url"
+                                placeholder="https://maps.google.com/..."
+                                value={event.googleMapsUrl || ''}
+                                onChange={(e) => updateEvent(index, 'googleMapsUrl', e.target.value)}
                                 className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-10"
                               />
                             </div>

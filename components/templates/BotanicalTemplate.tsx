@@ -407,6 +407,17 @@ export default function BotanicalTemplate({
                       className="flex flex-wrap gap-4 font-sans text-xs"
                       style={{ color: '#8FAF7E' }}
                     >
+                      {ev.date && (
+                        <span className="flex items-center gap-1 font-bold text-[#2D5A27]">
+                          <Clock className="w-3 h-3" />
+                          {new Date(ev.date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {ev.time}
@@ -416,11 +427,11 @@ export default function BotanicalTemplate({
                         {ev.location}
                       </span>
                     </div>
-
+                    
                     {/* Map Link */}
                     <div className="mt-4">
                       <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                        href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#2D5A27] hover:text-white"

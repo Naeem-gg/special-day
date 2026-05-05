@@ -398,6 +398,17 @@ export default function SakuraDreamTemplate({
                     className="flex flex-wrap gap-4 font-sans text-xs"
                     style={{ color: '#C4A0C8' }}
                   >
+                    {ev.date && (
+                      <span className="flex items-center gap-1 font-bold text-[#4A2060]">
+                        <Clock className="w-3 h-3" />
+                        {new Date(ev.date).toLocaleDateString('en-US', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    )}
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {ev.time}
@@ -408,7 +419,7 @@ export default function SakuraDreamTemplate({
                     </span>
                   </div>
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                    href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#4A2060] hover:text-white hover:border-[#4A2060]"

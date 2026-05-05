@@ -419,6 +419,17 @@ export default function RoseGoldTemplate({
                       className="flex flex-wrap gap-4 font-sans text-xs"
                       style={{ color: '#C4A0A0' }}
                     >
+                      {ev.date && (
+                        <span className="flex items-center gap-1 font-bold text-[#B76E79]">
+                          <Clock className="w-3 h-3" />
+                          {new Date(ev.date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {ev.time}
@@ -430,7 +441,7 @@ export default function RoseGoldTemplate({
                     </div>
                     {!isPreview && (
                       <a
-                        href={`https://maps.google.com/?q=${encodeURIComponent(ev.location)}`}
+                        href={ev.googleMapsUrl || `https://maps.google.com/?q=${encodeURIComponent(ev.location)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-4 inline-flex items-center gap-1 font-sans text-xs uppercase tracking-widest px-4 py-2 rounded-full border transition-colors hover:text-white hover:border-rose-400 hover:bg-rose-400"

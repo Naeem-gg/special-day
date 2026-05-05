@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const ogImage =
     invitation.gallery && (invitation.gallery as any[]).length > 0
       ? (invitation.gallery as any[])[0].url
-      : '/og-image.png'
+      : '/logo.png'
 
   return {
     title,
