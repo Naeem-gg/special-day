@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, Snowflake, Shield } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function ArcticFrostTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function ArcticFrostTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -87,6 +89,27 @@ export default function ArcticFrostTemplate({
           </h1>
           <p className="text-xl md:text-2xl font-light mb-2 tracking-widest text-blue-900/60 uppercase font-bold">{fmt}</p>
           <p className="text-sm font-medium tracking-[0.2em] text-blue-400 uppercase italic">{venue}</p>
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center bg-sky-50/50">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-xs uppercase tracking-[0.6em] mb-10 text-sky-400">The Winter Wait</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#0ea5e9',
+              secondary: '#f0f9ff',
+              accent: '#38bdf8',
+              text: '#0c4a6e'
+            }}
+          />
         </motion.div>
       </section>
 

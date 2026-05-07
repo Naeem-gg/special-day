@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ChevronDown, Clock, Map as MapIcon, MapPin, Calendar } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { StyleProps } from './types'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function SakuraPetal({ style }: { style: React.CSSProperties }) {
   return (
@@ -32,7 +33,6 @@ export default function SakuraDreamTemplate({
   mapUrl,
 }: StyleProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([])
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     const count = isThumbnail ? 5 : window.innerWidth < 768 ? 10 : 20
@@ -44,21 +44,6 @@ export default function SakuraDreamTemplate({
       }))
     )
   }, [isThumbnail])
-
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
 
   const fmt = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
@@ -234,33 +219,16 @@ export default function SakuraDreamTemplate({
             >
               Until Our Special Day
             </p>
-            <div className="flex gap-4 md:gap-8 justify-center flex-wrap">
-              {[
-                { label: 'Days', v: time.days },
-                { label: 'Hours', v: time.hours },
-                { label: 'Min', v: time.minutes },
-                { label: 'Sec', v: time.seconds },
-              ].map((i) => (
-                <div key={i.label} className="flex flex-col items-center gap-3">
-                  <div
-                    className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl font-light transition-all duration-500"
-                    style={{
-                      background: 'linear-gradient(135deg, #FFF0F8, #FAF0FF)',
-                      color: '#4A2060',
-                      boxShadow: '0 4px 20px rgba(212,180,253,0.2)',
-                    }}
-                  >
-                    {String(i.v).padStart(2, '0')}
-                  </div>
-                  <span
-                    className="font-sans text-[9px] uppercase tracking-widest"
-                    style={{ color: '#D4B4FD' }}
-                  >
-                    {i.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#FFB7C5',
+                secondary: '#FFF0F8',
+                accent: '#D4B4FD',
+                text: '#4A2060'
+              }}
+            />
           </motion.div>
         </section>
 

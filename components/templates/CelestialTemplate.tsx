@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Sparkles, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function CosmosCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -183,22 +184,6 @@ export default function CelestialTemplate({
   ourStory,
   mapUrl,
 }: StyleProps) {
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -415,37 +400,18 @@ export default function CelestialTemplate({
               className="font-sans text-xs uppercase tracking-[0.4em] mb-10"
               style={{ color: '#B8A0FF' }}
             >
-              Until Our Stars Align
+              Countdown to Eternity
             </p>
-            <div className="flex gap-4 md:gap-10 justify-center flex-wrap">
-              {[
-                { label: 'Days', v: time.days },
-                { label: 'Hours', v: time.hours },
-                { label: 'Minutes', v: time.minutes },
-                { label: 'Seconds', v: time.seconds },
-              ].map((i) => (
-                <div key={i.label} className="flex flex-col items-center gap-2">
-                  <div
-                    className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl font-light"
-                    style={{
-                      background:
-                        'radial-gradient(circle, rgba(255,215,0,0.1), rgba(108,59,166,0.15))',
-                      color: '#FFD700',
-                      border: '1px solid rgba(255,215,0,0.25)',
-                      boxShadow: '0 0 20px rgba(108,59,166,0.3)',
-                    }}
-                  >
-                    {String(i.v).padStart(2, '0')}
-                  </div>
-                  <span
-                    className="font-sans text-[10px] uppercase tracking-widest"
-                    style={{ color: '#6A5A8A' }}
-                  >
-                    {i.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#FFD700',
+                secondary: '#0A0E2A',
+                accent: '#FFD700',
+                text: '#E0D4FF'
+              }}
+            />
           </motion.div>
         </section>
 

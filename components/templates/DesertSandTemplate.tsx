@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Clock, Wind, Sun } from 'lucide-react'
+import { MapPin, Clock, Wind, Sun, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function DesertSandTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function DesertSandTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -101,6 +103,27 @@ export default function DesertSandTemplate({
              </motion.div>
            ))}
         </div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center bg-[#F5E6D3]/30">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-sm font-sans uppercase tracking-[0.5em] mb-10 text-[#D2691E]">The Journey Begins In</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#8B4513',
+              secondary: '#FDF5E6',
+              accent: '#D2691E',
+              text: '#634133'
+            }}
+          />
+        </motion.div>
       </section>
 
       {/* --- STORY --- */}

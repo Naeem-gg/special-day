@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, Sun, Waves } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function SunsetBreezeTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function SunsetBreezeTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -67,6 +69,27 @@ export default function SunsetBreezeTemplate({
               <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C58.31,111.41,135.29,114.32,203.49,103,262.13,93.26,275.52,65,321.39,56.44Z"></path>
           </svg>
         </div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center bg-[#FFFBF0]">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.4em] mb-10 text-[#FF8A65]">The Sun Sets In</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#FF8A65',
+              secondary: '#FFFBF0',
+              accent: '#FFAB91',
+              text: '#4E342E'
+            }}
+          />
+        </motion.div>
       </section>
 
       {/* --- STORY --- */}

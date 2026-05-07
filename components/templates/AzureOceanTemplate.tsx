@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function WaveDivider({ flip = false }: { flip?: boolean }) {
   return (
@@ -71,7 +72,6 @@ export default function AzureOceanTemplate({
   mapUrl,
 }: StyleProps) {
   const [bubbles, setBubbles] = useState<React.CSSProperties[]>([])
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     setBubbles(
@@ -84,21 +84,6 @@ export default function AzureOceanTemplate({
       }))
     )
   }, [])
-
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -246,30 +231,16 @@ export default function AzureOceanTemplate({
             <p className="font-sans text-xs uppercase tracking-[0.4em] mb-10 text-teal-600">
               Until We Set Sail Together
             </p>
-            <div className="flex gap-4 md:gap-10 justify-center flex-wrap">
-              {[
-                { label: 'Days', v: time.days },
-                { label: 'Hours', v: time.hours },
-                { label: 'Minutes', v: time.minutes },
-                { label: 'Seconds', v: time.seconds },
-              ].map((i) => (
-                <div key={i.label} className="flex flex-col items-center gap-2">
-                  <div
-                    className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl font-light"
-                    style={{
-                      background: 'linear-gradient(135deg, #0A3F6B, #1A6B8A)',
-                      color: '#4ECDC4',
-                      boxShadow: '0 8px 30px rgba(10,63,107,0.2)',
-                    }}
-                  >
-                    {String(i.v).padStart(2, '0')}
-                  </div>
-                  <span className="font-sans text-[10px] uppercase tracking-widest text-teal-500">
-                    {i.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#0A3F6B',
+                secondary: '#4ECDC4',
+                accent: '#0A3F6B',
+                text: '#0A3F6B'
+              }}
+            />
           </motion.div>
         </section>
 

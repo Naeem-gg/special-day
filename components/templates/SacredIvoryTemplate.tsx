@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Feather, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 /* ── Gold leaf floating particle ────────────────────────── */
 function GoldLeaf({ style }: { style: React.CSSProperties }) {
@@ -72,7 +73,6 @@ export default function SacredIvoryTemplate({
   mapUrl,
 }: StyleProps) {
   const [goldLeaves, setGoldLeaves] = useState<React.CSSProperties[]>([])
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     setGoldLeaves(
@@ -83,21 +83,6 @@ export default function SacredIvoryTemplate({
       }))
     )
   }, [])
-
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -365,65 +350,16 @@ export default function SacredIvoryTemplate({
             >
               The Grand Beginning In
             </motion.p>
-
-            <div className="flex gap-4 md:gap-10 justify-center flex-wrap px-4">
-              {[
-                { label: 'Days', v: time.days },
-                { label: 'Hours', v: time.hours },
-                { label: 'Minutes', v: time.minutes },
-                { label: 'Seconds', v: time.seconds },
-              ].map((i, idx) => (
-                <motion.div
-                  key={i.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.1, duration: 0.8 }}
-                  className="flex flex-col items-center gap-4 group"
-                >
-                  <div
-                    className="relative w-20 h-24 md:w-24 md:h-28 flex items-center justify-center overflow-hidden"
-                    style={{
-                      background: 'linear-gradient(135deg, #FFFDF5 0%, #FFF8E7 100%)',
-                      border: '1px solid rgba(212,175,55,0.4)',
-                      boxShadow: '0 10px 40px rgba(212,175,55,0.08)',
-                    }}
-                  >
-                    {/* Shimmer effect */}
-                    <motion.div
-                      animate={{ x: ['-100%', '200%'] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
-                      className="absolute inset-0 z-10 w-1/2 h-full bg-linear-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg] pointer-events-none"
-                    />
-
-                    {/* Rolling Number Animation */}
-                    <AnimatePresence mode="popLayout">
-                      <motion.span
-                        key={i.v}
-                        initial={{ y: 40, opacity: 0, filter: 'blur(4px)' }}
-                        animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                        exit={{ y: -40, opacity: 0, filter: 'blur(4px)' }}
-                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="text-3xl md:text-5xl font-light z-20"
-                        style={{ color: '#5C3317' }}
-                      >
-                        {String(i.v).padStart(2, '0')}
-                      </motion.span>
-                    </AnimatePresence>
-
-                    {/* Corner accents inside boxes */}
-                    <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-[#D4AF37]/30" />
-                    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[#D4AF37]/30" />
-                  </div>
-
-                  <span
-                    className="text-[10px] uppercase tracking-[0.3em] font-bold"
-                    style={{ color: '#B8860B', fontFamily: "'Montserrat', sans-serif" }}
-                  >
-                    {i.label}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#8B4513',
+                secondary: '#FFFDF5',
+                accent: '#D4AF37',
+                text: '#5C3317'
+              }}
+            />
           </motion.div>
         </section>
 

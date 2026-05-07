@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, Calendar, Heart } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function MinimalModernTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function MinimalModernTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
   mapUrl,
 }: StyleProps) {
@@ -72,6 +74,27 @@ export default function MinimalModernTemplate({
         >
           <span className="text-[9px] uppercase tracking-widest text-zinc-300">Scroll</span>
           <div className="w-px h-12 bg-zinc-100" />
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center border-y border-zinc-100">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 mb-10 text-center">Countdown</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#18181b',
+              secondary: '#ffffff',
+              accent: '#a1a1aa',
+              text: '#18181b'
+            }}
+          />
         </motion.div>
       </section>
 

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Heart } from 'lucide-react'
+import { MapPin, Heart, Calendar, Clock } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function ClassicScriptTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function ClassicScriptTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -59,6 +61,27 @@ export default function ClassicScriptTemplate({
           </h1>
           <p className="text-xl md:text-2xl font-light mb-2 tracking-widest">{fmt}</p>
           <p className="text-sm uppercase tracking-widest text-zinc-400">{venue}</p>
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center bg-zinc-50/50">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-xs uppercase tracking-[0.4em] text-zinc-400 mb-10">Countdown to Celebration</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#18181b',
+              secondary: '#f4f4f5',
+              accent: '#a1a1aa',
+              text: '#18181b'
+            }}
+          />
         </motion.div>
       </section>
 

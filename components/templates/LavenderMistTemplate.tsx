@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, Calendar, Sparkles } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function LavenderMistTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function LavenderMistTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -76,6 +78,27 @@ export default function LavenderMistTemplate({
           <div className="w-24 h-px bg-purple-100 mx-auto mb-10" />
           <p className="text-2xl md:text-3xl font-light mb-2">{fmt}</p>
           <p className="text-lg text-purple-400 italic">{venue}</p>
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center relative z-10 bg-white/40">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-xs uppercase tracking-[0.5em] mb-10 text-purple-400">The Mist Clears In</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#a855f7',
+              secondary: '#fdfbff',
+              accent: '#d8b4fe',
+              text: '#4a3e54'
+            }}
+          />
         </motion.div>
       </section>
 

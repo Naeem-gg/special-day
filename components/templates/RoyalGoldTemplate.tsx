@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Crown, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function OrnateBorder() {
   return (
@@ -130,89 +131,7 @@ function MughalDivider() {
   )
 }
 
-/* ── Flip-Clock Digit ────────────────── */
-function FlipDigit({ value, label }: { value: number; label: string }) {
-  const display = String(value).padStart(2, '0')
-  const prevRef = useRef(display)
-  const [flip, setFlip] = useState(false)
-
-  useEffect(() => {
-    if (prevRef.current !== display) {
-      setFlip(true)
-      const t = setTimeout(() => setFlip(false), 600)
-      prevRef.current = display
-      return () => clearTimeout(t)
-    }
-  }, [display])
-
-  return (
-    <div className="flex flex-col items-center gap-1 md:gap-2">
-      <div className="relative w-14 h-16 md:w-20 md:h-24 perspective-[400px]">
-        {/* Back face (static) */}
-        <div
-          className="absolute inset-0 flex items-center justify-center rounded-lg overflow-hidden"
-          style={{
-            background: 'linear-gradient(180deg, #2A0610 0%, #3A0A14 50%, #1A0008 100%)',
-            border: '1px solid rgba(212,175,55,0.3)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(0,0,0,0.5)',
-          }}
-        >
-          {/* Center line */}
-          <div className="absolute left-0 right-0 top-1/2 h-px bg-black/40 z-10" />
-          <span
-            className="text-xl md:text-3xl font-light tracking-wider"
-            style={{ color: '#D4AF37', fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
-            {display}
-          </span>
-        </div>
-
-        {/* Flip animation layer */}
-        <AnimatePresence>
-          {flip && (
-            <motion.div
-              key={display}
-              className="absolute inset-0 flex items-center justify-center rounded-lg overflow-hidden z-20"
-              style={{
-                background: 'linear-gradient(180deg, #2A0610 0%, #3A0A14 50%, #1A0008 100%)',
-                border: '1px solid rgba(212,175,55,0.3)',
-                transformOrigin: 'top center',
-                backfaceVisibility: 'hidden',
-              }}
-              initial={{ rotateX: -90, opacity: 0 }}
-              animate={{ rotateX: 0, opacity: 1 }}
-              exit={{ rotateX: 90, opacity: 0 }}
-              transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-            >
-              <div className="absolute left-0 right-0 top-1/2 h-px bg-black/40 z-10" />
-              <span
-                className="text-xl md:text-3xl font-light tracking-wider"
-                style={{ color: '#D4AF37', fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                {display}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Subtle shine effect on glass */}
-        <div
-          className="absolute inset-0 rounded-lg pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
-          }}
-        />
-      </div>
-      <span
-        className="font-sans text-[8px] md:text-[10px] uppercase tracking-[0.25em]"
-        style={{ color: '#D4AF37' }}
-      >
-        {label}
-      </span>
-    </div>
-  )
-}
+// Removed inline FlipDigit logic
 
 export default function RoyalGoldTemplate({
   brideName,
@@ -230,22 +149,7 @@ export default function RoyalGoldTemplate({
   ourStory,
   mapUrl,
 }: StyleProps) {
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
+  // Removed inline countdown logic
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -453,30 +357,16 @@ export default function RoyalGoldTemplate({
               Royal Countdown
             </h2>
 
-            <div className="flex gap-3 md:gap-6 justify-center">
-              <FlipDigit value={time.days} label="Days" />
-              <div
-                className="flex flex-col justify-center text-xl md:text-2xl font-light pt-2"
-                style={{ color: '#D4AF37' }}
-              >
-                :
-              </div>
-              <FlipDigit value={time.hours} label="Hours" />
-              <div
-                className="flex flex-col justify-center text-xl md:text-2xl font-light pt-2"
-                style={{ color: '#D4AF37' }}
-              >
-                :
-              </div>
-              <FlipDigit value={time.minutes} label="Min" />
-              <div
-                className="flex flex-col justify-center text-xl md:text-2xl font-light pt-2"
-                style={{ color: '#D4AF37' }}
-              >
-                :
-              </div>
-              <FlipDigit value={time.seconds} label="Sec" />
-            </div>
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#D4AF37',
+                secondary: '#3A0A14',
+                accent: '#D4AF37',
+                text: '#FFFBF0'
+              }}
+            />
           </motion.div>
         </section>
 

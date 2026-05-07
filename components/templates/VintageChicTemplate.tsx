@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, Heart, Camera } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function VintageChicTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function VintageChicTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -68,6 +70,27 @@ export default function VintageChicTemplate({
             {fmt}
           </p>
           <p className="text-sm font-sans uppercase tracking-widest text-[#8D6E63]/80 italic">{venue}</p>
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="font-sans text-[10px] uppercase tracking-[0.5em] mb-10 text-[#8D6E63]">Countdown to the Day</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#8d6e63',
+              secondary: '#f5e6d3',
+              accent: '#ebd9c1',
+              text: '#5d4037'
+            }}
+          />
         </motion.div>
       </section>
 

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, ExternalLink, Share2, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 import BackgroundMusic from '@/components/invitation/BackgroundMusic'
 
 /* ── SVG Vine drawing ──────────────────────────────────── */
@@ -85,7 +86,6 @@ export default function BotanicalTemplate({
   mapUrl,
 }: StyleProps) {
   const [leaves, setLeaves] = useState<React.CSSProperties[]>([])
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     const count = isThumbnail ? 4 : window.innerWidth < 768 ? 8 : 14
@@ -98,20 +98,7 @@ export default function BotanicalTemplate({
     )
   }, [isThumbnail])
 
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
+  // Removed inline countdown logic
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -253,33 +240,16 @@ export default function BotanicalTemplate({
           >
             Days Until We Say "I Do"
           </p>
-          <div className="flex gap-6 md:gap-12 justify-center flex-wrap">
-            {[
-              { label: 'Days', v: time.days },
-              { label: 'Hours', v: time.hours },
-              { label: 'Minutes', v: time.minutes },
-              { label: 'Seconds', v: time.seconds },
-            ].map((i) => (
-              <div key={i.label} className="flex flex-col items-center gap-2">
-                <div
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl md:text-3xl font-light transition-all duration-500"
-                  style={{
-                    background: 'linear-gradient(135deg, #F2F7EE, #E0EDD8)',
-                    color: '#1A3A14',
-                    boxShadow: '0 4px 20px rgba(45,90,39,0.12)',
-                  }}
-                >
-                  {String(i.v).padStart(2, '0')}
-                </div>
-                <span
-                  className="font-sans text-[10px] uppercase tracking-widest"
-                  style={{ color: '#8FAF7E' }}
-                >
-                  {i.label}
-                </span>
-              </div>
-            ))}
-          </div>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#2D5A27',
+              secondary: '#F2F7EE',
+              accent: '#8FAF7E',
+              text: '#1A3A14'
+            }}
+          />
         </motion.div>
       </section>
 

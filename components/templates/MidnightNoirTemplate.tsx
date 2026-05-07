@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Star, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function StarField() {
   const [mounted, setMounted] = useState(false)
@@ -55,22 +56,7 @@ export default function MidnightNoirTemplate({
   ourStory,
   mapUrl,
 }: StyleProps) {
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
+  // Removed inline countdown logic
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -242,55 +228,16 @@ export default function MidnightNoirTemplate({
             >
               The Countdown to Eternity
             </motion.p>
-
-            <div className="flex gap-4 md:gap-10 justify-center flex-wrap">
-              {[
-                { label: 'Days', v: time.days },
-                { label: 'Hours', v: time.hours },
-                { label: 'Minutes', v: time.minutes },
-                { label: 'Seconds', v: time.seconds },
-              ].map((i, idx) => (
-                <motion.div
-                  key={i.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.1, duration: 0.8 }}
-                  className="flex flex-col items-center gap-3"
-                >
-                  <div
-                    className="relative w-18 h-20 md:w-24 md:h-28 flex items-center justify-center overflow-hidden"
-                    style={{
-                      border: '1px solid rgba(201,168,76,0.5)',
-                      background: 'linear-gradient(180deg, #111 0%, #050505 100%)',
-                      boxShadow: '0 0 30px rgba(201,168,76,0.1) inset',
-                    }}
-                  >
-                    {/* Golden edge glow */}
-                    <div className="absolute inset-0 pointer-events-none shadow-[0_0_15px_rgba(201,168,76,0.1)]" />
-
-                    <AnimatePresence mode="popLayout">
-                      <motion.span
-                        key={i.v}
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -30, opacity: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="text-3xl md:text-5xl font-light z-10"
-                        style={{ color: '#C9A84C', textShadow: '0 0 10px rgba(201,168,76,0.3)' }}
-                      >
-                        {String(i.v).padStart(2, '0')}
-                      </motion.span>
-                    </AnimatePresence>
-                  </div>
-                  <span
-                    className="font-sans text-[10px] uppercase tracking-[0.3em]"
-                    style={{ color: '#888' }}
-                  >
-                    {i.label}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#C9A84C',
+                secondary: '#111',
+                accent: '#C9A84C',
+                text: '#C9A84C'
+              }}
+            />
           </motion.div>
         </section>
 

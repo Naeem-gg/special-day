@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Heart, Star, ChevronDown } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function GoldPetals() {
   const [mounted, setMounted] = useState(false)
@@ -52,6 +53,7 @@ export default function OpulentRubyTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -124,6 +126,27 @@ export default function OpulentRubyTemplate({
           className="absolute bottom-16 left-1/2 -translate-x-1/2"
         >
            <ChevronDown className="animate-bounce w-8 h-8 opacity-40" />
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center relative z-10 bg-black/40 border-y border-[#D4AF37]/10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-sm font-sans uppercase tracking-[0.8em] mb-10 text-[#D4AF37]/50 font-bold">The Royal Wait</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#D4AF37',
+              secondary: '#4A0404',
+              accent: '#B8860B',
+              text: '#EAD8A0'
+            }}
+          />
         </motion.div>
       </section>
 

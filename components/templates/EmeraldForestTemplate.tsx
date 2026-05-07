@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function Firefly({ style }: { style: React.CSSProperties }) {
   return (
@@ -250,33 +251,17 @@ export default function EmeraldForestTemplate({
             >
               Until the Forest Ceremony
             </p>
-            <div className="flex gap-4 md:gap-10 justify-center flex-wrap">
-              {[
-                { label: 'Days', v: time.days },
-                { label: 'Hours', v: time.hours },
-                { label: 'Minutes', v: time.minutes },
-                { label: 'Seconds', v: time.seconds },
-              ].map((i) => (
-                <div key={i.label} className="flex flex-col items-center gap-2">
-                  <div
-                    className="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl font-light"
-                    style={{
-                      background: 'linear-gradient(135deg, #1A3C34, #2D5A4A)',
-                      color: '#B87333',
-                      boxShadow: '0 8px 30px rgba(26,60,52,0.3)',
-                    }}
-                  >
-                    {String(i.v).padStart(2, '0')}
-                  </div>
-                  <span
-                    className="font-sans text-[10px] uppercase tracking-widest"
-                    style={{ color: '#8FAF7E' }}
-                  >
-                    {i.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+            
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#B87333',
+                secondary: '#1A3C34',
+                accent: '#B87333',
+                text: '#1A3C34'
+              }}
+            />
           </motion.div>
         </section>
 

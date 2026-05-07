@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Leaf, Sparkles, ChevronDown } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function Fireflies() {
   const [mounted, setMounted] = useState(false)
@@ -50,6 +51,7 @@ export default function EnchantedGardenTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -125,6 +127,27 @@ export default function EnchantedGardenTemplate({
           className="absolute bottom-12 left-1/2 -translate-x-1/2"
         >
            <ChevronDown className="animate-bounce" />
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center relative z-10 bg-black/20">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-xs font-sans uppercase tracking-[0.5em] mb-10 text-[#D4AF37]/60 italic font-bold">The Magic Begins In</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#D4AF37',
+              secondary: '#0B2010',
+              accent: '#EAD8A0',
+              text: '#EAD8A0'
+            }}
+          />
         </motion.div>
       </section>
 

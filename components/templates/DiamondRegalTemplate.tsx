@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Star, Diamond, Crown, ChevronDown } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 function DiamondSparkle() {
   const [mounted, setMounted] = useState(false)
@@ -51,6 +52,7 @@ export default function DiamondRegalTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -128,6 +130,27 @@ export default function DiamondRegalTemplate({
           className="absolute bottom-12 left-1/2 -translate-x-1/2"
         >
            <ChevronDown className="animate-bounce text-zinc-700" />
+        </motion.div>
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center bg-zinc-950 border-y border-white/5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-xs uppercase tracking-[0.8em] text-zinc-500 mb-10">The Royal Countdown</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#ffffff',
+              secondary: '#000000',
+              accent: '#333333',
+              text: '#ffffff'
+            }}
+          />
         </motion.div>
       </section>
 

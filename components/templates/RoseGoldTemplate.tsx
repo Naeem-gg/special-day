@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, ChevronDown, Heart, Share2, ExternalLink, Calendar } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 /* ── Petal ─────────────────────────────────────────────── */
 function Petal({ style }: { style: React.CSSProperties }) {
@@ -17,39 +18,7 @@ function Petal({ style }: { style: React.CSSProperties }) {
   )
 }
 
-/* ── Flip Digit ────────────────────────────────────────── */
-function FlipDigit({ value, label }: { value: number; label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <div
-        className="w-16 h-20 md:w-20 md:h-24 rounded-2xl shadow-lg flex items-center justify-center text-3xl md:text-4xl font-light"
-        style={{
-          background: 'white',
-          color: '#6B2737',
-          boxShadow: '0 8px 30px rgba(183,110,121,0.15)',
-        }}
-      >
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={value}
-            initial={{ y: -10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 10, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {String(value).padStart(2, '0')}
-          </motion.span>
-        </AnimatePresence>
-      </div>
-      <span
-        className="text-[10px] uppercase tracking-[0.25em] font-sans"
-        style={{ color: '#B76E79' }}
-      >
-        {label}
-      </span>
-    </div>
-  )
-}
+// Removed inline FlipDigit logic
 
 export default function RoseGoldTemplate({
   brideName,
@@ -67,7 +36,6 @@ export default function RoseGoldTemplate({
   mapUrl,
 }: StyleProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([])
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
     const count = isThumbnail ? 6 : window.innerWidth < 768 ? 12 : 22
@@ -81,20 +49,7 @@ export default function RoseGoldTemplate({
     )
   }, [isThumbnail])
 
-  useEffect(() => {
-    const tick = () => {
-      const d = Math.max(0, date.getTime() - Date.now())
-      setTime({
-        days: Math.floor(d / 86400000),
-        hours: Math.floor((d % 86400000) / 3600000),
-        minutes: Math.floor((d % 3600000) / 60000),
-        seconds: Math.floor((d % 60000) / 1000),
-      })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [date])
+  // Removed inline countdown logic
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -255,16 +210,16 @@ export default function RoseGoldTemplate({
             >
               Counting Down to Forever
             </p>
-            <div className="flex gap-4 md:gap-10 justify-center flex-wrap">
-              {[
-                { label: 'Days', v: time.days },
-                { label: 'Hours', v: time.hours },
-                { label: 'Minutes', v: time.minutes },
-                { label: 'Seconds', v: time.seconds },
-              ].map((i) => (
-                <FlipDigit key={i.label} value={i.v} label={i.label} />
-              ))}
-            </div>
+            <PremiumCountdown 
+              targetDate={date} 
+              tier={tier}
+              theme={{
+                primary: '#B76E79',
+                secondary: '#FFF8F0',
+                accent: '#D4AF37',
+                text: '#6B2737'
+              }}
+            />
           </motion.div>
         </section>
 

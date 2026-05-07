@@ -5,6 +5,7 @@ import { Clock, Gem, MapPin, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import RSVPModal from '@/components/invitation/RSVPModal'
 import type { StyleProps } from './types'
+import PremiumCountdown from '@/components/invitation/PremiumCountdown'
 
 export default function AmethystGlanceTemplate({
   brideName,
@@ -16,6 +17,7 @@ export default function AmethystGlanceTemplate({
   isPreview,
   isThumbnail,
   invitationId,
+  tier,
   ourStory,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
@@ -102,6 +104,27 @@ export default function AmethystGlanceTemplate({
             <Sparkles size={Math.random() * 10 + 5} />
           </motion.div>
         ))}
+      </section>
+
+      {/* --- COUNTDOWN --- */}
+      <section className="py-20 text-center relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-[10px] uppercase tracking-[0.8em] mb-10 text-purple-400">The Crystalline Wait</p>
+          <PremiumCountdown 
+            targetDate={date} 
+            tier={tier}
+            theme={{
+              primary: '#7c3aed',
+              secondary: '#1e1b4b',
+              accent: '#a78bfa',
+              text: '#f5f3ff'
+            }}
+          />
+        </motion.div>
       </section>
 
       {/* --- STORY --- */}
