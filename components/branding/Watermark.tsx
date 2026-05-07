@@ -6,7 +6,7 @@ import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
 
 export function Watermark() {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1, duration: 1 }}
@@ -14,10 +14,7 @@ export function Watermark() {
     >
       <div className="flex items-center gap-2 text-xs font-medium tracking-[0.3em] uppercase text-gray-400/60">
         <span>Made with</span>
-        <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
+        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Infinity }}>
           <Heart size={14} className="fill-rose-400 text-rose-400" />
         </motion.div>
         <span>on</span>

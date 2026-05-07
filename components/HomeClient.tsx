@@ -36,10 +36,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 function TypewriterHeading() {
   const phrases = [
     "They'll Never Forget",
-    "That Sparkles with Joy",
-    "as Unique as Your Love",
-    "That Tells Your Story",
-    "That Guests Will Cherish",
+    'That Sparkles with Joy',
+    'as Unique as Your Love',
+    'That Tells Your Story',
+    'That Guests Will Cherish',
   ]
   const [index, setIndex] = useState(0)
   const [text, setText] = useState('')
@@ -49,7 +49,7 @@ function TypewriterHeading() {
   useEffect(() => {
     const handleTyping = () => {
       const fullText = phrases[index]
-      
+
       if (!isDeleting) {
         setText(fullText.substring(0, text.length + 1))
         setSpeed(100) // Typing speed
@@ -379,7 +379,9 @@ export default function HomeClient({
             </motion.div>
             <span className="flex items-center gap-2">
               <span>✨ Special Offer: Save 5% with code</span>
-              <span className="bg-white text-[#D4AF37] px-1.5 py-0.5 rounded-md font-black">DN5</span>
+              <span className="bg-white text-[#D4AF37] px-1.5 py-0.5 rounded-md font-black">
+                DN5
+              </span>
               <span className="hidden sm:inline">— Limited Time Only! 💌</span>
             </span>
           </div>
@@ -415,9 +417,17 @@ export default function HomeClient({
               <PopoverContent className="w-56 p-2 rounded-2xl border-amber-100 shadow-2xl shadow-amber-200/50">
                 <div className="grid gap-1">
                   {[
-                    { name: 'How it Works', icon: <Sparkles className="w-4 h-4" />, href: '#how-it-works' },
+                    {
+                      name: 'How it Works',
+                      icon: <Sparkles className="w-4 h-4" />,
+                      href: '#how-it-works',
+                    },
                     { name: 'Pricing', icon: <Ticket className="w-4 h-4" />, href: '#pricing' },
-                    { name: 'Testimonials', icon: <Star className="w-4 h-4" />, href: '#testimonials' },
+                    {
+                      name: 'Testimonials',
+                      icon: <Star className="w-4 h-4" />,
+                      href: '#testimonials',
+                    },
                     { name: 'FAQs', icon: <HelpCircle className="w-4 h-4" />, href: '#faqs' },
                   ].map((item) => (
                     <Link
@@ -426,7 +436,9 @@ export default function HomeClient({
                       className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-amber-50 hover:text-[#D4AF37] transition-all group"
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-gray-400 group-hover:text-[#D4AF37]">{item.icon}</span>
+                        <span className="text-gray-400 group-hover:text-[#D4AF37]">
+                          {item.icon}
+                        </span>
                         {item.name}
                       </div>
                       <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
@@ -1194,7 +1206,7 @@ export default function HomeClient({
               originalPrice="1299"
               features={[
                 'Everything in Basic',
-                "Integrated RSVP (Guest List)",
+                'Integrated RSVP (Guest List)',
                 'Up to 5 photos',
                 'Your favourite background music',
                 'Edit details for 48 hours',
@@ -1235,31 +1247,33 @@ export default function HomeClient({
             className="text-center mb-16 space-y-4"
           >
             <h2 className="text-4xl md:text-5xl font-serif">Commonly Asked Questions</h2>
-            <p className="text-muted-foreground text-lg">Everything you need to know about your digital invitation.</p>
+            <p className="text-muted-foreground text-lg">
+              Everything you need to know about your digital invitation.
+            </p>
           </motion.div>
 
           <div className="space-y-4">
             {[
               {
-                q: "How do I share my digital wedding invitation?",
-                a: "Once you create your invitation, you'll get a unique link. You can simply copy this link and send it via WhatsApp, Instagram DM, Email, or even include it on your paper Save the Date cards."
+                q: 'How do I share my digital wedding invitation?',
+                a: "Once you create your invitation, you'll get a unique link. You can simply copy this link and send it via WhatsApp, Instagram DM, Email, or even include it on your paper Save the Date cards.",
               },
               {
                 q: "Can I edit my invitation after I've shared it?",
-                a: "Yes! You can edit the details like venue, time, and photos for up to 48 hours after purchase. The changes will reflect instantly for everyone who opens your link."
+                a: 'Yes! You can edit the details like venue, time, and photos for up to 48 hours after purchase. The changes will reflect instantly for everyone who opens your link.',
               },
               {
-                q: "How does the RSVP tracking work?",
-                a: "Our Silver and Gold plans include an RSVP button on your invitation. When guests fill it out, their response (Name, Guests, Attending status) is instantly updated in your private dashboard."
+                q: 'How does the RSVP tracking work?',
+                a: 'Our Silver and Gold plans include an RSVP button on your invitation. When guests fill it out, their response (Name, Guests, Attending status) is instantly updated in your private dashboard.',
               },
               {
-                q: "Can I add music to my invitation?",
-                a: "Absolutely! Our Silver and Gold plans allow you to add any song. You can upload an MP3 or provide a link to a song that sets the perfect mood for your guests."
+                q: 'Can I add music to my invitation?',
+                a: 'Absolutely! Our Silver and Gold plans allow you to add any song. You can upload an MP3 or provide a link to a song that sets the perfect mood for your guests.',
               },
               {
-                q: "How long will my invitation stay online?",
-                a: "All invitations stay live for at least one full year from the date of creation. Our Gold plan even offers lifetime access so you can revisit your digital memories forever."
-              }
+                q: 'How long will my invitation stay online?',
+                a: 'All invitations stay live for at least one full year from the date of creation. Our Gold plan even offers lifetime access so you can revisit your digital memories forever.',
+              },
             ].map((faq, i) => (
               <motion.div
                 key={i}
@@ -1282,35 +1296,35 @@ export default function HomeClient({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
               {
-                "@type": "Question",
-                "name": "How do I share my digital wedding invitation?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Once you create your invitation, you'll get a unique link. You can simply copy this link and send it via WhatsApp, Instagram DM, Email, or even include it on your paper Save the Date cards."
-                }
+                '@type': 'Question',
+                name: 'How do I share my digital wedding invitation?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: "Once you create your invitation, you'll get a unique link. You can simply copy this link and send it via WhatsApp, Instagram DM, Email, or even include it on your paper Save the Date cards.",
+                },
               },
               {
-                "@type": "Question",
-                "name": "Can I edit my invitation after I've shared it?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes! You can edit the details like venue, time, and photos for up to 48 hours after purchase. The changes will reflect instantly for everyone who opens your link."
-                }
+                '@type': 'Question',
+                name: "Can I edit my invitation after I've shared it?",
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Yes! You can edit the details like venue, time, and photos for up to 48 hours after purchase. The changes will reflect instantly for everyone who opens your link.',
+                },
               },
               {
-                "@type": "Question",
-                "name": "How does the RSVP tracking work?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Your guests will see an RSVP button on your invitation. When they fill it out, their response (Name, Number of Guests, Attending status) is instantly updated in your private dashboard."
-                }
-              }
-            ]
-          })
+                '@type': 'Question',
+                name: 'How does the RSVP tracking work?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Your guests will see an RSVP button on your invitation. When they fill it out, their response (Name, Number of Guests, Attending status) is instantly updated in your private dashboard.',
+                },
+              },
+            ],
+          }),
         }}
       />
 

@@ -41,7 +41,9 @@ export default function VintageChicTemplate({
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/old-mathematics.png')]" />
 
       {/* --- HERO --- */}
-      <section className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}>
+      <section
+        className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -54,10 +56,10 @@ export default function VintageChicTemplate({
           <div className="absolute -bottom-4 -left-4 text-4xl opacity-40 -rotate-90">❦</div>
           <div className="absolute -bottom-4 -right-4 text-4xl opacity-40 rotate-180">❦</div>
 
-          <p className="font-sans text-[10px] uppercase tracking-[0.5em] mb-12 text-[#8D6E63]">Save the Date</p>
-          <h1 className="text-6xl md:text-8xl font-normal mb-6 italic leading-none">
-            {brideName}
-          </h1>
+          <p className="font-sans text-[10px] uppercase tracking-[0.5em] mb-12 text-[#8D6E63]">
+            Save the Date
+          </p>
+          <h1 className="text-6xl md:text-8xl font-normal mb-6 italic leading-none">{brideName}</h1>
           <div className="flex items-center justify-center gap-4 my-8">
             <div className="h-px w-12 bg-[#8D6E63]/30" />
             <span className="italic text-3xl font-light opacity-60">to</span>
@@ -69,7 +71,9 @@ export default function VintageChicTemplate({
           <p className="text-2xl md:text-3xl font-light mb-4 border-y border-[#8D6E63]/10 py-6 tracking-[0.2em]">
             {fmt}
           </p>
-          <p className="text-sm font-sans uppercase tracking-widest text-[#8D6E63]/80 italic">{venue}</p>
+          <p className="text-sm font-sans uppercase tracking-widest text-[#8D6E63]/80 italic">
+            {venue}
+          </p>
         </motion.div>
       </section>
 
@@ -80,15 +84,17 @@ export default function VintageChicTemplate({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="font-sans text-[10px] uppercase tracking-[0.5em] mb-10 text-[#8D6E63]">Countdown to the Day</p>
-          <PremiumCountdown 
-            targetDate={date} 
+          <p className="font-sans text-[10px] uppercase tracking-[0.5em] mb-10 text-[#8D6E63]">
+            Countdown to the Day
+          </p>
+          <PremiumCountdown
+            targetDate={date}
             tier={tier}
             theme={{
               primary: '#8d6e63',
               secondary: '#f5e6d3',
               accent: '#ebd9c1',
-              text: '#5d4037'
+              text: '#5d4037',
             }}
           />
         </motion.div>
@@ -101,8 +107,10 @@ export default function VintageChicTemplate({
             <Heart className="w-6 h-6 mx-auto mb-12 text-[#8D6E63]/20" />
             <h2 className="text-4xl font-light mb-12 italic">Our Lovestory</h2>
             <div className="relative">
-               <span className="absolute -top-10 -left-10 text-9xl text-[#8D6E63]/5 font-serif italic">"</span>
-               <p className="text-xl md:text-2xl leading-relaxed italic text-[#5D4037]/80 px-4">
+              <span className="absolute -top-10 -left-10 text-9xl text-[#8D6E63]/5 font-serif italic">
+                "
+              </span>
+              <p className="text-xl md:text-2xl leading-relaxed italic text-[#5D4037]/80 px-4">
                 {ourStory}
               </p>
             </div>
@@ -113,7 +121,9 @@ export default function VintageChicTemplate({
       {/* --- SCHEDULE --- */}
       <section className="py-40 px-6 bg-[#EBD9C1]/50">
         <div className="max-w-4xl mx-auto">
-          <h2 className="font-sans text-xs uppercase tracking-[0.6em] text-center mb-24 opacity-50">Timeline</h2>
+          <h2 className="font-sans text-xs uppercase tracking-[0.6em] text-center mb-24 opacity-50">
+            Timeline
+          </h2>
           <div className="space-y-24">
             {events.map((ev, i) => (
               <motion.div
@@ -156,9 +166,15 @@ export default function VintageChicTemplate({
                   viewport={{ once: true }}
                   className="bg-white p-6 shadow-2xl shadow-[#8D6E63]/10 border border-[#8D6E63]/5"
                 >
-                  <img src={img.url} alt="" className="w-full aspect-[4/5] object-cover sepia-[0.3] hover:sepia-0 transition-all duration-1000" />
+                  <img
+                    src={img.url}
+                    alt=""
+                    className="w-full aspect-[4/5] object-cover sepia-[0.3] hover:sepia-0 transition-all duration-1000"
+                  />
                   <div className="h-px w-full bg-[#8D6E63]/10 my-4" />
-                  <p className="text-[10px] text-center uppercase tracking-widest opacity-40">MOMENT #{i + 1}</p>
+                  <p className="text-[10px] text-center uppercase tracking-widest opacity-40">
+                    MOMENT #{i + 1}
+                  </p>
                 </motion.div>
               ))}
             </div>
@@ -170,7 +186,9 @@ export default function VintageChicTemplate({
       <section className="py-40 px-6 text-center">
         <div className="max-w-xl mx-auto border-t border-[#8D6E63]/10 pt-20">
           <h2 className="text-5xl font-normal mb-12 italic">Join our Journey</h2>
-          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && (
+            <RSVPModal invitationId={invitationId} />
+          )}
           <p className="mt-20 font-sans text-[9px] uppercase tracking-[0.5em] opacity-30">
             Vintage Chic Collection — DNvites
           </p>

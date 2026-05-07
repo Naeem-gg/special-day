@@ -53,7 +53,9 @@ export function LoginForm() {
           <div className="mx-auto bg-amber-50 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 text-amber-500 transform -rotate-6">
             <Lock className="w-8 h-8" />
           </div>
-          <CardTitle className="text-3xl font-bold text-gray-900 font-serif tracking-tight">Admin Access</CardTitle>
+          <CardTitle className="text-3xl font-bold text-gray-900 font-serif tracking-tight">
+            Admin Access
+          </CardTitle>
           <CardDescription className="text-sm font-medium text-gray-400">
             Enter credentials to access DNvites Control
           </CardDescription>
@@ -61,7 +63,12 @@ export function LoginForm() {
         <CardContent className="px-8 pb-10">
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Username</Label>
+              <Label
+                htmlFor="username"
+                className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1"
+              >
+                Username
+              </Label>
               <Input
                 id="username"
                 type="text"
@@ -73,7 +80,12 @@ export function LoginForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1">Password</Label>
+              <Label
+                htmlFor="password"
+                className="text-xs font-bold uppercase tracking-widest text-gray-400 ml-1"
+              >
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"

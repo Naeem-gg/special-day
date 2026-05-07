@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from '@/components/ui/skeleton'
 
 export function HomeSkeleton() {
   return (
@@ -30,7 +30,9 @@ export function HomeSkeleton() {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex -space-x-3">
-              {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-10 w-10 rounded-full border-2 border-white" />)}
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-10 w-10 rounded-full border-2 border-white" />
+              ))}
             </div>
             <Skeleton className="h-8 w-40 rounded" />
           </div>
@@ -44,18 +46,21 @@ export function HomeSkeleton() {
       <div className="bg-amber-50/30 py-24">
         <div className="container mx-auto px-6 space-y-12">
           <div className="flex flex-col items-center space-y-4">
-             <Skeleton className="h-4 w-32 rounded-full" />
-             <Skeleton className="h-12 w-96 rounded-xl" />
-             <Skeleton className="h-1 w-24 rounded-full" />
+            <Skeleton className="h-4 w-32 rounded-full" />
+            <Skeleton className="h-12 w-96 rounded-xl" />
+            <Skeleton className="h-1 w-24 rounded-full" />
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="p-10 bg-white rounded-[2.5rem] border border-amber-100 space-y-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="p-10 bg-white rounded-[2.5rem] border border-amber-100 space-y-6"
+              >
                 <Skeleton className="h-16 w-16 rounded-2xl" />
                 <Skeleton className="h-8 w-3/4 rounded-lg" />
                 <div className="space-y-2">
-                   <Skeleton className="h-4 w-full rounded" />
-                   <Skeleton className="h-4 w-5/6 rounded" />
+                  <Skeleton className="h-4 w-full rounded" />
+                  <Skeleton className="h-4 w-5/6 rounded" />
                 </div>
               </div>
             ))}

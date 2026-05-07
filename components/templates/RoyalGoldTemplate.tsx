@@ -357,14 +357,14 @@ export default function RoyalGoldTemplate({
               Royal Countdown
             </h2>
 
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#D4AF37',
                 secondary: '#3A0A14',
                 accent: '#D4AF37',
-                text: '#FFFBF0'
+                text: '#FFFBF0',
               }}
             />
           </motion.div>
@@ -406,7 +406,10 @@ export default function RoyalGoldTemplate({
                 >
                   <div className="flex-1">
                     {/* Removed Event Numbering */}
-                    <h3 className="text-xl md:text-2xl font-light mb-2" style={{ color: '#3A0A14' }}>
+                    <h3
+                      className="text-xl md:text-2xl font-light mb-2"
+                      style={{ color: '#3A0A14' }}
+                    >
                       {ev.name}
                     </h3>
                     {ev.description && (
@@ -442,7 +445,10 @@ export default function RoyalGoldTemplate({
                       </span>
                     </div>
                     <a
-                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      href={
+                        ev.googleMapsUrl ||
+                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 inline-flex items-center gap-2 px-4 py-2 border text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#D4AF37] hover:text-[#3A0A14] hover:border-[#D4AF37]"
@@ -511,7 +517,9 @@ export default function RoyalGoldTemplate({
             <p className="font-sans text-xs md:text-sm mb-10" style={{ color: '#806060' }}>
               {venue}
             </p>
-            {invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} inline={inline} />}
+            {invitationId && tier !== 'basic' && (
+              <RSVPModal invitationId={invitationId} inline={inline} />
+            )}
           </motion.div>
         </section>
       </div>

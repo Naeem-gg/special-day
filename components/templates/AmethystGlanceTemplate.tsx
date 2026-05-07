@@ -44,7 +44,9 @@ export default function AmethystGlanceTemplate({
       </div>
 
       {/* --- HERO --- */}
-      <section className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}>
+      <section
+        className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -55,7 +57,7 @@ export default function AmethystGlanceTemplate({
           <motion.div
             className="absolute inset-0 bg-linear-to-tr from-transparent via-white/10 to-transparent skew-x-[-20deg]"
             animate={{ x: ['-100%', '200%'] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 5 }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 5 }}
           />
 
           <h2 className="font-sans text-[10px] uppercase tracking-[0.8em] mb-16 text-purple-300 flex items-center justify-center gap-4">
@@ -64,21 +66,29 @@ export default function AmethystGlanceTemplate({
             <div className="h-px w-8 bg-purple-500/30" />
           </h2>
 
-          <h1 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter text-white" style={{ fontFamily: 'var(--font-cinzel)' }}>
+          <h1
+            className="text-5xl md:text-8xl font-black mb-4 tracking-tighter text-white"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
             {brideName}
           </h1>
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
             className="my-10 text-purple-400"
           >
             <Gem size={40} className="mx-auto" />
           </motion.div>
-          <h1 className="text-5xl md:text-8xl font-black mb-16 tracking-tighter text-white" style={{ fontFamily: 'var(--font-cinzel)' }}>
+          <h1
+            className="text-5xl md:text-8xl font-black mb-16 tracking-tighter text-white"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
             {groomName}
           </h1>
 
-          <p className="text-xl md:text-2xl font-light mb-2 tracking-widest text-purple-200 uppercase">{fmt}</p>
+          <p className="text-xl md:text-2xl font-light mb-2 tracking-widest text-purple-200 uppercase">
+            {fmt}
+          </p>
           <p className="text-sm tracking-[0.3em] text-purple-400/80 font-medium">{venue}</p>
         </motion.div>
 
@@ -98,7 +108,7 @@ export default function AmethystGlanceTemplate({
             transition={{
               duration: 2 + Math.random() * 3,
               repeat: Infinity,
-              delay: Math.random() * 5
+              delay: Math.random() * 5,
             }}
           >
             <Sparkles size={Math.random() * 10 + 5} />
@@ -113,15 +123,17 @@ export default function AmethystGlanceTemplate({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="text-[10px] uppercase tracking-[0.8em] mb-10 text-purple-400">The Crystalline Wait</p>
-          <PremiumCountdown 
-            targetDate={date} 
+          <p className="text-[10px] uppercase tracking-[0.8em] mb-10 text-purple-400">
+            The Crystalline Wait
+          </p>
+          <PremiumCountdown
+            targetDate={date}
             tier={tier}
             theme={{
               primary: '#7c3aed',
               secondary: '#1e1b4b',
               accent: '#a78bfa',
-              text: '#f5f3ff'
+              text: '#f5f3ff',
             }}
           />
         </motion.div>
@@ -131,7 +143,12 @@ export default function AmethystGlanceTemplate({
       {ourStory && (
         <section className="py-40 px-6">
           <div className="max-w-3xl mx-auto text-center border-y border-white/5 py-32 bg-white/2">
-            <h2 className="text-3xl font-bold mb-12 text-purple-300" style={{ fontFamily: 'var(--font-cinzel)' }}>Our Crystalline Journey</h2>
+            <h2
+              className="text-3xl font-bold mb-12 text-purple-300"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              Our Crystalline Journey
+            </h2>
             <p className="text-xl md:text-3xl leading-relaxed font-light text-purple-100/70 italic">
               "{ourStory}"
             </p>
@@ -152,9 +169,16 @@ export default function AmethystGlanceTemplate({
             >
               <div className="flex justify-between items-start mb-8">
                 <Clock className="text-purple-400 group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-mono text-purple-500 font-bold uppercase tracking-widest">{ev.time}</span>
+                <span className="text-xs font-mono text-purple-500 font-bold uppercase tracking-widest">
+                  {ev.time}
+                </span>
               </div>
-              <h3 className="text-3xl font-bold mb-4 text-white" style={{ fontFamily: 'var(--font-cinzel)' }}>{ev.name}</h3>
+              <h3
+                className="text-3xl font-bold mb-4 text-white"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                {ev.name}
+              </h3>
               <p className="text-purple-200/50 mb-8 leading-relaxed">{ev.description}</p>
               <div className="flex items-center gap-2 text-sm text-purple-300/70">
                 <MapPin size={14} />
@@ -176,7 +200,11 @@ export default function AmethystGlanceTemplate({
                   whileHover={{ scale: 1.02 }}
                   className="overflow-hidden rounded-xl border border-white/10"
                 >
-                  <img src={img.url} alt="" className="w-full object-cover saturate-[0.8] brightness-110" />
+                  <img
+                    src={img.url}
+                    alt=""
+                    className="w-full object-cover saturate-[0.8] brightness-110"
+                  />
                 </motion.div>
               ))}
             </div>
@@ -188,8 +216,15 @@ export default function AmethystGlanceTemplate({
       <section className="py-40 px-6 text-center">
         <div className="max-w-2xl mx-auto p-20 border border-white/10 bg-linear-to-b from-white/5 to-transparent rounded-[100px_100px_0_0]">
           <Gem size={48} className="mx-auto mb-10 text-purple-400 opacity-30" />
-          <h2 className="text-5xl font-black mb-12 text-white" style={{ fontFamily: 'var(--font-cinzel)' }}>Secure Your Presence</h2>
-          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+          <h2
+            className="text-5xl font-black mb-12 text-white"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            Secure Your Presence
+          </h2>
+          {!isPreview && invitationId && tier !== 'basic' && (
+            <RSVPModal invitationId={invitationId} />
+          )}
           <p className="mt-20 text-[10px] tracking-[0.6em] text-purple-500 font-bold uppercase">
             DNvites Premium Series
           </p>

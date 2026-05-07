@@ -528,7 +528,9 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
                     type="number"
                     placeholder="Optional original price"
                     value={localStrikePrices[tier.id]}
-                    onChange={(e) => setLocalStrikePrices({ ...localStrikePrices, [tier.id]: e.target.value })}
+                    onChange={(e) =>
+                      setLocalStrikePrices({ ...localStrikePrices, [tier.id]: e.target.value })
+                    }
                     className="font-mono text-sm text-gray-400 line-through focus:border-gray-400 focus:ring-gray-100"
                   />
                 </div>
@@ -536,8 +538,9 @@ export function TierManager({ initialTiers = [] }: { initialTiers: any[] }) {
               <Button
                 onClick={() => handleUpdatePrice(tier.id)}
                 disabled={
-                  updatingId === tier.id || 
-                  (localPrices[tier.id] === tier.price.toString() && localStrikePrices[tier.id] === (tier.strikePrice || '').toString())
+                  updatingId === tier.id ||
+                  (localPrices[tier.id] === tier.price.toString() &&
+                    localStrikePrices[tier.id] === (tier.strikePrice || '').toString())
                 }
                 className="w-full bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-all h-11"
               >

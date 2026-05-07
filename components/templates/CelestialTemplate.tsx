@@ -184,7 +184,6 @@ export default function CelestialTemplate({
   ourStory,
   mapUrl,
 }: StyleProps) {
-
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -402,14 +401,14 @@ export default function CelestialTemplate({
             >
               Countdown to Eternity
             </p>
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#FFD700',
                 secondary: '#0A0E2A',
                 accent: '#FFD700',
-                text: '#E0D4FF'
+                text: '#E0D4FF',
               }}
             />
           </motion.div>
@@ -493,7 +492,10 @@ export default function CelestialTemplate({
                       </span>
                     </div>
                     <a
-                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      href={
+                        ev.googleMapsUrl ||
+                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#FFD700] hover:text-[#0A0E2A] hover:border-[#FFD700]"
@@ -566,7 +568,9 @@ export default function CelestialTemplate({
             <p className="font-sans text-sm mb-10" style={{ color: '#6A5A8A' }}>
               {venue}
             </p>
-            {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== 'basic' && (
+              <RSVPModal invitationId={invitationId} />
+            )}
           </motion.div>
         </section>
       </div>

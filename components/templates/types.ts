@@ -217,10 +217,6 @@ export const STYLES: StyleMeta[] = [
 
 export const TIER_STYLES: Record<string, string[]> = {
   basic: STYLES.filter((t) => t.tier === 'basic').map((t) => t.slug),
-  standard: STYLES.filter((t) => t.tier === 'basic' || t.tier === 'standard').map(
-    (t) => t.slug
-  ),
+  standard: STYLES.filter((t) => t.tier === 'basic' || t.tier === 'standard').map((t) => t.slug),
   premium: STYLES.map((t) => t.slug),
 }
-
-

@@ -228,14 +228,14 @@ export default function MidnightNoirTemplate({
             >
               The Countdown to Eternity
             </motion.p>
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#C9A84C',
                 secondary: '#111',
                 accent: '#C9A84C',
-                text: '#C9A84C'
+                text: '#C9A84C',
               }}
             />
           </motion.div>
@@ -380,7 +380,10 @@ export default function MidnightNoirTemplate({
                         </div>
                       </div>
                       <a
-                        href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                        href={
+                          ev.googleMapsUrl ||
+                          `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#C9A84C] hover:text-black hover:border-[#C9A84C]"
@@ -453,7 +456,9 @@ export default function MidnightNoirTemplate({
             <p className="font-sans text-sm mb-10" style={{ color: '#666' }}>
               {venue}
             </p>
-            {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== 'basic' && (
+              <RSVPModal invitationId={invitationId} />
+            )}
           </motion.div>
         </section>
       </div>

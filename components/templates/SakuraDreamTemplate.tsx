@@ -219,14 +219,14 @@ export default function SakuraDreamTemplate({
             >
               Until Our Special Day
             </p>
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#FFB7C5',
                 secondary: '#FFF0F8',
                 accent: '#D4B4FD',
-                text: '#4A2060'
+                text: '#4A2060',
               }}
             />
           </motion.div>
@@ -382,7 +382,10 @@ export default function SakuraDreamTemplate({
                     </span>
                   </div>
                   <a
-                    href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                    href={
+                      ev.googleMapsUrl ||
+                      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#4A2060] hover:text-white hover:border-[#4A2060]"

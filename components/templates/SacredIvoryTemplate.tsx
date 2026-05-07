@@ -350,14 +350,14 @@ export default function SacredIvoryTemplate({
             >
               The Grand Beginning In
             </motion.p>
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#8B4513',
                 secondary: '#FFFDF5',
                 accent: '#D4AF37',
-                text: '#5C3317'
+                text: '#5C3317',
               }}
             />
           </motion.div>
@@ -447,7 +447,10 @@ export default function SacredIvoryTemplate({
                       </span>
                     </div>
                     <a
-                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      href={
+                        ev.googleMapsUrl ||
+                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 border text-[10px] font-bold uppercase tracking-[0.3em] transition-all duration-300 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37]"

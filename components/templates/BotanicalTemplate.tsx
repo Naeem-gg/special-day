@@ -2,7 +2,15 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Clock, ExternalLink, Share2, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
+import {
+  MapPin,
+  Clock,
+  ExternalLink,
+  Share2,
+  ChevronDown,
+  Map as MapIcon,
+  Calendar,
+} from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 import PremiumCountdown from '@/components/invitation/PremiumCountdown'
@@ -240,14 +248,14 @@ export default function BotanicalTemplate({
           >
             Days Until We Say "I Do"
           </p>
-          <PremiumCountdown 
-            targetDate={date} 
+          <PremiumCountdown
+            targetDate={date}
             tier={tier}
             theme={{
               primary: '#2D5A27',
               secondary: '#F2F7EE',
               accent: '#8FAF7E',
-              text: '#1A3A14'
+              text: '#1A3A14',
             }}
           />
         </motion.div>
@@ -369,17 +377,17 @@ export default function BotanicalTemplate({
                       className="flex flex-wrap gap-4 font-sans text-xs"
                       style={{ color: '#8FAF7E' }}
                     >
-                    {ev.date && !isNaN(new Date(ev.date).getTime()) && (
-                      <span className="flex items-center gap-1 font-bold text-[#2D5A27]">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(ev.date).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </span>
-                    )}
+                      {ev.date && !isNaN(new Date(ev.date).getTime()) && (
+                        <span className="flex items-center gap-1 font-bold text-[#2D5A27]">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(ev.date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {ev.time}
@@ -389,11 +397,14 @@ export default function BotanicalTemplate({
                         {ev.location}
                       </span>
                     </div>
-                    
+
                     {/* Map Link */}
                     <div className="mt-4">
                       <a
-                        href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                        href={
+                          ev.googleMapsUrl ||
+                          `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#2D5A27] hover:text-white"

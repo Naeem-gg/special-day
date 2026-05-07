@@ -31,7 +31,10 @@ export async function GET(
     }
 
     if (invitation.tier === 'basic') {
-      return NextResponse.json({ error: 'RSVP management not available for this plan' }, { status: 403 })
+      return NextResponse.json(
+        { error: 'RSVP management not available for this plan' },
+        { status: 403 }
+      )
     }
 
     // Fetch RSVPs

@@ -39,7 +39,9 @@ export default function MinimalModernTemplate({
       style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
     >
       {/* --- HERO --- */}
-      <section className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}>
+      <section
+        className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
+      >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -49,20 +51,14 @@ export default function MinimalModernTemplate({
           <span className="text-[10px] tracking-[0.4em] uppercase text-zinc-400 mb-8 block">
             The Marriage of
           </span>
-          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-4">
-            {brideName}
-          </h1>
+          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-4">{brideName}</h1>
           <div className="flex items-center justify-center gap-4 my-6">
             <div className="h-px w-8 bg-zinc-200" />
             <Heart className="w-4 h-4 text-zinc-300 fill-zinc-300" />
             <div className="h-px w-8 bg-zinc-200" />
           </div>
-          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-12">
-            {groomName}
-          </h1>
-          <p className="text-sm md:text-base tracking-widest text-zinc-500 uppercase">
-            {fmt}
-          </p>
+          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-12">{groomName}</h1>
+          <p className="text-sm md:text-base tracking-widest text-zinc-500 uppercase">{fmt}</p>
           <p className="text-xs mt-2 text-zinc-400">{venue}</p>
         </motion.div>
 
@@ -84,15 +80,17 @@ export default function MinimalModernTemplate({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 mb-10 text-center">Countdown</p>
-          <PremiumCountdown 
-            targetDate={date} 
+          <p className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 mb-10 text-center">
+            Countdown
+          </p>
+          <PremiumCountdown
+            targetDate={date}
             tier={tier}
             theme={{
               primary: '#18181b',
               secondary: '#ffffff',
               accent: '#a1a1aa',
-              text: '#18181b'
+              text: '#18181b',
             }}
           />
         </motion.div>
@@ -113,7 +111,9 @@ export default function MinimalModernTemplate({
       {/* --- SCHEDULE --- */}
       <section className="py-32 px-6">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-xs uppercase tracking-[0.5em] text-zinc-400 mb-20 text-center">Schedule</h2>
+          <h2 className="text-xs uppercase tracking-[0.5em] text-zinc-400 mb-20 text-center">
+            Schedule
+          </h2>
           <div className="space-y-16">
             {events.map((ev, i) => (
               <motion.div
@@ -125,12 +125,16 @@ export default function MinimalModernTemplate({
               >
                 <div className="absolute left-[-5px] top-0 w-2 h-2 rounded-full bg-zinc-200" />
                 <div className="md:w-32 pt-1">
-                  <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest">{ev.time}</span>
+                  <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest">
+                    {ev.time}
+                  </span>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-medium mb-2">{ev.name}</h3>
-                  {ev.description && <p className="text-zinc-500 text-sm mb-4 leading-relaxed">{ev.description}</p>}
-                  
+                  {ev.description && (
+                    <p className="text-zinc-500 text-sm mb-4 leading-relaxed">{ev.description}</p>
+                  )}
+
                   <div className="flex flex-wrap gap-4 mb-4">
                     {ev.date && !isNaN(new Date(ev.date).getTime()) && (
                       <p className="text-zinc-400 text-[10px] uppercase tracking-wider flex items-center gap-2 font-bold">
@@ -153,7 +157,10 @@ export default function MinimalModernTemplate({
 
                   {!isPreview && (
                     <a
-                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      href={
+                        ev.googleMapsUrl ||
+                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 pb-1 hover:text-zinc-900 hover:border-zinc-900 transition-all"
@@ -172,7 +179,9 @@ export default function MinimalModernTemplate({
       {gallery.length > 0 && (
         <section className="py-32 px-4 bg-zinc-50">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-xs uppercase tracking-[0.5em] text-zinc-400 mb-20 text-center">Moments</h2>
+            <h2 className="text-xs uppercase tracking-[0.5em] text-zinc-400 mb-20 text-center">
+              Moments
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gallery.map((img, i) => (
                 <motion.div
@@ -198,10 +207,10 @@ export default function MinimalModernTemplate({
       <section className="py-32 px-6 text-center">
         <Heart className="w-6 h-6 mx-auto mb-8 text-zinc-200" />
         <h2 className="text-3xl md:text-4xl font-light mb-12">Will you join us?</h2>
-        {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
-        <p className="mt-12 text-[10px] text-zinc-300 uppercase tracking-[0.3em]">
-          {venue}
-        </p>
+        {!isPreview && invitationId && tier !== 'basic' && (
+          <RSVPModal invitationId={invitationId} />
+        )}
+        <p className="mt-12 text-[10px] text-zinc-300 uppercase tracking-[0.3em]">{venue}</p>
       </section>
     </div>
   )

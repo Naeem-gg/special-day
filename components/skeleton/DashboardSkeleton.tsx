@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from '@/components/ui/skeleton'
 
 export function DashboardSkeleton() {
   return (
@@ -58,11 +58,14 @@ export function DashboardSkeleton() {
               </div>
               <Skeleton className="h-10 w-32 rounded-xl" />
             </div>
-            
+
             {/* Template Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <div key={i} className="rounded-2xl border border-gray-100 overflow-hidden bg-white">
+                <div
+                  key={i}
+                  className="rounded-2xl border border-gray-100 overflow-hidden bg-white"
+                >
                   <Skeleton className="aspect-[3/4] w-full" />
                   <div className="p-3 space-y-2">
                     <Skeleton className="h-4 w-3/4 rounded" />
@@ -78,19 +81,19 @@ export function DashboardSkeleton() {
         <div className="lg:col-span-4 space-y-6">
           <div className="sticky top-24 space-y-6">
             <div className="rounded-[2.5rem] bg-white border border-rose-100 shadow-xl overflow-hidden">
-               <div className="p-6 bg-rose-50/50 border-b border-rose-100">
-                  <Skeleton className="h-6 w-32 rounded" />
-               </div>
-               <div className="p-6 space-y-4">
-                  <Skeleton className="aspect-[9/16] w-full rounded-2xl mx-auto max-w-[280px]" />
-                  <Skeleton className="h-14 w-full rounded-2xl" />
-               </div>
+              <div className="p-6 bg-rose-50/50 border-b border-rose-100">
+                <Skeleton className="h-6 w-32 rounded" />
+              </div>
+              <div className="p-6 space-y-4">
+                <Skeleton className="aspect-[9/16] w-full rounded-2xl mx-auto max-w-[280px]" />
+                <Skeleton className="h-14 w-full rounded-2xl" />
+              </div>
             </div>
-            
+
             <div className="rounded-[2rem] bg-amber-50/50 border border-amber-100 p-6 space-y-3">
-               <Skeleton className="h-5 w-40 rounded" />
-               <Skeleton className="h-3 w-full rounded" />
-               <Skeleton className="h-3 w-2/3 rounded" />
+              <Skeleton className="h-5 w-40 rounded" />
+              <Skeleton className="h-3 w-full rounded" />
+              <Skeleton className="h-3 w-2/3 rounded" />
             </div>
           </div>
         </div>

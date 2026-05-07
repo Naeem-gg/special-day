@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from '@/components/ui/skeleton'
 
 export function ShellSkeleton() {
   return (
@@ -21,7 +21,7 @@ export function ShellSkeleton() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="p-6 rounded-2xl border space-y-4">
               <Skeleton className="h-48 w-full rounded-xl" />
               <div className="space-y-2">
@@ -36,9 +36,9 @@ export function ShellSkeleton() {
         <div className="space-y-6">
           <Skeleton className="h-10 w-48 rounded-lg" />
           <div className="space-y-3">
-             <Skeleton className="h-4 w-full rounded" />
-             <Skeleton className="h-4 w-full rounded" />
-             <Skeleton className="h-4 w-3/4 rounded" />
+            <Skeleton className="h-4 w-full rounded" />
+            <Skeleton className="h-4 w-full rounded" />
+            <Skeleton className="h-4 w-3/4 rounded" />
           </div>
         </div>
       </div>

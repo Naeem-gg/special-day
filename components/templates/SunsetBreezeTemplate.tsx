@@ -38,10 +38,12 @@ export default function SunsetBreezeTemplate({
       style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
     >
       {/* --- HERO --- */}
-      <section className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'} bg-linear-to-b from-[#FFE0B2] to-[#FFFBF0]`}>
+      <section
+        className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'} bg-linear-to-b from-[#FFE0B2] to-[#FFFBF0]`}
+      >
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
           className="absolute top-20 right-20 text-[#FFB74D] opacity-20"
         >
           <Sun size={120} />
@@ -54,7 +56,9 @@ export default function SunsetBreezeTemplate({
           className="relative z-10"
         >
           <Waves className="w-10 h-10 text-[#FFAB91] mx-auto mb-8" />
-          <h2 className="text-sm font-bold uppercase tracking-[0.4em] mb-6 text-[#FF8A65]">The Adventure Begins</h2>
+          <h2 className="text-sm font-bold uppercase tracking-[0.4em] mb-6 text-[#FF8A65]">
+            The Adventure Begins
+          </h2>
           <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-8 text-[#4E342E]">
             {brideName} <span className="text-[#FFAB91]">&amp;</span> {groomName}
           </h1>
@@ -65,8 +69,12 @@ export default function SunsetBreezeTemplate({
         </motion.div>
 
         <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0]">
-          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-24 fill-[#FFFBF0]">
-              <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C58.31,111.41,135.29,114.32,203.49,103,262.13,93.26,275.52,65,321.39,56.44Z"></path>
+          <svg
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
+            className="relative block w-full h-24 fill-[#FFFBF0]"
+          >
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C58.31,111.41,135.29,114.32,203.49,103,262.13,93.26,275.52,65,321.39,56.44Z"></path>
           </svg>
         </div>
       </section>
@@ -78,15 +86,17 @@ export default function SunsetBreezeTemplate({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="text-xs font-bold uppercase tracking-[0.4em] mb-10 text-[#FF8A65]">The Sun Sets In</p>
-          <PremiumCountdown 
-            targetDate={date} 
+          <p className="text-xs font-bold uppercase tracking-[0.4em] mb-10 text-[#FF8A65]">
+            The Sun Sets In
+          </p>
+          <PremiumCountdown
+            targetDate={date}
             tier={tier}
             theme={{
               primary: '#FF8A65',
               secondary: '#FFFBF0',
               accent: '#FFAB91',
-              text: '#4E342E'
+              text: '#4E342E',
             }}
           />
         </motion.div>
@@ -99,14 +109,12 @@ export default function SunsetBreezeTemplate({
             <div className="flex-1 space-y-8">
               <h2 className="text-4xl font-bold text-[#4E342E]">Our Story</h2>
               <div className="w-16 h-2 bg-[#FFAB91]" />
-              <p className="text-lg md:text-xl leading-relaxed opacity-80 italic">
-                {ourStory}
-              </p>
+              <p className="text-lg md:text-xl leading-relaxed opacity-80 italic">{ourStory}</p>
             </div>
             <div className="w-48 h-48 rounded-full border-4 border-[#FFAB91] p-2 rotate-12">
-               <div className="w-full h-full rounded-full bg-[#FFE0B2] flex items-center justify-center">
-                  <Sun className="w-12 h-12 text-[#FF8A65]" />
-               </div>
+              <div className="w-full h-full rounded-full bg-[#FFE0B2] flex items-center justify-center">
+                <Sun className="w-12 h-12 text-[#FF8A65]" />
+              </div>
             </div>
           </div>
         </section>
@@ -131,7 +139,9 @@ export default function SunsetBreezeTemplate({
                 <span className="text-[#FFAB91] font-bold tracking-widest">{ev.time}</span>
                 <h3 className="text-2xl font-bold">{ev.name}</h3>
                 <p className="text-white/60 text-sm leading-relaxed">{ev.description}</p>
-                <p className="text-xs flex items-center gap-2 text-[#FFAB91]"><MapPin className="w-3 h-3" /> {ev.location}</p>
+                <p className="text-xs flex items-center gap-2 text-[#FFAB91]">
+                  <MapPin className="w-3 h-3" /> {ev.location}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -160,7 +170,9 @@ export default function SunsetBreezeTemplate({
         <div className="bg-[#FFF3E0] max-w-2xl mx-auto p-16 rounded-[40px] shadow-inner">
           <h2 className="text-4xl font-bold text-[#4E342E] mb-6">RSVP</h2>
           <p className="mb-10 text-[#FF8A65] font-bold">We can't wait to celebrate with you!</p>
-          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && (
+            <RSVPModal invitationId={invitationId} />
+          )}
         </div>
       </section>
     </div>

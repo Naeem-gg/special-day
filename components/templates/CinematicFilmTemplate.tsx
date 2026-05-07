@@ -239,14 +239,14 @@ export default function CinematicFilmTemplate({
             >
               Feature Presentation Begins In
             </p>
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#C0A060',
                 secondary: '#0A0A0A',
                 accent: '#F0EAD6',
-                text: '#F0EAD6'
+                text: '#F0EAD6',
               }}
             />
           </motion.div>
@@ -383,7 +383,9 @@ export default function CinematicFilmTemplate({
             <p className="font-sans text-sm mb-10" style={{ color: '#666' }}>
               {venue}
             </p>
-            {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== 'basic' && (
+              <RSVPModal invitationId={invitationId} />
+            )}
           </motion.div>
         </section>
       </div>

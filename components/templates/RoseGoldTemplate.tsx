@@ -210,14 +210,14 @@ export default function RoseGoldTemplate({
             >
               Counting Down to Forever
             </p>
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#B76E79',
                 secondary: '#FFF8F0',
                 accent: '#D4AF37',
-                text: '#6B2737'
+                text: '#6B2737',
               }}
             />
           </motion.div>
@@ -391,7 +391,10 @@ export default function RoseGoldTemplate({
                     </div>
                     {!isPreview && (
                       <a
-                        href={ev.googleMapsUrl || `https://maps.google.com/?q=${encodeURIComponent(ev.location)}`}
+                        href={
+                          ev.googleMapsUrl ||
+                          `https://maps.google.com/?q=${encodeURIComponent(ev.location)}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-4 inline-flex items-center gap-1 font-sans text-xs uppercase tracking-widest px-4 py-2 rounded-full border transition-colors hover:text-white hover:border-rose-400 hover:bg-rose-400"

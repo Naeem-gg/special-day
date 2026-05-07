@@ -63,7 +63,9 @@ export default function LavenderMistTemplate({
       </div>
 
       {/* --- HERO --- */}
-      <section className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}>
+      <section
+        className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -71,9 +73,12 @@ export default function LavenderMistTemplate({
           className="relative z-10"
         >
           <Sparkles className="w-6 h-6 text-purple-300 mx-auto mb-8 animate-pulse" />
-          <h2 className="text-xl md:text-2xl font-light italic mb-6 text-purple-400">Please Join Us for the Wedding of</h2>
+          <h2 className="text-xl md:text-2xl font-light italic mb-6 text-purple-400">
+            Please Join Us for the Wedding of
+          </h2>
           <h1 className="text-6xl md:text-8xl font-normal tracking-wide mb-8">
-            {brideName} <span className="text-purple-300 block md:inline md:mx-4">&amp;</span> {groomName}
+            {brideName} <span className="text-purple-300 block md:inline md:mx-4">&amp;</span>{' '}
+            {groomName}
           </h1>
           <div className="w-24 h-px bg-purple-100 mx-auto mb-10" />
           <p className="text-2xl md:text-3xl font-light mb-2">{fmt}</p>
@@ -88,15 +93,17 @@ export default function LavenderMistTemplate({
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
         >
-          <p className="text-xs uppercase tracking-[0.5em] mb-10 text-purple-400">The Mist Clears In</p>
-          <PremiumCountdown 
-            targetDate={date} 
+          <p className="text-xs uppercase tracking-[0.5em] mb-10 text-purple-400">
+            The Mist Clears In
+          </p>
+          <PremiumCountdown
+            targetDate={date}
             tier={tier}
             theme={{
               primary: '#a855f7',
               secondary: '#fdfbff',
               accent: '#d8b4fe',
-              text: '#4a3e54'
+              text: '#4a3e54',
             }}
           />
         </motion.div>
@@ -119,7 +126,9 @@ export default function LavenderMistTemplate({
       {/* --- SCHEDULE --- */}
       <section className="py-32 px-6 relative z-10 bg-white/30 backdrop-blur-md">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-light text-center mb-24 italic text-purple-400">Celebration Details</h2>
+          <h2 className="text-4xl font-light text-center mb-24 italic text-purple-400">
+            Celebration Details
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {events.map((ev, i) => (
               <motion.div
@@ -134,7 +143,9 @@ export default function LavenderMistTemplate({
                 <p className="text-lg mb-6 text-purple-600/70">{ev.description}</p>
                 <div className="flex flex-col items-center gap-2 text-sm text-purple-400">
                   <span className="font-bold">{ev.time}</span>
-                  <span className="flex items-center gap-1 italic"><MapPin className="w-3 h-3" /> {ev.location}</span>
+                  <span className="flex items-center gap-1 italic">
+                    <MapPin className="w-3 h-3" /> {ev.location}
+                  </span>
                 </div>
               </motion.div>
             ))}
@@ -146,7 +157,7 @@ export default function LavenderMistTemplate({
       {gallery.length > 0 && (
         <section className="py-32 px-4 relative z-10">
           <div className="max-w-5xl mx-auto">
-             <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
               {gallery.map((img, i) => (
                 <motion.div
                   key={i}
@@ -165,7 +176,9 @@ export default function LavenderMistTemplate({
       <section className="py-32 px-6 text-center relative z-10">
         <div className="max-w-xl mx-auto bg-white/80 p-16 rounded-full border border-purple-50">
           <h2 className="text-4xl font-light mb-10 italic">We Hope to See You There</h2>
-          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && (
+            <RSVPModal invitationId={invitationId} />
+          )}
         </div>
       </section>
     </div>

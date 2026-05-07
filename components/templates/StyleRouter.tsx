@@ -64,10 +64,7 @@ import DoorIntro from '../invitation/DoorIntro'
 import CurtainIntro from '../invitation/CurtainIntro'
 import { Watermark } from '../branding/Watermark'
 
-export default function StyleRouter({
-  style,
-  ...props
-}: StyleProps & { style: string }) {
+export default function StyleRouter({ style, ...props }: StyleProps & { style: string }) {
   const Component = STYLE_MAP[style] ?? RoseGoldTemplate
   const meta = STYLES.find((t) => t.slug === style)
   const isPremium = meta?.tier === 'premium'
@@ -167,4 +164,3 @@ export default function StyleRouter({
 }
 
 export { STYLE_MAP }
-

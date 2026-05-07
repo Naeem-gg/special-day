@@ -251,15 +251,15 @@ export default function EmeraldForestTemplate({
             >
               Until the Forest Ceremony
             </p>
-            
-            <PremiumCountdown 
-              targetDate={date} 
+
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#B87333',
                 secondary: '#1A3C34',
                 accent: '#B87333',
-                text: '#1A3C34'
+                text: '#1A3C34',
               }}
             />
           </motion.div>
@@ -338,7 +338,10 @@ export default function EmeraldForestTemplate({
                         </span>
                       </div>
                       <a
-                        href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                        href={
+                          ev.googleMapsUrl ||
+                          `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#1A3C34] hover:text-[#B87333] hover:border-[#1A3C34]"
@@ -408,7 +411,9 @@ export default function EmeraldForestTemplate({
             <p className="font-sans text-sm mb-10" style={{ color: '#8FAF7E' }}>
               {venue}
             </p>
-            {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== 'basic' && (
+              <RSVPModal invitationId={invitationId} />
+            )}
           </motion.div>
         </section>
       </div>

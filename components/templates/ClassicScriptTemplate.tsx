@@ -38,7 +38,9 @@ export default function ClassicScriptTemplate({
       style={{ fontFamily: 'var(--font-cormorant), serif' }}
     >
       {/* --- HERO --- */}
-      <section className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}>
+      <section
+        className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
+      >
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -51,10 +53,10 @@ export default function ClassicScriptTemplate({
           <div className="absolute bottom-4 left-4 w-12 h-12 border-b border-l border-zinc-200" />
           <div className="absolute bottom-4 right-4 w-12 h-12 border-b border-r border-zinc-200" />
 
-          <p className="text-sm uppercase tracking-[0.6em] mb-12 text-zinc-400">Together with their families</p>
-          <h1 className="text-6xl md:text-8xl font-normal mb-8 leading-none italic">
-            {brideName}
-          </h1>
+          <p className="text-sm uppercase tracking-[0.6em] mb-12 text-zinc-400">
+            Together with their families
+          </p>
+          <h1 className="text-6xl md:text-8xl font-normal mb-8 leading-none italic">{brideName}</h1>
           <p className="text-2xl font-light italic text-zinc-300 my-4">&amp;</p>
           <h1 className="text-6xl md:text-8xl font-normal mb-16 leading-none italic">
             {groomName}
@@ -71,15 +73,17 @@ export default function ClassicScriptTemplate({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="text-xs uppercase tracking-[0.4em] text-zinc-400 mb-10">Countdown to Celebration</p>
-          <PremiumCountdown 
-            targetDate={date} 
+          <p className="text-xs uppercase tracking-[0.4em] text-zinc-400 mb-10">
+            Countdown to Celebration
+          </p>
+          <PremiumCountdown
+            targetDate={date}
             tier={tier}
             theme={{
               primary: '#18181b',
               secondary: '#f4f4f5',
               accent: '#a1a1aa',
-              text: '#18181b'
+              text: '#18181b',
             }}
           />
         </motion.div>
@@ -90,9 +94,7 @@ export default function ClassicScriptTemplate({
         <section className="py-32 px-6">
           <div className="max-w-xl mx-auto text-center border-y border-zinc-50 py-20">
             <h2 className="text-sm uppercase tracking-[0.5em] text-zinc-400 mb-10">Our Story</h2>
-            <p className="text-2xl leading-relaxed italic text-zinc-600">
-              "{ourStory}"
-            </p>
+            <p className="text-2xl leading-relaxed italic text-zinc-600">"{ourStory}"</p>
           </div>
         </section>
       )}
@@ -110,7 +112,9 @@ export default function ClassicScriptTemplate({
                 viewport={{ once: true }}
                 className="text-center"
               >
-                <span className="text-xs uppercase tracking-[0.4em] text-zinc-300 block mb-4">{ev.time}</span>
+                <span className="text-xs uppercase tracking-[0.4em] text-zinc-300 block mb-4">
+                  {ev.time}
+                </span>
                 <h3 className="text-3xl font-normal mb-4 italic">{ev.name}</h3>
                 <p className="text-zinc-500 max-w-sm mx-auto mb-4">{ev.description}</p>
                 <p className="text-xs uppercase tracking-widest text-zinc-400 flex items-center justify-center gap-2">
@@ -145,7 +149,9 @@ export default function ClassicScriptTemplate({
       <section className="py-32 px-6 text-center">
         <Heart className="w-4 h-4 mx-auto mb-12 text-zinc-200" />
         <h2 className="text-4xl font-normal mb-12 italic">Kindly Respond</h2>
-        {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+        {!isPreview && invitationId && tier !== 'basic' && (
+          <RSVPModal invitationId={invitationId} />
+        )}
       </section>
     </div>
   )

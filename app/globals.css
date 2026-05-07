@@ -61,53 +61,53 @@
 
 /* ── Brand color tokens ───────────────── */
 :root {
-  --dn-metallic: #D4AF37;
-  --dn-gold: #C5A059;
-  --dn-ivory: #FFF9F4;
-  --dn-champagne: #F9F0E6;
-  --dn-dark: #1F1B14;
+  --dn-metallic: #d4af37;
+  --dn-gold: #c5a059;
+  --dn-ivory: #fff9f4;
+  --dn-champagne: #f9f0e6;
+  --dn-dark: #1f1b14;
   --radius: 0.625rem;
 
   /* Soft ivory background */
-  --background: #FCFAF8;
-  --foreground: #1F1E1C;
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
+  --background: #fcfaf8;
+  --foreground: #1f1e1c;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
   /* Gold primary */
-  --primary: #D4AF37;
-  --primary-foreground: #FFFFFF;
+  --primary: #d4af37;
+  --primary-foreground: #ffffff;
   /* Warm taupe secondary */
-  --secondary: #F2F0ED;
+  --secondary: #f2f0ed;
   --secondary-foreground: #333333;
-  --muted: #F7F5F2;
-  --muted-foreground: #6B6B6B;
-  --accent: #F9F0E6;
+  --muted: #f7f5f2;
+  --muted-foreground: #6b6b6b;
+  --accent: #f9f0e6;
   --accent-foreground: #333333;
-  --destructive: #EF4444;
-  --border: #E5E2DF;
-  --input: #E5E2DF;
-  --ring: #D4AF37;
-  --sidebar: #FCFCFC;
-  --sidebar-foreground: #1A1A1A;
+  --destructive: #ef4444;
+  --border: #e5e2df;
+  --input: #e5e2df;
+  --ring: #d4af37;
+  --sidebar: #fcfcfc;
+  --sidebar-foreground: #1a1a1a;
   --sidebar-primary: #333333;
-  --sidebar-primary-foreground: #FCFCFC;
-  --sidebar-accent: #F5F5F5;
+  --sidebar-primary-foreground: #fcfcfc;
+  --sidebar-accent: #f5f5f5;
   --sidebar-accent-foreground: #333333;
-  --sidebar-border: #F0F0F0;
-  --sidebar-ring: #A5A5A5;
+  --sidebar-border: #f0f0f0;
+  --sidebar-ring: #a5a5a5;
 }
 
 .dark {
   --background: #121115;
-  --foreground: #FAFAFA;
-  --card: #1C1B20;
-  --card-foreground: #FAFAFA;
-  --primary: #D4AF37;
+  --foreground: #fafafa;
+  --card: #1c1b20;
+  --card-foreground: #fafafa;
+  --primary: #d4af37;
   --primary-foreground: #121115;
-  --secondary: #1A1A1A;
-  --secondary-foreground: #FAFAFA;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #fafafa;
 }
 
 /* ── Base reset ───────────────────────── */
@@ -124,8 +124,8 @@
 
   /* prettier selection */
   ::selection {
-    background: #D4AF3733;
-    color: #1F1B14;
+    background: #d4af3733;
+    color: #1f1b14;
   }
 }
 
@@ -170,13 +170,13 @@
   0%,
   100% {
     box-shadow:
-      0 0 20px #D4AF3744,
-      0 0 60px #C5A05922;
+      0 0 20px #d4af3744,
+      0 0 60px #c5a05922;
   }
   50% {
     box-shadow:
-      0 0 60px #D4AF3788,
-      0 0 120px #C5A05955;
+      0 0 60px #d4af3788,
+      0 0 120px #c5a05955;
   }
 }
 
@@ -260,7 +260,7 @@
 
 /* Vibrant shimmer gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #D4AF37 0%, #C5A059 50%, #8E6F3E 100%);
+  background: linear-gradient(135deg, #d4af37 0%, #c5a059 50%, #8e6f3e 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -305,7 +305,7 @@
 
 /* Skeleton loading shimmer */
 .skeleton {
-  background: linear-gradient(90deg, #F9F0E6 25%, #FFF9F4 50%, #F9F0E6 75%);
+  background: linear-gradient(90deg, #f9f0e6 25%, #fff9f4 50%, #f9f0e6 75%);
   background-size: 300px 100%;
   animation: shimmer 1.5s infinite linear;
   border-radius: 8px;
@@ -323,8 +323,8 @@
 /* Glow ring */
 .glow-ring {
   box-shadow:
-    0 0 30px #D4AF3755,
-    0 0 80px #C5A05933;
+    0 0 30px #d4af3755,
+    0 0 80px #c5a05933;
 }
 
 /* Card hover lift */
@@ -343,7 +343,7 @@
 /* divider wave */
 .divider-wave {
   height: 2px;
-  background: linear-gradient(90deg, transparent, #D4AF37, #C5A059, #D4AF37, transparent);
+  background: linear-gradient(90deg, transparent, #d4af37, #c5a059, #d4af37, transparent);
   animation: wave 1.2s ease-out forwards;
   transform-origin: left;
   opacity: 0;

@@ -231,14 +231,14 @@ export default function AzureOceanTemplate({
             <p className="font-sans text-xs uppercase tracking-[0.4em] mb-10 text-teal-600">
               Until We Set Sail Together
             </p>
-            <PremiumCountdown 
-              targetDate={date} 
+            <PremiumCountdown
+              targetDate={date}
               tier={tier}
               theme={{
                 primary: '#0A3F6B',
                 secondary: '#4ECDC4',
                 accent: '#0A3F6B',
-                text: '#0A3F6B'
+                text: '#0A3F6B',
               }}
             />
           </motion.div>
@@ -315,7 +315,10 @@ export default function AzureOceanTemplate({
                       </span>
                     </div>
                     <a
-                      href={ev.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`}
+                      href={
+                        ev.googleMapsUrl ||
+                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-teal-600 hover:text-white hover:border-teal-600"
