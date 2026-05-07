@@ -179,7 +179,7 @@ export default function ArcticFrostTemplate({
         <div className="max-w-xl mx-auto p-20 bg-white/60 rounded-[40px] border border-white shadow-inner">
            <Snowflake size={32} className="mx-auto mb-10 text-blue-300" />
            <h2 className="text-4xl font-black mb-10 text-[#1A2A3A]" style={{ fontFamily: 'var(--font-cinzel)' }}>Warm Your Heart With Us</h2>
-           {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+           {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
            <p className="mt-16 text-[10px] font-bold text-blue-400 uppercase tracking-[0.5em]">
               Arctic Series Collection
            </p>

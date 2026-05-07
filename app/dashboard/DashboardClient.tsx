@@ -1130,7 +1130,7 @@ export default function DashboardClient({
                 <div className="space-y-1">
                   <CardTitle className="text-3xl font-serif">Welcome to DNvites</CardTitle>
                   <CardDescription className="text-base px-2">
-                    Log in to save your invitations, edit them later, and manage your RSVPs from a
+                    Log in to save your invitations, edit them later, and manage your RSVPs (Silver/Gold) from a
                     single dashboard.
                   </CardDescription>
                 </div>
@@ -1156,10 +1156,7 @@ export default function DashboardClient({
                 >
                   Create Without Account →
                 </Button>
-                <p className="text-[10px] text-center text-gray-400 px-4 leading-tight">
-                  Note: Guest invitations cannot be edited after purchase and do not include the
-                  RSVP management dashboard.
-                </p>
+                  Note: Guest invitations cannot be edited after purchase and do not include RSVP management.
               </CardContent>
             </Card>
           </motion.div>
@@ -1269,8 +1266,8 @@ export default function DashboardClient({
                     <h4 className="font-bold text-amber-900 text-sm">Continue as Guest?</h4>
                     <p className="text-amber-800/80 text-xs leading-relaxed">
                       You can create and buy your invitation without an account. However, **you
-                      won't be able to edit it later** or track RSVPs unless you sign up with the
-                      same email address.
+                      won't be able to edit it later** or track RSVPs (requires Silver/Gold) unless you
+                      sign up with the same email address.
                       <Link href="/login" className="ml-1 text-[#F43F8F] font-bold hover:underline">
                         Sign in now
                       </Link>{' '}

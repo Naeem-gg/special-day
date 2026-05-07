@@ -566,7 +566,7 @@ export default function CelestialTemplate({
             <p className="font-sans text-sm mb-10" style={{ color: '#6A5A8A' }}>
               {venue}
             </p>
-            {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
           </motion.div>
         </section>
       </div>

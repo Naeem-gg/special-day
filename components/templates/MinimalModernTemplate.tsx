@@ -198,7 +198,7 @@ export default function MinimalModernTemplate({
       <section className="py-32 px-6 text-center">
         <Heart className="w-6 h-6 mx-auto mb-8 text-zinc-200" />
         <h2 className="text-3xl md:text-4xl font-light mb-12">Will you join us?</h2>
-        {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+        {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
         <p className="mt-12 text-[10px] text-zinc-300 uppercase tracking-[0.3em]">
           {venue}
         </p>

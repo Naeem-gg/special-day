@@ -30,6 +30,10 @@ export async function GET(
       return NextResponse.json({ error: 'Invitation not found or access denied' }, { status: 404 })
     }
 
+    if (invitation.tier === 'basic') {
+      return NextResponse.json({ error: 'RSVP management not available for this plan' }, { status: 403 })
+    }
+
     // Fetch RSVPs
     const invitationRsvps = await db
       .select()
@@ -70,6 +74,10 @@ export async function DELETE(
 
     if (!invitation) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    }
+
+    if (invitation.tier === 'basic') {
+      return NextResponse.json({ error: 'Action not allowed on this plan' }, { status: 403 })
     }
 
     // Delete RSVP

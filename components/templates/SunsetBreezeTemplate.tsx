@@ -160,7 +160,7 @@ export default function SunsetBreezeTemplate({
         <div className="bg-[#FFF3E0] max-w-2xl mx-auto p-16 rounded-[40px] shadow-inner">
           <h2 className="text-4xl font-bold text-[#4E342E] mb-6">RSVP</h2>
           <p className="mb-10 text-[#FF8A65] font-bold">We can't wait to celebrate with you!</p>
-          {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
         </div>
       </section>
     </div>

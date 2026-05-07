@@ -191,7 +191,7 @@ export default function DesertSandTemplate({
       <section className="py-40 px-6 text-center">
         <div className="max-w-lg mx-auto bg-white/20 p-16 rounded-sm border border-[#D2691E]/10 backdrop-blur-sm">
           <h2 className="text-5xl font-normal mb-10 italic">Be Part of our Oasis</h2>
-          {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
           <p className="mt-16 text-[10px] font-sans uppercase tracking-widest text-[#D2691E]/60">
              {venue}
           </p>

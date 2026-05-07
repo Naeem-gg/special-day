@@ -229,7 +229,7 @@ export default function DiamondRegalTemplate({
         <div className="max-w-4xl mx-auto relative z-10">
            <Crown size={48} className="mx-auto mb-16 text-white/20" />
            <h2 className="text-6xl md:text-8xl font-normal mb-16 italic text-transparent bg-clip-text bg-linear-to-b from-white to-zinc-600">Secure Your Invitation</h2>
-           {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+           {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
            <div className="mt-40 text-[9px] font-sans tracking-[1em] text-zinc-700 uppercase font-bold">
               DNvites Diamond Series • Limited Edition
            </div>

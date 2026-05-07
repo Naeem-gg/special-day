@@ -338,10 +338,12 @@ export function DashboardClient({
                         </span>{' '}
                         views
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                        <Users className="w-3.5 h-3.5" />
-                        <span className="font-semibold text-slate-700">—</span> RSVPs
-                      </div>
+                      {invite.tier !== 'basic' && (
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                          <Users className="w-3.5 h-3.5" />
+                          <span className="font-semibold text-slate-700">—</span> RSVPs
+                        </div>
+                      )}
                       {/* 48h Edit Indicator */}
                       {(() => {
                         const hoursLeft =

@@ -145,7 +145,7 @@ export default function ClassicScriptTemplate({
       <section className="py-32 px-6 text-center">
         <Heart className="w-4 h-4 mx-auto mb-12 text-zinc-200" />
         <h2 className="text-4xl font-normal mb-12 italic">Kindly Respond</h2>
-        {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+        {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
       </section>
     </div>
   )

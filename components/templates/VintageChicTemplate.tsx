@@ -170,7 +170,7 @@ export default function VintageChicTemplate({
       <section className="py-40 px-6 text-center">
         <div className="max-w-xl mx-auto border-t border-[#8D6E63]/10 pt-20">
           <h2 className="text-5xl font-normal mb-12 italic">Join our Journey</h2>
-          {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
           <p className="mt-20 font-sans text-[9px] uppercase tracking-[0.5em] opacity-30">
             Vintage Chic Collection — DNvites
           </p>

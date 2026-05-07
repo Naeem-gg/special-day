@@ -408,7 +408,7 @@ export default function EmeraldForestTemplate({
             <p className="font-sans text-sm mb-10" style={{ color: '#8FAF7E' }}>
               {venue}
             </p>
-            {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
           </motion.div>
         </section>
       </div>

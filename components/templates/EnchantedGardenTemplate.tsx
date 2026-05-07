@@ -223,7 +223,7 @@ export default function EnchantedGardenTemplate({
         <div className="max-w-2xl mx-auto p-20 bg-emerald-950/20 backdrop-blur-md rounded-full border border-[#D4AF37]/10 shadow-2xl shadow-green-950/50">
            <Leaf size={40} className="mx-auto mb-10 text-green-500 opacity-20" />
            <h2 className="text-5xl font-normal mb-12 italic text-[#EAD8A0]">Enter the Garden</h2>
-           {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+           {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
            <div className="mt-20 text-[10px] font-sans tracking-[0.4em] text-green-900 font-bold uppercase">
               The Enchanted Collection — DNvites
            </div>

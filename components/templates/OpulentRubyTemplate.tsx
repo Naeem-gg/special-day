@@ -223,7 +223,7 @@ export default function OpulentRubyTemplate({
         <div className="max-w-2xl mx-auto p-24 border-2 border-[#D4AF37]/20 bg-linear-to-b from-[#4A0404]/50 to-transparent">
            <Heart size={48} className="mx-auto mb-16 text-[#D4AF37] opacity-20" />
            <h2 className="text-6xl md:text-8xl font-normal mb-16 italic text-transparent bg-clip-text bg-linear-to-b from-[#D4AF37] to-[#B8860B]">Join the Dynasty</h2>
-           {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+           {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
            <div className="mt-40 text-[10px] font-sans tracking-[0.8em] text-[#D4AF37]/30 font-bold uppercase">
               Opulent Series • DNvites Premium
            </div>

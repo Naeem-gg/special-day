@@ -383,7 +383,7 @@ export default function CinematicFilmTemplate({
             <p className="font-sans text-sm mb-10" style={{ color: '#666' }}>
               {venue}
             </p>
-            {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+            {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
           </motion.div>
         </section>
       </div>

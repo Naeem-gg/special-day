@@ -511,7 +511,7 @@ export default function RoyalGoldTemplate({
             <p className="font-sans text-xs md:text-sm mb-10" style={{ color: '#806060' }}>
               {venue}
             </p>
-            {invitationId && <RSVPModal invitationId={invitationId} inline={inline} />}
+            {invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} inline={inline} />}
           </motion.div>
         </section>
       </div>

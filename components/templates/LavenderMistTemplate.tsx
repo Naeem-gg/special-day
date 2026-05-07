@@ -165,7 +165,7 @@ export default function LavenderMistTemplate({
       <section className="py-32 px-6 text-center relative z-10">
         <div className="max-w-xl mx-auto bg-white/80 p-16 rounded-full border border-purple-50">
           <h2 className="text-4xl font-light mb-10 italic">We Hope to See You There</h2>
-          {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
         </div>
       </section>
     </div>

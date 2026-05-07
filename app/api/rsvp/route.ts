@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
-import { rsvps } from '@/lib/db/schema'
+import { rsvps, invitations } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
@@ -9,6 +10,16 @@ export async function POST(req: NextRequest) {
 
     if (!invitationId || !name) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Verify tier allows RSVPs
+    const [invitation] = await db
+      .select({ tier: invitations.tier })
+      .from(invitations)
+      .where(eq(invitations.id, invitationId))
+
+    if (!invitation || invitation.tier === 'basic') {
+      return NextResponse.json({ error: 'RSVP not available for this plan' }, { status: 403 })
     }
 
     const [newRsvp] = await db

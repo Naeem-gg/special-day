@@ -189,7 +189,7 @@ export default function AmethystGlanceTemplate({
         <div className="max-w-2xl mx-auto p-20 border border-white/10 bg-linear-to-b from-white/5 to-transparent rounded-[100px_100px_0_0]">
           <Gem size={48} className="mx-auto mb-10 text-purple-400 opacity-30" />
           <h2 className="text-5xl font-black mb-12 text-white" style={{ fontFamily: 'var(--font-cinzel)' }}>Secure Your Presence</h2>
-          {!isPreview && invitationId && <RSVPModal invitationId={invitationId} />}
+          {!isPreview && invitationId && tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
           <p className="mt-20 text-[10px] tracking-[0.6em] text-purple-500 font-bold uppercase">
             DNvites Premium Series
           </p>

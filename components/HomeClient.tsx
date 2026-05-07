@@ -793,7 +793,7 @@ export default function HomeClient({
             <FeatureCard
               icon={<Gift className="w-6 h-6 text-[#D4AF37]" />}
               title="Track Who's Coming"
-              description="Your guests can RSVP with a click and you can see the list in real time - no spreadsheets needed!"
+              description="Your guests can RSVP with a click and you can see the list in real time (Silver & Gold plans)."
               delay={0.3}
             />
             <FeatureCard
@@ -1182,6 +1182,7 @@ export default function HomeClient({
                 'Space for 1 wedding photo',
                 '1 year of hosting included',
                 'Edit details for 48 hours',
+                'No RSVP management',
                 'Shareable via WhatsApp & Social',
               ]}
               delay={0.1}
@@ -1193,7 +1194,7 @@ export default function HomeClient({
               originalPrice="1299"
               features={[
                 'Everything in Basic',
-                "See who's coming (Guest List)",
+                "Integrated RSVP (Guest List)",
                 'Up to 5 photos',
                 'Your favourite background music',
                 'Edit details for 48 hours',
@@ -1249,7 +1250,7 @@ export default function HomeClient({
               },
               {
                 q: "How does the RSVP tracking work?",
-                a: "Your guests will see an RSVP button on your invitation. When they fill it out, their response (Name, Number of Guests, Attending status) is instantly updated in your private dashboard."
+                a: "Our Silver and Gold plans include an RSVP button on your invitation. When guests fill it out, their response (Name, Guests, Attending status) is instantly updated in your private dashboard."
               },
               {
                 q: "Can I add music to my invitation?",
