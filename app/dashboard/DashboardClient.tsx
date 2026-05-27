@@ -105,13 +105,13 @@ const StyleCard = ({ tmpl, formData, isSelected, handleStylePreview, handleStyle
                     formData.events[0]?.name
                       ? formData.events
                       : [
-                          {
-                            name: 'Sangeet',
-                            time: '6:00 PM',
-                            location: 'Crystal Ballroom',
-                            description: 'Music & Dance',
-                          },
-                        ]
+                        {
+                          name: 'Sangeet',
+                          time: '6:00 PM',
+                          location: 'Crystal Ballroom',
+                          description: 'Music & Dance',
+                        },
+                      ]
                   }
                   gallery={formData.gallery}
                   ourStory={formData.ourStory}
@@ -770,18 +770,18 @@ export default function DashboardClient({
                                 {
                                   getDisplayPrice(
                                     (tiers.find((t) => t.slug === formData.tier)?.price || 0) -
-                                      calculateFinalPrice(
-                                        tiers.find((t) => t.slug === formData.tier)?.price || 0
-                                      ),
+                                    calculateFinalPrice(
+                                      tiers.find((t) => t.slug === formData.tier)?.price || 0
+                                    ),
                                     currency
                                   ).symbol
                                 }
                                 {
                                   getDisplayPrice(
                                     (tiers.find((t) => t.slug === formData.tier)?.price || 0) -
-                                      calculateFinalPrice(
-                                        tiers.find((t) => t.slug === formData.tier)?.price || 0
-                                      ),
+                                    calculateFinalPrice(
+                                      tiers.find((t) => t.slug === formData.tier)?.price || 0
+                                    ),
                                     currency
                                   ).amount
                                 }
@@ -794,21 +794,21 @@ export default function DashboardClient({
                               {calculateFinalPrice(
                                 tiers.find((t) => t.slug === formData.tier)?.price || 0
                               ) < (tiers.find((t) => t.slug === formData.tier)?.price || 0) && (
-                                <span className="text-sm text-gray-400 line-through">
-                                  {
-                                    getDisplayPrice(
-                                      tiers.find((t) => t.slug === formData.tier)?.price || 0,
-                                      currency
-                                    ).symbol
-                                  }
-                                  {
-                                    getDisplayPrice(
-                                      tiers.find((t) => t.slug === formData.tier)?.price || 0,
-                                      currency
-                                    ).amount
-                                  }
-                                </span>
-                              )}
+                                  <span className="text-sm text-gray-400 line-through">
+                                    {
+                                      getDisplayPrice(
+                                        tiers.find((t) => t.slug === formData.tier)?.price || 0,
+                                        currency
+                                      ).symbol
+                                    }
+                                    {
+                                      getDisplayPrice(
+                                        tiers.find((t) => t.slug === formData.tier)?.price || 0,
+                                        currency
+                                      ).amount
+                                    }
+                                  </span>
+                                )}
                               <span className="text-2xl text-[#F43F8F]">
                                 {
                                   getDisplayPrice(
@@ -1131,17 +1131,18 @@ export default function DashboardClient({
                           formData.events[0]?.name
                             ? formData.events
                             : [
-                                {
-                                  name: 'Main Event',
-                                  time: '6:00 PM',
-                                  location: 'Royal Hall',
-                                  description: 'Join us for dinner.',
-                                },
-                              ]
+                              {
+                                name: 'Main Event',
+                                time: '6:00 PM',
+                                location: 'Royal Hall',
+                                description: 'Join us for dinner.',
+                              },
+                            ]
                         }
                         gallery={formData.gallery}
                         ourStory={formData.ourStory}
                         mapUrl={formData.mapUrl}
+                        musicUrl={formData.musicUrl}
                         isPreview={true}
                       />
                     </Skeleton>
@@ -1359,13 +1360,13 @@ export default function DashboardClient({
             {/* Wedding Details */}
             <motion.div custom={0} variants={cardVariants} initial="hidden" animate="visible">
               <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
-                <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
+                <CardHeader className="p-4 sm:p-6">
                   <CardTitle className="flex items-center gap-2 font-serif text-xl">
                     <Heart className="w-5 h-5 text-[#F43F8F] fill-[#F43F8F]" />
                     Tell Us About Your Love
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-6 pt-6">
+                <CardContent className="grid gap-6 p-4 sm:p-6 pt-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label htmlFor="brideName" className="text-sm font-semibold text-gray-700">
@@ -1444,7 +1445,7 @@ export default function DashboardClient({
                           </div>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 w-full min-w-0">
                         <span className="text-gray-400 text-sm shrink-0">/invite/</span>
                         <Input
                           id="slug"
@@ -1458,11 +1459,10 @@ export default function DashboardClient({
                           }
                           required
                           readOnly={formData.tier.toLowerCase() === 'basic'}
-                          className={`border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 transition-all ${
-                            formData.tier.toLowerCase() === 'basic'
-                              ? 'bg-gray-50/50 text-gray-400 border-dashed cursor-not-allowed'
-                              : 'bg-white'
-                          }`}
+                          className={`flex-1 min-w-0 border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 transition-all ${formData.tier.toLowerCase() === 'basic'
+                            ? 'bg-gray-50/50 text-gray-400 border-dashed cursor-not-allowed'
+                            : 'bg-white'
+                            }`}
                         />
                       </div>
                       {formData.tier.toLowerCase() === 'basic' ? (
@@ -1519,8 +1519,8 @@ export default function DashboardClient({
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full min-w-0">
+                      <div className="relative flex-1 min-w-0">
                         <Input
                           id="musicUrl"
                           placeholder="Paste a link OR upload a file"
@@ -1535,10 +1535,11 @@ export default function DashboardClient({
                             setFormData({ ...formData, musicUrl: transformed })
                           }}
                           readOnly={!!uploadedMusicName}
-                          className={`border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 pr-10 ${uploadedMusicName ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+                          className={`w-full border-rose-200 focus:border-[#F43F8F] rounded-xl h-11 pr-10 ${uploadedMusicName ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
                         />
                         {formData.musicUrl && (
                           <button
+                            type="button"
                             onClick={() => setFormData({ ...formData, musicUrl: '' })}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500"
                           >
@@ -1547,9 +1548,9 @@ export default function DashboardClient({
                         )}
                       </div>
 
-                      <label className="shrink-0">
+                      <label className="shrink-0 w-full sm:w-auto">
                         <div
-                          className={`h-11 px-4 rounded-xl border-2 border-dashed flex items-center justify-center gap-2 cursor-pointer transition-all ${isUploadingMusic ? 'bg-gray-50 border-gray-200' : 'border-rose-200 bg-rose-50/30 hover:bg-rose-50 hover:border-rose-300'}`}
+                          className={`h-11 px-4 rounded-xl border-2 border-dashed flex items-center justify-center gap-2 cursor-pointer transition-all w-full ${isUploadingMusic ? 'bg-gray-50 border-gray-200' : 'border-rose-200 bg-rose-50/30 hover:bg-rose-50 hover:border-rose-300'}`}
                         >
                           {isUploadingMusic ? (
                             <Loader2 className="w-4 h-4 text-[#F43F8F] animate-spin" />
@@ -1678,7 +1679,7 @@ export default function DashboardClient({
             {/* Style Picker */}
             <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible">
               <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
-                <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
+                <CardHeader className="">
                   <CardTitle className="flex items-center gap-2 font-serif text-xl">
                     <Sparkles className="w-5 h-5 text-[#D4AF37]" />
                     Choose Your Invitation Style
@@ -1747,17 +1748,17 @@ export default function DashboardClient({
                                 {/* Show Strike Price from DB if exists, otherwise show calculated Original Price if discounted */}
                                 {(selectedTier?.strikePrice ||
                                   (hasDiscount && originalPrice > finalPrice)) && (
-                                  <span className="text-xs text-gray-400 line-through">
-                                    ₹{selectedTier?.strikePrice || originalPrice}
-                                  </span>
-                                )}
+                                    <span className="text-xs text-gray-400 line-through">
+                                      ₹{selectedTier?.strikePrice || originalPrice}
+                                    </span>
+                                  )}
                                 {hasDiscount && finalPrice < originalPrice && (
                                   <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full border border-green-100">
                                     SAVE{' '}
                                     {Math.round(
                                       (((selectedTier?.strikePrice || originalPrice) - finalPrice) /
                                         (selectedTier?.strikePrice || originalPrice)) *
-                                        100
+                                      100
                                     )}
                                     %
                                   </span>
@@ -1873,7 +1874,7 @@ export default function DashboardClient({
                 {/* Special Moments Schedule */}
                 <motion.div custom={1} variants={cardVariants} initial="hidden" animate="visible">
                   <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
-                    <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100 flex flex-row items-center justify-between pb-4">
+                    <CardHeader className="flex flex-row items-center justify-between pb-4">
                       <CardTitle className="flex items-center gap-2 font-serif text-xl">
                         <Sparkles className="w-5 h-5 text-[#D4AF37]" />
                         Your Special Moments Schedule
@@ -1983,7 +1984,7 @@ export default function DashboardClient({
                 {/* Your Photo Album */}
                 <motion.div custom={2} variants={cardVariants} initial="hidden" animate="visible">
                   <Card className="border-0 shadow-xl shadow-rose-100/40 rounded-3xl overflow-hidden">
-                    <CardHeader className="bg-linear-to-r from-rose-50 to-amber-50 border-b border-rose-100">
+                    <CardHeader className="">
                       <CardTitle className="flex items-center gap-2 font-serif text-xl">
                         📸 Your Photo Album
                       </CardTitle>
@@ -2023,7 +2024,7 @@ export default function DashboardClient({
               variants={cardVariants}
               initial="hidden"
               animate="visible"
-              className="flex justify-end pt-2 pb-8"
+              className="flex justify-center pt-2 pb-8"
             >
               <motion.button
                 type="submit"

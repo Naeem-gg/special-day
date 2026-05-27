@@ -636,8 +636,7 @@ export default function EnvelopeIntro({
                         : { scale: 1, y: 0 }
                   }
                   transition={{ duration: 0.55, ease: 'easeOut' }}
-                  className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2"
-                  style={{ width: '16rem', height: '16rem' }}
+                  className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-1/2 w-44 h-44 sm:w-52 sm:h-52 md:w-64 md:h-64"
                 >
                   <WaxSeal
                     theme={theme}
@@ -652,10 +651,10 @@ export default function EnvelopeIntro({
             {/* ── "Tap to unlock" hint ─────────────────────── */}
             {step === 'idle' && !autoOpen && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="mt-14 flex flex-col items-center gap-3"
+                className="absolute -top-16 left-0 right-0 flex flex-col items-center gap-2 pointer-events-none"
               >
                 <motion.div
                   animate={{ y: [0, -6, 0] }}

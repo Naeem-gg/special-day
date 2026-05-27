@@ -137,7 +137,7 @@ export default function DoorIntro({
           {!isOpen && !autoOpen && (
             <motion.div
               onClick={handleOpen}
-              className="absolute inset-0 z-30 cursor-pointer flex flex-col items-center justify-center text-white"
+              className="absolute inset-0 z-30 cursor-pointer flex flex-col items-center justify-center text-white -translate-y-24 sm:-translate-y-28"
             >
               <motion.p
                 animate={{ opacity: [0.4, 1, 0.4] }}

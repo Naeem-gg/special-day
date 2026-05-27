@@ -90,6 +90,22 @@ export default function RoseGoldTemplate({
           className={`relative flex flex-col items-center justify-center overflow-hidden text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
           style={{ background: 'linear-gradient(160deg, #FFF8F0 0%, #FEF0F0 60%, #FFF5E6 100%)' }}
         >
+          {/* Video backdrop */}
+          {!isThumbnail && (
+            <div className="absolute inset-0 z-0 pointer-events-none">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+                style={{ opacity: 0.15, mixBlendMode: 'multiply' }}
+              >
+                <source src="/videos/rings-hand.mp4" type="video/mp4" />
+              </video>
+            </div>
+          )}
+
           {/* Petals */}
           {petals.map((s, i) => (
             <Petal key={i} style={s} />

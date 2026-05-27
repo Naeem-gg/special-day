@@ -29,7 +29,7 @@ for (const line of envContent.split('\n')) {
   if (!process.env[key]) process.env[key] = val
 }
 
-const DATABASE_URL = process.env.DATABASE_URL
+const DATABASE_URL = process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL
 if (!DATABASE_URL) {
   console.error('❌  DATABASE_URL is not set in .env.local')
   process.exit(1)
@@ -89,6 +89,9 @@ const statements = [
     last_otp_at      TIMESTAMPTZ,
     otp_resend_count INTEGER     NOT NULL DEFAULT 0,
     last_otp_resend_at TIMESTAMPTZ,
+    reset_otp        TEXT,
+    reset_otp_expires TIMESTAMPTZ,
+    last_reset_at    TIMESTAMPTZ,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`,
 
@@ -196,6 +199,9 @@ const alterStatements = [
   `ALTER TABLE tiers ADD COLUMN IF NOT EXISTS strike_price INTEGER`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_resend_count INTEGER DEFAULT 0 NOT NULL`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS last_otp_resend_at TIMESTAMPTZ`,
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp TEXT`,
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp_expires TIMESTAMPTZ`,
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reset_at TIMESTAMPTZ`,
 ]
 
 const allStatements = [...statements, ...alterStatements]
@@ -207,7 +213,7 @@ let failed = 0
 for (const stmt of allStatements) {
   const label = stmt.trim().split('\n')[0].slice(0, 80)
   try {
-    await sql.unsafe(stmt)
+    await sql.query(stmt)
     console.log(`  ✅  ${label}`)
     ok++
   } catch (err) {

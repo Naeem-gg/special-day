@@ -48,6 +48,17 @@ export default function MobileInvitationPreview() {
   const [hasOpened, setHasOpened] = useState(false)
   const [musicOn, setMusicOn] = useState(false)
   const [hasScrolled, setHasScrolled] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (musicOn) {
+        audioRef.current.play().catch((err) => console.log('Playback blocked', err))
+      } else {
+        audioRef.current.pause()
+      }
+    }
+  }, [musicOn])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,6 +93,11 @@ export default function MobileInvitationPreview() {
     >
       {/* Phone Frame */}
       <div className="absolute inset-0 bg-[#1a0a0d] rounded-[3.5rem] border-12 border-[#2d1b20] shadow-[0_0_0_2px_rgba(255,255,255,0.05),0_30px_60px_-12px_rgba(0,0,0,0.5)] overflow-hidden">
+        <audio
+          ref={audioRef}
+          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+          loop
+        />
         {/* Screen Content */}
         <div className="absolute inset-0 bg-white overflow-hidden rounded-[2.8rem] flex flex-col">
           {/* Status Bar */}

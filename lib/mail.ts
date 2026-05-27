@@ -2,6 +2,7 @@ import { render } from 'react-email'
 import PurchaseReceiptEmail from '@/components/emails/PurchaseReceiptEmail'
 import GiftCouponEmail from '@/components/emails/GiftCouponEmail'
 import FeedbackNotificationEmail from '@/components/emails/FeedbackNotificationEmail'
+import PasswordResetOtpEmail from '@/components/emails/PasswordResetOtpEmail'
 import React from 'react'
 import { Resend } from 'resend'
 
@@ -136,3 +137,28 @@ export async function sendFeedbackNotification({
     htmlContent,
   })
 }
+
+export async function sendPasswordResetOtp({
+  to,
+  name,
+  otpCode,
+}: {
+  to: string
+  name: string
+  otpCode: string
+}) {
+  // @ts-ignore
+  const htmlContent = await render(
+    React.createElement(PasswordResetOtpEmail, {
+      name,
+      otpCode,
+    })
+  )
+
+  return sendEmail({
+    to,
+    subject: 'Reset your DNvites Password 🔑',
+    htmlContent,
+  })
+}
+

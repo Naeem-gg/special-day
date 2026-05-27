@@ -1,42 +1,38 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { DNvitesLogo } from '@/components/branding/DNvitesLogo'
-import {
-  Calendar,
-  Eye,
-  Settings,
-  Share2,
-  Plus,
-  ArrowRight,
-  BarChart3,
-  Users,
-  TrendingUp,
-  ExternalLink,
-  X,
-  Trash2,
-  Download,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Edit3,
-  Clock,
-  Star,
-  MessageSquare,
-} from 'lucide-react'
-import Link from 'next/link'
-import { format } from 'date-fns'
-import { useState, useEffect } from 'react'
+import { TestimonialForm } from '@/components/testimonials/TestimonialForm'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
+  DialogContent
 } from '@/components/ui/dialog'
-import { TestimonialForm } from '@/components/testimonials/TestimonialForm'
+import { format } from 'date-fns'
+import { motion } from 'framer-motion'
+import {
+  ArrowRight,
+  BarChart3,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Download,
+  Edit3,
+  ExternalLink,
+  Eye,
+  Loader2,
+  MessageSquare,
+  Plus,
+  Settings,
+  Share2,
+  Star,
+  Trash2,
+  TrendingUp,
+  Users,
+  XCircle
+} from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 const TIER_GRADIENT: Record<string, string> = {
   basic: 'from-rose-100 to-amber-100',
@@ -349,7 +345,7 @@ export function DashboardClient({
                         const hoursLeft =
                           48 -
                           (new Date().getTime() - new Date(invite.createdAt).getTime()) /
-                            (1000 * 60 * 60)
+                          (1000 * 60 * 60)
                         if (hoursLeft > 0) {
                           return (
                             <div className="flex items-center gap-1.5 text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 ml-auto">
@@ -377,7 +373,7 @@ export function DashboardClient({
                       {(() => {
                         const isEditable =
                           (new Date().getTime() - new Date(invite.createdAt).getTime()) /
-                            (1000 * 60 * 60) <
+                          (1000 * 60 * 60) <
                           48
                         if (isEditable) {
                           return (
@@ -412,7 +408,7 @@ export function DashboardClient({
                               title: `${invite.brideName} & ${invite.groomName}`,
                               url: `${window.location.origin}/invite/${invite.slug}`,
                             })
-                            .catch(() => {})
+                            .catch(() => { })
                         }
                       >
                         Share Invitation

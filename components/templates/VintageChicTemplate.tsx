@@ -44,6 +44,22 @@ export default function VintageChicTemplate({
       <section
         className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
       >
+        {/* Video backdrop */}
+        {!isThumbnail && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+              style={{ opacity: 0.12, mixBlendMode: 'multiply' }}
+            >
+              <source src="/videos/stamps.mp4" type="video/mp4" />
+            </video>
+          </div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}

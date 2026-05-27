@@ -63,6 +63,7 @@ import EnvelopeIntro from '../invitation/EnvelopeIntro'
 import DoorIntro from '../invitation/DoorIntro'
 import CurtainIntro from '../invitation/CurtainIntro'
 import { Watermark } from '../branding/Watermark'
+import BackgroundMusic from '../invitation/BackgroundMusic'
 
 export default function StyleRouter({ style, ...props }: StyleProps & { style: string }) {
   const Component = STYLE_MAP[style] ?? RoseGoldTemplate
@@ -132,6 +133,7 @@ export default function StyleRouter({ style, ...props }: StyleProps & { style: s
     <>
       {renderIntro()}
       <Component {...props} tier={meta?.tier} ourStory={props.ourStory} mapUrl={props.mapUrl} />
+      {props.musicUrl && !props.isThumbnail && <BackgroundMusic url={props.musicUrl} />}
 
       {/* ── Brand Promotional Footer ────────────── */}
       {!props.isThumbnail && (

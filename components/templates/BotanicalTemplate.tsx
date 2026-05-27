@@ -14,7 +14,6 @@ import {
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 import PremiumCountdown from '@/components/invitation/PremiumCountdown'
-import BackgroundMusic from '@/components/invitation/BackgroundMusic'
 
 /* ── SVG Vine drawing ──────────────────────────────────── */
 function VineDivider() {
@@ -120,7 +119,6 @@ export default function BotanicalTemplate({
       className={isThumbnail ? 'min-h-full' : 'min-h-screen'}
       style={{ fontFamily: "'Playfair Display', Georgia, serif", background: '#FAFCF8' }}
     >
-      {musicUrl && !isThumbnail && <BackgroundMusic url={musicUrl} />}
 
       {/* ── HERO ─────────────────────────────────── */}
       <section

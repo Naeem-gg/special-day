@@ -70,13 +70,30 @@ export default function DiamondRegalTemplate({
   return (
     <div
       className="min-h-screen bg-black text-white overflow-hidden"
-      style={{ fontFamily: 'var(--font-playfair), serif' }}
+      style={{ fontFamily: 'var(--font-cormorant), serif' }}
     >
       {/* --- HERO --- */}
       <section
         className={`relative flex flex-col items-center justify-center text-center px-6 ${isThumbnail ? 'min-h-[812px]' : 'min-h-screen'}`}
       >
         <DiamondSparkle />
+
+        {/* Video backdrop */}
+        {!isThumbnail && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+              style={{ opacity: 0.35, mixBlendMode: 'screen' }}
+            >
+              <source src="/videos/rings-invite.mp4" type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-black/45" />
+          </div>
+        )}
 
         {/* Platinum Geometric Accents */}
         <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
@@ -106,13 +123,16 @@ export default function DiamondRegalTemplate({
             <Crown size={60} className="mx-auto text-white" strokeWidth={1} />
           </motion.div>
 
-          <h2 className="text-xs font-sans uppercase tracking-[0.8em] mb-16 text-zinc-500">
+          <h2
+            className="text-xs uppercase tracking-[0.8em] mb-16 text-zinc-500 font-bold animate-pulse"
+            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+          >
             The Royal Union Of
           </h2>
 
           <h1
-            className="text-7xl md:text-9xl font-black mb-6 tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white via-zinc-400 to-zinc-700"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            className="text-6xl md:text-8xl font-normal mb-6 tracking-[0.12em] text-transparent bg-clip-text bg-linear-to-b from-white via-zinc-200 to-zinc-500"
+            style={{ fontFamily: 'var(--font-cinzel), serif' }}
           >
             {brideName}
           </h1>
@@ -122,15 +142,25 @@ export default function DiamondRegalTemplate({
             <div className="h-px w-24 bg-linear-to-l from-transparent to-white/30" />
           </div>
           <h1
-            className="text-7xl md:text-9xl font-black mb-16 tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white via-zinc-400 to-zinc-700"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            className="text-6xl md:text-8xl font-normal mb-16 tracking-[0.12em] text-transparent bg-clip-text bg-linear-to-b from-white via-zinc-200 to-zinc-500"
+            style={{ fontFamily: 'var(--font-cinzel), serif' }}
           >
             {groomName}
           </h1>
 
-          <p className="text-2xl md:text-4xl font-light mb-4 tracking-[0.2em] uppercase">{fmt}</p>
+          <p
+            className="text-2xl md:text-4xl font-light mb-4 tracking-[0.25em] uppercase text-zinc-200"
+            style={{ fontFamily: 'var(--font-cormorant), serif' }}
+          >
+            {fmt}
+          </p>
           <div className="h-[1px] w-20 bg-white/20 mx-auto my-8" />
-          <p className="text-sm font-sans tracking-[0.5em] text-zinc-500 uppercase">{venue}</p>
+          <p
+            className="text-xs tracking-[0.6em] text-zinc-400 uppercase font-medium"
+            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+          >
+            {venue}
+          </p>
         </motion.div>
 
         <motion.div
@@ -150,17 +180,20 @@ export default function DiamondRegalTemplate({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="text-xs uppercase tracking-[0.8em] text-zinc-500 mb-10">
+          <p
+            className="text-xs uppercase tracking-[0.8em] text-zinc-500 mb-10 font-bold"
+            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+          >
             The Royal Countdown
           </p>
           <PremiumCountdown
             targetDate={date}
             tier={tier}
             theme={{
-              primary: '#ffffff',
-              secondary: '#000000',
-              accent: '#333333',
-              text: '#ffffff',
+              primary: '#E5E4E2', // Platinum silver for the labels
+              secondary: '#1C1C1E', // Dark charcoal boxes to stand out from background
+              accent: '#FFFFFF', // Clean white digits
+              text: '#FFFFFF',
             }}
           />
         </motion.div>
@@ -172,8 +205,8 @@ export default function DiamondRegalTemplate({
           <DiamondSparkle />
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <h2
-              className="text-5xl font-black mb-20 tracking-widest uppercase text-zinc-800"
-              style={{ fontFamily: 'var(--font-cinzel)' }}
+              className="text-3xl md:text-4xl font-normal mb-20 tracking-[0.3em] uppercase text-zinc-700"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
             >
               The Legacy
             </h2>
@@ -192,12 +225,12 @@ export default function DiamondRegalTemplate({
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-32">
             <h2
-              className="text-4xl font-black tracking-[0.4em] uppercase text-white mb-4"
-              style={{ fontFamily: 'var(--font-cinzel)' }}
+              className="text-4xl font-normal tracking-[0.4em] uppercase text-white mb-6"
+              style={{ fontFamily: 'var(--font-cinzel), serif' }}
             >
               Itinerary
             </h2>
-            <div className="w-12 h-1 bg-white mx-auto" />
+            <div className="w-16 h-px bg-zinc-700 mx-auto" />
           </div>
           <div className="space-y-1">
             {events.map((ev, i) => (
@@ -210,19 +243,28 @@ export default function DiamondRegalTemplate({
               >
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0 h-full bg-white transition-all duration-700 group-hover:w-1" />
                 <div className="mb-8 md:mb-0">
-                  <span className="text-xs font-sans text-zinc-500 uppercase tracking-[0.5em] block mb-4">
+                  <span
+                    className="text-xs text-zinc-500 uppercase tracking-[0.5em] block mb-4 font-bold"
+                    style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                  >
                     {ev.time}
                   </span>
-                  <h3 className="text-5xl font-normal group-hover:translate-x-4 transition-transform duration-700">
+                  <h3
+                    className="text-4xl md:text-5xl font-normal group-hover:translate-x-4 transition-transform duration-700"
+                    style={{ fontFamily: 'var(--font-cormorant), serif' }}
+                  >
                     {ev.name}
                   </h3>
                 </div>
                 <div className="text-center md:text-right max-w-sm">
-                  <p className="text-zinc-500 text-lg mb-6 leading-relaxed italic">
+                  <p className="text-zinc-400 text-lg mb-6 leading-relaxed italic font-light">
                     {ev.description}
                   </p>
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-400 flex items-center justify-center md:justify-end gap-3 font-bold">
-                    <MapPin size={12} className="text-white" /> {ev.location}
+                  <p
+                    className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 flex items-center justify-center md:justify-end gap-3 font-bold"
+                    style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+                  >
+                    <MapPin size={12} className="text-white/40" /> {ev.location}
                   </p>
                 </div>
               </motion.div>
@@ -260,13 +302,19 @@ export default function DiamondRegalTemplate({
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_70%)]" />
         <div className="max-w-4xl mx-auto relative z-10">
           <Crown size={48} className="mx-auto mb-16 text-white/20" />
-          <h2 className="text-6xl md:text-8xl font-normal mb-16 italic text-transparent bg-clip-text bg-linear-to-b from-white to-zinc-600">
+          <h2
+            className="text-5xl md:text-7xl font-light mb-16 italic text-transparent bg-clip-text bg-linear-to-b from-white to-zinc-500"
+            style={{ fontFamily: 'var(--font-cormorant), serif' }}
+          >
             Secure Your Invitation
           </h2>
           {!isPreview && invitationId && tier !== 'basic' && (
             <RSVPModal invitationId={invitationId} />
           )}
-          <div className="mt-40 text-[9px] font-sans tracking-[1em] text-zinc-700 uppercase font-bold">
+          <div
+            className="mt-40 text-[9px] tracking-[1.2em] text-zinc-700 uppercase font-bold"
+            style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
+          >
             DNvites Diamond Series • Limited Edition
           </div>
         </div>

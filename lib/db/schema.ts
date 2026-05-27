@@ -22,6 +22,9 @@ export const users = pgTable('users', {
   lastOtpAt: timestamp('last_otp_at'),
   otpResendCount: integer('otp_resend_count').default(0).notNull(),
   lastOtpResendAt: timestamp('last_otp_resend_at'),
+  resetOtp: text('reset_otp'),
+  resetOtpExpires: timestamp('reset_otp_expires'),
+  lastResetAt: timestamp('last_reset_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
