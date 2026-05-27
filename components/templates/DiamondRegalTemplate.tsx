@@ -493,7 +493,11 @@ export default function DiamondRegalTemplate({
 
             {!isPreview && invitationId && tier !== 'basic' && (
               <div className="inline-block scale-105 md:scale-110">
-                <RSVPModal invitationId={invitationId} />
+                <RSVPModal
+                  invitationId={invitationId}
+                  className="relative z-10"
+                  buttonClassName="shine-hover-btn px-12 py-4 border border-white/20 bg-white/5 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-500 text-[11px] font-bold uppercase tracking-[0.25em] rounded-lg shadow-lg"
+                />
               </div>
             )}
 

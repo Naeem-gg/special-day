@@ -23,6 +23,7 @@ import {
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { EditInvitationModal } from '@/components/invitation/EditInvitationModal'
 
 export function AdminOverview({ initialStats }: { initialStats: any }) {
   const [stats, setStats] = useState<any>(initialStats)
@@ -91,6 +92,7 @@ export function AdminOverview({ initialStats }: { initialStats: any }) {
 export function InvitationManager({ initialInvitations = [] }: { initialInvitations: any[] }) {
   const [invitations, setInvitations] = useState<any[]>(initialInvitations)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [editInvite, setEditInvite] = useState<any>(null)
 
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this invitation?')) return
@@ -151,20 +153,41 @@ export function InvitationManager({ initialInvitations = [] }: { initialInvitati
                 <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-1 bg-gray-100 text-gray-600 rounded">
                   {inv.tier}
                 </span>
-                <Link href={`/invite/${inv.slug}`} target="_blank">
+                <div className="flex gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    onClick={() => setEditInvite(inv)}
+                    className="h-7 text-xs text-[#F43F8F] hover:text-[#d82a75] hover:bg-rose-50 flex items-center gap-1"
                   >
-                    View Invite →
+                    <Edit className="w-3.5 h-3.5" /> Edit
                   </Button>
-                </Link>
+                  <Link href={`/invite/${inv.slug}`} target="_blank">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      View Invite →
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Edit Invitation Modal for Admins */}
+      <EditInvitationModal
+        isOpen={!!editInvite}
+        onClose={() => setEditInvite(null)}
+        invitation={editInvite}
+        onSaveSuccess={() => {
+          window.location.reload()
+        }}
+        isAdmin={true}
+      />
     </div>
   )
 }

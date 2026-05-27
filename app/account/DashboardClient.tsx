@@ -33,6 +33,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { EditInvitationModal } from '@/components/invitation/EditInvitationModal'
 
 const TIER_GRADIENT: Record<string, string> = {
   basic: 'from-rose-100 to-amber-100',
@@ -60,6 +61,7 @@ export function DashboardClient({
   const [isLoadingRsvps, setIsLoadingRsvps] = useState(false)
   const [showReviewDialog, setShowReviewDialog] = useState(false)
   const [hasReviewed, setHasReviewed] = useState(initialHasReviewed)
+  const [editInvite, setEditInvite] = useState<any>(null)
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -369,24 +371,14 @@ export function DashboardClient({
                         </Button>
                       </Link>
 
-                      {/* Edit Button (within 48h) */}
-                      {(() => {
-                        const isEditable =
-                          (new Date().getTime() - new Date(invite.createdAt).getTime()) /
-                          (1000 * 60 * 60) <
-                          48
-                        if (isEditable) {
-                          return (
-                            <Link href={`/dashboard?edit=${invite.slug}`} className="w-full">
-                              <Button className="w-full justify-between bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 shadow-sm">
-                                Edit Details
-                                <Edit3 className="w-4 h-4 text-[#F43F8F]" />
-                              </Button>
-                            </Link>
-                          )
-                        }
-                        return null
-                      })()}
+                      {/* Edit Button */}
+                      <Button
+                        className="w-full justify-between bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 shadow-sm"
+                        onClick={() => setEditInvite(invite)}
+                      >
+                        Edit Details
+                        <Edit3 className="w-4 h-4 text-[#F43F8F]" />
+                      </Button>
 
                       {invite.tier !== 'basic' && (
                         <Button
@@ -436,7 +428,7 @@ export function DashboardClient({
 
       {/* ── RSVP Manager Modal ──────────── */}
       <Dialog open={!!selectedInvite} onOpenChange={(open) => !open && setSelectedInvite(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-0 rounded-3xl shadow-2xl">
+        <DialogContent className="md:max-w-2xl w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto p-0 border-0 rounded-3xl shadow-2xl">
           <div
             className={`h-32 bg-linear-to-r ${selectedInvite ? TIER_GRADIENT[selectedInvite.tier] : 'from-rose-50 to-amber-50'} flex items-end p-6`}
           >
@@ -541,7 +533,7 @@ export function DashboardClient({
       </Dialog>
       {/* ── Review Dialog ────────────── */}
       <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <DialogContent className="max-w-lg p-0 border-0 rounded-3xl overflow-hidden shadow-2xl">
+        <DialogContent className="md:max-w-lg w-[calc(100%-2rem)] p-0 border-0 rounded-3xl overflow-hidden shadow-2xl">
           <div className="bg-linear-to-r from-rose-50 to-amber-50 p-6 border-b border-rose-100 text-center">
             <h3 className="text-xl font-serif text-slate-900">Your Feedback Matters</h3>
             <p className="text-xs text-slate-500 mt-1">
@@ -564,6 +556,15 @@ export function DashboardClient({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── Edit Invitation Modal ────────── */}
+      <EditInvitationModal
+        isOpen={!!editInvite}
+        onClose={() => setEditInvite(null)}
+        invitation={editInvite}
+        onSaveSuccess={() => window.location.reload()}
+        isAdmin={false}
+      />
     </div>
   )
 }

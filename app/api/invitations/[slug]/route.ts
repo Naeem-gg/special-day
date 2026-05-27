@@ -3,7 +3,7 @@ import { invitations } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 
-import { getUserSession } from '@/lib/auth-utils'
+import { getUserSession, getSession } from '@/lib/auth-utils'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -27,7 +27,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
   try {
     const { slug } = await params
     const session = await getUserSession()
-    if (!session) {
+    const adminSession = await getSession()
+
+    if (!session && !adminSession) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -44,6 +46,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       language,
       ourStory,
       mapUrl,
+      tier,
+      paidAmount,
     } = body
 
     // Find invitation
@@ -55,39 +59,49 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       return NextResponse.json({ error: 'Invitation not found' }, { status: 404 })
     }
 
-    // Security: Check ownership
-    if (invitation.userEmail !== session.email) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    // Security: Check ownership & 48h limit if NOT admin
+    if (!adminSession) {
+      if (invitation.userEmail !== session.email) {
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+      }
+
+      // Security: Check 48h limit
+      const createdDate = new Date(invitation.createdAt)
+      const now = new Date()
+      const diffInHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60)
+
+      if (diffInHours > 48) {
+        return NextResponse.json(
+          { error: 'Editing window has closed (48 hours passed)' },
+          { status: 403 }
+        )
+      }
     }
 
-    // Security: Check 48h limit
-    const createdDate = new Date(invitation.createdAt)
-    const now = new Date()
-    const diffInHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60)
+    const updateData: any = {
+      brideName,
+      groomName,
+      date: new Date(date),
+      venue,
+      events,
+      gallery,
+      musicUrl,
+      template,
+      language: language || 'en',
+      ourStory,
+      mapUrl,
+    }
 
-    if (diffInHours > 48) {
-      return NextResponse.json(
-        { error: 'Editing window has closed (48 hours passed)' },
-        { status: 403 }
-      )
+    // Admins can also update tier and paid amount
+    if (adminSession) {
+      if (tier !== undefined) updateData.tier = tier
+      if (paidAmount !== undefined) updateData.paidAmount = paidAmount
     }
 
     // Update
     await db
       .update(invitations)
-      .set({
-        brideName,
-        groomName,
-        date: new Date(date),
-        venue,
-        events,
-        gallery,
-        musicUrl,
-        template,
-        language,
-        ourStory,
-        mapUrl,
-      })
+      .set(updateData)
       .where(eq(invitations.id, invitation.id))
 
     return NextResponse.json({ success: true, message: 'Invitation updated successfully' })
@@ -96,3 +110,4 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+

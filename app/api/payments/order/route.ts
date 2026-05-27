@@ -6,7 +6,7 @@ import { razorpay } from '@/lib/razorpay'
 
 export async function POST(req: NextRequest) {
   try {
-    const { tierSlug, couponCode, currency = 'INR' } = await req.json()
+    const { tierSlug, couponCode, currency = 'INR', invitationSlug } = await req.json()
     const { getDisplayPrice } = await import('@/lib/currency')
 
     // 1. Fetch the tier from DB to get the true base price
@@ -17,7 +17,19 @@ export async function POST(req: NextRequest) {
 
     let baseAmount = tier.price
 
-    // 2. If a coupon is provided, validate it strictly on the server
+    // 2. Fetch the existing invitation if upgrading
+    if (invitationSlug) {
+      const { invitations } = await import('@/lib/db/schema')
+      const existingInvite = await db.query.invitations.findFirst({
+        where: eq(invitations.slug, invitationSlug),
+      })
+      if (existingInvite) {
+        // Calculate upgrade price (difference between new tier price and what they already paid)
+        baseAmount = Math.max(0, tier.price - (existingInvite.paidAmount || 0))
+      }
+    }
+
+    // 3. If a coupon is provided, validate it strictly on the server
     if (couponCode) {
       const { coupons } = await import('@/lib/db/schema')
       const { and } = await import('drizzle-orm')
@@ -33,11 +45,11 @@ export async function POST(req: NextRequest) {
         const isLimitReached = coupon.usageLimit && coupon.usedCount >= coupon.usageLimit
 
         if (!isExpired && !isLimitReached) {
-          // Apply discount
+          // Apply discount to baseAmount (which may be the upgrade difference)
           if (coupon.discountType === 'percentage') {
-            baseAmount = Math.round(tier.price * (1 - coupon.discountValue / 100))
+            baseAmount = Math.round(baseAmount * (1 - coupon.discountValue / 100))
           } else {
-            baseAmount = Math.max(0, tier.price - coupon.discountValue)
+            baseAmount = Math.max(0, baseAmount - coupon.discountValue)
           }
         }
       }

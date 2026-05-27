@@ -26,6 +26,13 @@ const DOOR_THEMES = {
     knobColor: '#888888',
     gradient: 'linear-gradient(135deg, #1A1A1A 0%, #050505 100%)',
   },
+  'diamond-regal': {
+    bg: '#050505',
+    doorColor: '#111111',
+    ornamentColor: '#E5E4E2', // Platinum
+    knobColor: '#FFFFFF',
+    gradient: 'linear-gradient(135deg, #1C1C1E 0%, #050505 100%)',
+  },
   default: {
     bg: '#0f172a',
     doorColor: '#1e293b',

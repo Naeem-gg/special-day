@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       const payment = await razorpay.payments.fetch(razorpay_payment_id)
 
       // Re-calculate what the price SHOULD be based on the tier and coupon in the request
-      const { tier, couponId } = invitationData
+      const { tier, couponId, isUpgrade, slug } = invitationData
       const [dbTier] = await db
         .select()
         .from(tiersTable)
@@ -61,6 +61,16 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // If it's an upgrade, deduct previously paid amount
+      if (isUpgrade && slug) {
+        const existingInvite = await db.query.invitations.findFirst({
+          where: eq(invitations.slug, slug),
+        })
+        if (existingInvite) {
+          expectedAmount = Math.max(0, expectedAmount - (existingInvite.paidAmount || 0))
+        }
+      }
+
       // Check if the amount actually paid matches our server-side calculation
       // Razorpay amount is in paise
       if (payment.amount !== expectedAmount * 100) {
@@ -73,9 +83,26 @@ export async function POST(req: NextRequest) {
       }
       // ──────────────────────────────
     } else {
-      // If bypassPayment is true, we MUST verify the coupon actually results in 0 cost
-      const { couponId, tier } = invitationData
-      if (!couponId) {
+      // If bypassPayment is true, we MUST verify the coupon actually results in 0 cost (or it is a free upgrade)
+      const { couponId, tier, isUpgrade, slug } = invitationData
+
+      let isUpgradeFree = false
+      if (isUpgrade && slug) {
+        const [dbTier] = await db
+          .select()
+          .from(tiersTable)
+          .where(eq(tiersTable.slug, tier || 'basic'))
+        const existingInvite = await db.query.invitations.findFirst({
+          where: eq(invitations.slug, slug),
+        })
+        if (dbTier && existingInvite && dbTier.price - (existingInvite.paidAmount || 0) <= 0) {
+          isUpgradeFree = true
+        }
+      }
+
+      if (isUpgradeFree) {
+        // Safe! Upgrade does not require any additional payment.
+      } else if (!couponId) {
         // ALLOW BASIC TIER TO BE FREE WITHOUT A COUPON DURING PROMO
         if (tier === 'basic') {
           // Success! Basic is free right now.
@@ -163,7 +190,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Otherwise, save the invitation (original logic)
+    // Otherwise, save the invitation (original logic) or update if it's an upgrade
     const {
       slug,
       brideName,
@@ -180,30 +207,73 @@ export async function POST(req: NextRequest) {
       discountApplied,
       paidAmount,
       userEmail,
+      isUpgrade,
+      ourStory,
+      mapUrl,
     } = invitationData
 
-    const [newInvitation] = await db
-      .insert(invitations)
-      .values({
-        slug,
-        brideName,
-        groomName,
-        userEmail,
-        date: new Date(date),
-        venue,
-        events: events || [],
-        gallery: gallery || [],
-        musicUrl,
-        backgroundImage,
-        tier: tier || 'basic',
-        template: template || 'rose-gold',
-        couponId: couponId || null,
-        discountApplied: discountApplied || 0,
-        paidAmount: paidAmount || 0,
-        razorpayOrderId: razorpay_order_id || 'FREE',
-        razorpayPaymentId: razorpay_payment_id || 'FREE',
+    let resultInvitation
+
+    if (isUpgrade) {
+      const existingInvite = await db.query.invitations.findFirst({
+        where: eq(invitations.slug, slug),
       })
-      .returning()
+      if (!existingInvite) {
+        return NextResponse.json({ error: 'Invitation to upgrade not found' }, { status: 404 })
+      }
+
+      const newPaidAmount = (existingInvite.paidAmount || 0) + (paidAmount || 0)
+
+      const [updatedInvitation] = await db
+        .update(invitations)
+        .set({
+          tier: tier || existingInvite.tier,
+          template: template || existingInvite.template,
+          paidAmount: newPaidAmount,
+          razorpayOrderId: razorpay_order_id || existingInvite.razorpayOrderId,
+          razorpayPaymentId: razorpay_payment_id || existingInvite.razorpayPaymentId,
+          brideName: brideName !== undefined ? brideName : existingInvite.brideName,
+          groomName: groomName !== undefined ? groomName : existingInvite.groomName,
+          date: date ? new Date(date) : existingInvite.date,
+          venue: venue !== undefined ? venue : existingInvite.venue,
+          events: events || existingInvite.events,
+          gallery: gallery || existingInvite.gallery,
+          musicUrl: musicUrl !== undefined ? musicUrl : existingInvite.musicUrl,
+          ourStory: ourStory !== undefined ? ourStory : existingInvite.ourStory,
+          mapUrl: mapUrl !== undefined ? mapUrl : existingInvite.mapUrl,
+        })
+        .where(eq(invitations.id, existingInvite.id))
+        .returning()
+
+      resultInvitation = updatedInvitation
+    } else {
+      const [newInvitation] = await db
+        .insert(invitations)
+        .values({
+          slug,
+          brideName,
+          groomName,
+          userEmail,
+          date: new Date(date),
+          venue,
+          events: events || [],
+          gallery: gallery || [],
+          musicUrl,
+          backgroundImage,
+          tier: tier || 'basic',
+          template: template || 'rose-gold',
+          couponId: couponId || null,
+          discountApplied: discountApplied || 0,
+          paidAmount: paidAmount || 0,
+          razorpayOrderId: razorpay_order_id || 'FREE',
+          razorpayPaymentId: razorpay_payment_id || 'FREE',
+          ourStory: ourStory || null,
+          mapUrl: mapUrl || null,
+        })
+        .returning()
+
+      resultInvitation = newInvitation
+    }
 
     // Update coupon usage if applicable
     if (couponId) {
@@ -234,7 +304,7 @@ export async function POST(req: NextRequest) {
       }).catch((err) => console.error('Failed to send receipt:', err))
     }
 
-    return NextResponse.json({ success: true, data: newInvitation })
+    return NextResponse.json({ success: true, data: resultInvitation })
   } catch (error) {
     console.error('Payment Verification Error:', error)
     return NextResponse.json(
