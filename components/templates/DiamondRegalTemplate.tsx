@@ -157,7 +157,7 @@ export default function DiamondRegalTemplate({
                 muted
                 loop
                 playsInline
-                className="w-full h-full object-cover hidden md:block"
+                className="w-full h-full object-cover"
                 style={{ opacity: 0.28, mixBlendMode: 'screen' }}
               >
                 <source src="/videos/rings-invite.mp4" type="video/mp4" />

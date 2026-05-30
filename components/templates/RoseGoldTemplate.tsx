@@ -99,7 +99,7 @@ export default function RoseGoldTemplate({
                 muted
                 loop
                 playsInline
-                className="w-full h-full object-cover hidden md:block"
+                className="w-full h-full object-cover"
                 style={{ opacity: 0.15, mixBlendMode: 'multiply' }}
               >
                 <source src="/videos/rings-hand.mp4" type="video/mp4" />
