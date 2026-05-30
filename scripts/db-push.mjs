@@ -143,6 +143,8 @@ const statements = [
     language            TEXT        NOT NULL DEFAULT 'en',
     our_story           TEXT,
     map_url             TEXT,
+    edit_window_override BOOLEAN     NOT NULL DEFAULT FALSE,
+    rsvp_button_text    TEXT        NOT NULL DEFAULT 'RSVP Now',
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`,
 
@@ -202,6 +204,8 @@ const alterStatements = [
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp TEXT`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp_expires TIMESTAMPTZ`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reset_at TIMESTAMPTZ`,
+  `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS edit_window_override BOOLEAN NOT NULL DEFAULT FALSE`,
+  `ALTER TABLE invitations ADD COLUMN IF NOT EXISTS rsvp_button_text TEXT NOT NULL DEFAULT 'RSVP Now'`,
 ]
 
 const allStatements = [...statements, ...alterStatements]

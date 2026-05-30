@@ -94,6 +94,26 @@ export function InvitationManager({ initialInvitations = [] }: { initialInvitati
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [editInvite, setEditInvite] = useState<any>(null)
 
+  const handleToggleEditOverride = async (id: number, currentOverride: boolean) => {
+    try {
+      const res = await fetch('/api/admin/invitations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, editWindowOverride: currentOverride }),
+      })
+      if (res.ok) {
+        setInvitations((invs) =>
+          invs.map((i) => (i.id === id ? { ...i, editWindowOverride: currentOverride } : i))
+        )
+        toast.success(currentOverride ? 'Edit window unlocked for user' : 'Standard edit window restored')
+      } else {
+        toast.error('Failed to update edit window')
+      }
+    } catch (err) {
+      toast.error('An error occurred')
+    }
+  }
+
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this invitation?')) return
     setDeletingId(id)
@@ -150,9 +170,21 @@ export function InvitationManager({ initialInvitations = [] }: { initialInvitati
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-gray-50">
-                <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-1 bg-gray-100 text-gray-600 rounded">
-                  {inv.tier}
-                </span>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-1 bg-gray-100 text-gray-600 rounded w-max">
+                    {inv.tier}
+                  </span>
+                  <button
+                    onClick={() => handleToggleEditOverride(inv.id, !inv.editWindowOverride)}
+                    className={`text-[9px] font-bold px-2 py-0.5 rounded border transition-colors text-left w-max ${
+                      inv.editWindowOverride
+                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                        : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    {inv.editWindowOverride ? 'Edit Window: Open' : 'Edit Window: 48h'}
+                  </button>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     variant="ghost"

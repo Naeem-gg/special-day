@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Clock, Crown, ChevronDown, Map as MapIcon, Calendar } from 'lucide-react'
+import { MapPin, Clock, Crown, ChevronDown, Map as MapIcon, Calendar, X } from 'lucide-react'
 import type { StyleProps } from './types'
 import RSVPModal from '@/components/invitation/RSVPModal'
 import PremiumCountdown from '@/components/invitation/PremiumCountdown'
@@ -148,8 +148,22 @@ export default function RoyalGoldTemplate({
   inline,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
-  // Removed inline countdown logic
+  const [sparkles, setSparkles] = useState<React.CSSProperties[]>([])
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+
+  useEffect(() => {
+    setSparkles(
+      Array.from({ length: 35 }, () => ({
+        left: `${Math.random() * 100}%`,
+        bottom: `-${Math.random() * 20}%`,
+        width: `${Math.random() * 5 + 2}px`,
+        height: `${Math.random() * 5 + 2}px`,
+        animation: `floatGoldSparkles ${6 + Math.random() * 8}s ${Math.random() * 8}s infinite linear`,
+      }))
+    )
+  }, [])
 
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -165,18 +179,32 @@ export default function RoyalGoldTemplate({
           from { clip-path: inset(0 50% 0 50%); }
           to { clip-path: inset(0 0% 0 0%); }
         }
-        .curtain { animation: curtainReveal 2s ease-out forwards; }
+        .curtain { animation: curtainReveal 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        
         @keyframes royalShimmer {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
         }
         .royal-text {
-          background: linear-gradient(90deg, #8B0000, #D4AF37, #6B1A2B, #D4AF37, #8B0000);
-          background-size: 300% 100%;
+          background: linear-gradient(90deg, #A82C43 0%, #D4AF37 30%, #FFF8DC 50%, #D4AF37 70%, #A82C43 100%);
+          background-size: 200% auto;
           -webkit-background-clip: text;
           background-clip: text;
           -webkit-text-fill-color: transparent;
-          animation: royalShimmer 5s ease-in-out infinite;
+          animation: royalShimmer 5.5s linear infinite;
+        }
+
+        @keyframes floatGoldSparkles {
+          0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+          50% { opacity: 0.8; }
+          100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        .gold-sparkle {
+          position: absolute;
+          background: radial-gradient(circle, #FFF8DC 20%, #D4AF37 60%, transparent 100%);
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 1;
         }
       `}</style>
 
@@ -187,7 +215,7 @@ export default function RoyalGoldTemplate({
         {/* ── HERO ─────────────────────────────────── */}
         <section
           className={`relative flex flex-col items-center justify-center text-center overflow-hidden px-6 ${isThumbnail ? 'min-h-[812px]' : inline ? 'min-h-[700px]' : 'min-h-screen'}`}
-          style={{ background: 'linear-gradient(160deg, #1A0008 0%, #3A0A14 50%, #1A0008 100%)' }}
+          style={{ background: 'linear-gradient(160deg, #160007 0%, #2f0810 50%, #160007 100%)' }}
         >
           <OrnateBorder />
 
@@ -213,6 +241,11 @@ export default function RoyalGoldTemplate({
                 'repeating-linear-gradient(45deg, rgba(212,175,55,0.1) 0px, transparent 1px, transparent 4px, rgba(212,175,55,0.05) 5px)',
             }}
           />
+
+          {/* Sparkles */}
+          {sparkles.map((style, i) => (
+            <div key={i} className="gold-sparkle" style={style} />
+          ))}
 
           <div className="relative z-10 max-w-3xl curtain px-4">
             <motion.div
@@ -328,7 +361,7 @@ export default function RoyalGoldTemplate({
         {/* ── COUNTDOWN ───────────────────────────── */}
         <section
           className="py-16 md:py-20 text-center px-4 relative overflow-hidden"
-          style={{ background: 'linear-gradient(180deg, #FFFBF0, #FFF5E0)' }}
+          style={{ background: 'linear-gradient(180deg, #160007 0%, #0d0003 100%)', borderTop: '1px solid rgba(212,175,55,0.15)', borderBottom: '1px solid rgba(212,175,55,0.15)' }}
         >
           {/* Decorative pattern */}
           <div
@@ -351,8 +384,8 @@ export default function RoyalGoldTemplate({
               ✦ Save The Date ✦
             </p>
             <h2
-              className="text-2xl md:text-3xl font-light mb-8 md:mb-10"
-              style={{ color: '#3A0A14', fontFamily: "'Playfair Display', serif" }}
+              className="text-2xl md:text-3xl font-light mb-8 md:mb-10 text-white"
+              style={{ fontFamily: "'Playfair Display', serif" }}
             >
               Royal Countdown
             </h2>
@@ -362,8 +395,8 @@ export default function RoyalGoldTemplate({
               tier={tier}
               theme={{
                 primary: '#D4AF37',
-                secondary: '#3A0A14',
-                accent: '#D4AF37',
+                secondary: '#1A0008',
+                accent: '#FFF8DC',
                 text: '#FFFBF0',
               }}
             />
@@ -371,7 +404,7 @@ export default function RoyalGoldTemplate({
         </section>
 
         {/* ── EVENTS ──────────────────────────────── */}
-        <section className="py-20 md:py-24 px-4" style={{ background: 'white' }}>
+        <section className="py-20 md:py-24 px-4" style={{ background: '#0d0003' }}>
           <div className="max-w-3xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -385,7 +418,7 @@ export default function RoyalGoldTemplate({
               >
                 Royal Programme
               </p>
-              <h2 className="text-3xl md:text-4xl font-light" style={{ color: '#3A0A14' }}>
+              <h2 className="text-3xl md:text-4xl font-light text-white">
                 The Events
               </h2>
               <MughalDivider />
@@ -398,31 +431,29 @@ export default function RoyalGoldTemplate({
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.15 }}
-                  className="p-6 md:p-8 relative overflow-hidden"
+                  className="p-6 md:p-8 relative overflow-hidden rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(212,175,55,0.12)]"
                   style={{
-                    background: 'linear-gradient(135deg, #FFF9F0, #FFFBF5)',
-                    border: '1px solid #E8D09A',
+                    background: 'linear-gradient(135deg, #1e0007 0%, #0d0003 100%)',
+                    border: '1.5px solid #D4AF37',
                   }}
                 >
                   <div className="flex-1">
                     {/* Removed Event Numbering */}
                     <h3
-                      className="text-xl md:text-2xl font-light mb-2"
-                      style={{ color: '#3A0A14' }}
+                      className="text-xl md:text-2xl font-light mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8DC] via-[#D4AF37] to-[#FFF8DC]"
                     >
                       {ev.name}
                     </h3>
                     {ev.description && (
                       <p
-                        className="font-sans text-xs md:text-sm mb-4 leading-relaxed"
-                        style={{ color: '#8A6A5A' }}
+                        className="font-sans text-xs md:text-sm mb-4 leading-relaxed text-[#A08080]"
                       >
                         {ev.description}
                       </p>
                     )}
                     <div
                       className="flex flex-wrap gap-4 font-sans text-[10px] md:text-xs"
-                      style={{ color: '#B0906A' }}
+                      style={{ color: '#EBD09A' }}
                     >
                       {ev.date && !isNaN(new Date(ev.date).getTime()) && (
                         <span className="flex items-center gap-1 font-bold text-[#D4AF37]">
@@ -435,12 +466,12 @@ export default function RoyalGoldTemplate({
                           })}
                         </span>
                       )}
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
+                      <span className="flex items-center gap-1 text-[#E0D0D0]">
+                        <Clock className="w-3 h-3 text-[#D4AF37]" />
                         {ev.time}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
+                      <span className="flex items-center gap-1 text-[#E0D0D0]">
+                        <MapPin className="w-3 h-3 text-[#D4AF37]" />
                         {ev.location}
                       </span>
                     </div>
@@ -451,8 +482,7 @@ export default function RoyalGoldTemplate({
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 border text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#D4AF37] hover:text-[#3A0A14] hover:border-[#D4AF37]"
-                      style={{ borderColor: '#E8D09A', color: '#D4AF37' }}
+                      className="mt-4 inline-flex items-center gap-2 px-5 py-2 border rounded-lg text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 bg-white/5 border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#1a0005] hover:border-[#D4AF37]"
                     >
                       <MapIcon className="w-3 h-3" /> Open in Maps
                     </a>
@@ -465,7 +495,7 @@ export default function RoyalGoldTemplate({
 
         {/* ── GALLERY ─────────────────────────────── */}
         {gallery.length > 0 && (
-          <section className="py-20 md:py-24 px-4" style={{ background: '#FFF9F0' }}>
+          <section className="py-20 md:py-24 px-4 bg-[#160007]" style={{ borderTop: '1px solid rgba(212,175,55,0.15)' }}>
             <div className="max-w-5xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -473,9 +503,10 @@ export default function RoyalGoldTemplate({
                 viewport={{ once: true }}
                 className="text-center mb-12 md:mb-14"
               >
-                <h2 className="text-3xl md:text-4xl font-light" style={{ color: '#3A0A14' }}>
+                <h2 className="text-3xl md:text-4xl font-light text-white">
                   Royal Portraits
                 </h2>
+                <MughalDivider />
               </motion.div>
               <div className="columns-2 md:columns-3 gap-3 md:gap-4 space-y-3 md:space-y-4">
                 {gallery.map((img, i) => (
@@ -485,8 +516,9 @@ export default function RoyalGoldTemplate({
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="overflow-hidden"
-                    style={{ breakInside: 'avoid', border: '2px solid #E8D09A' }}
+                    className="overflow-hidden cursor-zoom-in rounded-xl transition-all duration-300 hover:scale-[1.03]"
+                    style={{ breakInside: 'avoid', border: '1.5px solid #D4AF37' }}
+                    onClick={() => setSelectedImage(img.url)}
                   >
                     <img
                       src={img.url}
@@ -503,7 +535,7 @@ export default function RoyalGoldTemplate({
         {/* ── FOOTER ──────────────────────────────── */}
         <section
           className="py-16 md:py-20 text-center px-4"
-          style={{ background: 'linear-gradient(160deg, #1A0008, #3A0A14)' }}
+          style={{ background: 'linear-gradient(160deg, #160007, #0d0003)' }}
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -511,17 +543,50 @@ export default function RoyalGoldTemplate({
             viewport={{ once: true }}
           >
             <Crown className="w-8 h-8 mx-auto mb-6" style={{ color: '#D4AF37' }} />
-            <h2 className="text-2xl md:text-3xl font-light mb-2" style={{ color: '#FFFBF0' }}>
+            <h2 className="text-2xl md:text-3xl font-light mb-2 text-white">
               Your Grace Honours Us
             </h2>
-            <p className="font-sans text-xs md:text-sm mb-10" style={{ color: '#806060' }}>
+            <p className="font-sans text-xs md:text-sm mb-10 text-[#A08080]">
               {venue}
             </p>
             {invitationId && tier !== 'basic' && (
-              <RSVPModal invitationId={invitationId} inline={inline} />
+              <RSVPModal buttonText={rsvpButtonText || undefined}
+                invitationId={invitationId}
+                inline={inline}
+                buttonClassName="bg-gradient-to-r from-[#D4AF37] via-[#FFF8DC] to-[#D4AF37] text-[#1A0008] font-semibold font-sans tracking-[0.25em] uppercase px-8 py-4 rounded-full text-[10px] md:text-xs shadow-[0_10px_25px_rgba(212,175,55,0.45)] hover:scale-105 transition-all duration-300"
+              />
             )}
           </motion.div>
         </section>
+
+        {/* Lightbox Modal */}
+        <AnimatePresence>
+          {selectedImage && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedImage(null)}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md cursor-zoom-out"
+            >
+              <motion.div
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.9 }}
+                className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-xl border border-[#D4AF37]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img src={selectedImage} alt="" className="w-full h-auto max-h-[85vh] object-contain" />
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute top-4 right-4 bg-black/50 text-white rounded-full p-2 border border-white/20 hover:bg-black transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </>
   )

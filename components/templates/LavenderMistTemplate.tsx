@@ -19,6 +19,7 @@ export default function LavenderMistTemplate({
   invitationId,
   tier,
   ourStory,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -177,7 +178,7 @@ export default function LavenderMistTemplate({
         <div className="max-w-xl mx-auto bg-white/80 p-16 rounded-full border border-purple-50">
           <h2 className="text-4xl font-light mb-10 italic">We Hope to See You There</h2>
           {!isPreview && invitationId && tier !== 'basic' && (
-            <RSVPModal invitationId={invitationId} />
+            <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
           )}
         </div>
       </section>

@@ -46,6 +46,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       language,
       ourStory,
       mapUrl,
+      rsvpButtonText,
       tier,
       paidAmount,
     } = body
@@ -66,15 +67,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       }
 
       // Security: Check 48h limit
-      const createdDate = new Date(invitation.createdAt)
-      const now = new Date()
-      const diffInHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60)
+      if (!invitation.editWindowOverride) {
+        const createdDate = new Date(invitation.createdAt)
+        const now = new Date()
+        const diffInHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60)
 
-      if (diffInHours > 48) {
-        return NextResponse.json(
-          { error: 'Editing window has closed (48 hours passed)' },
-          { status: 403 }
-        )
+        if (diffInHours > 48) {
+          return NextResponse.json(
+            { error: 'Editing window has closed (48 hours passed)' },
+            { status: 403 }
+          )
+        }
       }
     }
 
@@ -90,6 +93,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       language: language || 'en',
       ourStory,
       mapUrl,
+      rsvpButtonText: rsvpButtonText || 'RSVP Now',
     }
 
     // Admins can also update tier and paid amount

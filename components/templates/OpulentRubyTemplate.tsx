@@ -55,6 +55,7 @@ export default function OpulentRubyTemplate({
   invitationId,
   tier,
   ourStory,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -251,7 +252,7 @@ export default function OpulentRubyTemplate({
             Join the Dynasty
           </h2>
           {!isPreview && invitationId && tier !== 'basic' && (
-            <RSVPModal invitationId={invitationId} />
+            <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
           )}
           <div className="mt-40 text-[10px] font-sans tracking-[0.8em] text-[#D4AF37]/30 font-bold uppercase">
             Opulent Series • DNvites Premium

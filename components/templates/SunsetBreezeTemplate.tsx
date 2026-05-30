@@ -19,6 +19,7 @@ export default function SunsetBreezeTemplate({
   invitationId,
   tier,
   ourStory,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -171,7 +172,7 @@ export default function SunsetBreezeTemplate({
           <h2 className="text-4xl font-bold text-[#4E342E] mb-6">RSVP</h2>
           <p className="mb-10 text-[#FF8A65] font-bold">We can't wait to celebrate with you!</p>
           {!isPreview && invitationId && tier !== 'basic' && (
-            <RSVPModal invitationId={invitationId} />
+            <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
           )}
         </div>
       </section>

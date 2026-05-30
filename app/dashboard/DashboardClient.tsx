@@ -116,6 +116,7 @@ const StyleCard = ({ tmpl, formData, isSelected, handleStylePreview, handleStyle
                   gallery={formData.gallery}
                   ourStory={formData.ourStory}
                   mapUrl={formData.mapUrl}
+                  rsvpButtonText={formData.rsvpButtonText}
                   isPreview={true}
                   isThumbnail={true}
                 />
@@ -236,6 +237,7 @@ export default function DashboardClient({
     mapUrl: '',
     events: [{ name: '', time: '', location: '', date: '', googleMapsUrl: '', description: '' }],
     gallery: [] as { url: string; publicId: string }[],
+    rsvpButtonText: 'RSVP Now',
   })
 
   useEffect(() => {
@@ -273,7 +275,11 @@ export default function DashboardClient({
                 brideName: data.brideName,
                 groomName: data.groomName,
                 userEmail: data.userEmail,
-                date: data.date ? new Date(data.date).toISOString().split('T')[0] : '',
+                date: data.date ? (() => {
+                  const d = new Date(data.date)
+                  const tzOffset = d.getTimezoneOffset() * 60000
+                  return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16)
+                })() : '',
                 venue: data.venue,
                 slug: data.slug,
                 musicUrl: data.musicUrl || '',
@@ -292,6 +298,7 @@ export default function DashboardClient({
                   },
                 ],
                 gallery: data.gallery || [],
+                rsvpButtonText: data.rsvpButtonText || 'RSVP Now',
               })
             }
           })
@@ -1143,6 +1150,7 @@ export default function DashboardClient({
                         ourStory={formData.ourStory}
                         mapUrl={formData.mapUrl}
                         musicUrl={formData.musicUrl}
+                        rsvpButtonText={formData.rsvpButtonText}
                         isPreview={true}
                       />
                     </Skeleton>
@@ -1487,6 +1495,19 @@ export default function DashboardClient({
                       value={formData.venue}
                       onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
                       required
+                      className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="rsvpButtonText" className="text-sm font-semibold text-gray-700">
+                      RSVP Button Text 🏷️ (Optional)
+                    </Label>
+                    <Input
+                      id="rsvpButtonText"
+                      placeholder="e.g. RSVP Now, Will You Attend?, Join Celebration"
+                      value={formData.rsvpButtonText}
+                      onChange={(e) => setFormData({ ...formData, rsvpButtonText: e.target.value })}
                       className="border-rose-200 focus:border-[#F43F8F] rounded-xl h-11"
                     />
                   </div>

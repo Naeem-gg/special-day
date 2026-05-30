@@ -79,6 +79,7 @@ export default function EmeraldForestTemplate({
   musicUrl,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const [fireflies, setFireflies] = useState<React.CSSProperties[]>([])
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
@@ -412,7 +413,7 @@ export default function EmeraldForestTemplate({
               {venue}
             </p>
             {!isPreview && invitationId && tier !== 'basic' && (
-              <RSVPModal invitationId={invitationId} />
+              <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
             )}
           </motion.div>
         </section>

@@ -25,3 +25,21 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to delete invitation' }, { status: 500 })
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const { id, editWindowOverride } = await req.json()
+    if (id === undefined || editWindowOverride === undefined) {
+      return NextResponse.json({ error: 'ID and editWindowOverride are required' }, { status: 400 })
+    }
+
+    await db
+      .update(invitations)
+      .set({ editWindowOverride })
+      .where(eq(invitations.id, id))
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to update invitation edit override' }, { status: 500 })
+  }
+}

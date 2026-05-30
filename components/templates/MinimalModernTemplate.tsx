@@ -20,6 +20,7 @@ export default function MinimalModernTemplate({
   tier,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -208,7 +209,7 @@ export default function MinimalModernTemplate({
         <Heart className="w-6 h-6 mx-auto mb-8 text-zinc-200" />
         <h2 className="text-3xl md:text-4xl font-light mb-12">Will you join us?</h2>
         {!isPreview && invitationId && tier !== 'basic' && (
-          <RSVPModal invitationId={invitationId} />
+          <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
         )}
         <p className="mt-12 text-[10px] text-zinc-300 uppercase tracking-[0.3em]">{venue}</p>
       </section>

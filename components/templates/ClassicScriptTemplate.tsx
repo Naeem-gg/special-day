@@ -19,6 +19,7 @@ export default function ClassicScriptTemplate({
   invitationId,
   tier,
   ourStory,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -150,7 +151,7 @@ export default function ClassicScriptTemplate({
         <Heart className="w-4 h-4 mx-auto mb-12 text-zinc-200" />
         <h2 className="text-4xl font-normal mb-12 italic">Kindly Respond</h2>
         {!isPreview && invitationId && tier !== 'basic' && (
-          <RSVPModal invitationId={invitationId} />
+          <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
         )}
       </section>
     </div>

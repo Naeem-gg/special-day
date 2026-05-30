@@ -18,8 +18,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!invitation) return {}
 
-  const title = `Wedding Invitation: ${invitation.brideName} & ${invitation.groomName}`
-  const description = `Join us in celebrating the wedding of ${invitation.brideName} and ${invitation.groomName} on ${invitation.date}.`
+  const d = new Date(invitation.date)
+  const formattedDate = d.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }) + (d.getHours() !== 0 || d.getMinutes() !== 0
+    ? ' at ' + d.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '')
+
+  const title = `💍 Wedding Invitation: ${invitation.brideName} & ${invitation.groomName}`
+  const description = `We request the honour of your presence at the wedding celebration of ${invitation.brideName} & ${invitation.groomName}. 📅 Date: ${formattedDate} 📍 Venue: ${invitation.venue}. Click to view details, map directions, and RSVP online.`
+  
   const ogImage =
     invitation.gallery && (invitation.gallery as any[]).length > 0
       ? (invitation.gallery as any[])[0].url
@@ -77,6 +91,7 @@ export default async function InvitationPage({ params }: PageProps) {
         musicUrl={invitation.musicUrl || undefined}
         ourStory={invitation.ourStory || undefined}
         mapUrl={invitation.mapUrl || undefined}
+        rsvpButtonText={invitation.rsvpButtonText || undefined}
         isPreview={false}
         invitationId={invitation.id}
       />

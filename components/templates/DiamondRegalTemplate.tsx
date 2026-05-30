@@ -56,6 +56,7 @@ export default function DiamondRegalTemplate({
   ourStory,
   mapUrl,
   inline,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -156,7 +157,7 @@ export default function DiamondRegalTemplate({
                 muted
                 loop
                 playsInline
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hidden md:block"
                 style={{ opacity: 0.28, mixBlendMode: 'screen' }}
               >
                 <source src="/videos/rings-invite.mp4" type="video/mp4" />
@@ -493,7 +494,7 @@ export default function DiamondRegalTemplate({
 
             {!isPreview && invitationId && tier !== 'basic' && (
               <div className="inline-block scale-105 md:scale-110">
-                <RSVPModal
+                <RSVPModal buttonText={rsvpButtonText || undefined}
                   invitationId={invitationId}
                   className="relative z-10"
                   buttonClassName="shine-hover-btn px-12 py-4 border border-white/20 bg-white/5 text-white hover:bg-white hover:text-black hover:border-white transition-all duration-500 text-[11px] font-bold uppercase tracking-[0.25em] rounded-lg shadow-lg"

@@ -19,6 +19,7 @@ export default function AmethystGlanceTemplate({
   invitationId,
   tier,
   ourStory,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -223,7 +224,7 @@ export default function AmethystGlanceTemplate({
             Secure Your Presence
           </h2>
           {!isPreview && invitationId && tier !== 'basic' && (
-            <RSVPModal invitationId={invitationId} />
+            <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
           )}
           <p className="mt-20 text-[10px] tracking-[0.6em] text-purple-500 font-bold uppercase">
             DNvites Premium Series

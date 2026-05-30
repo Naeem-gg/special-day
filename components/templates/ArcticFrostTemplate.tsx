@@ -19,6 +19,7 @@ export default function ArcticFrostTemplate({
   invitationId,
   tier,
   ourStory,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -212,7 +213,7 @@ export default function ArcticFrostTemplate({
             Warm Your Heart With Us
           </h2>
           {!isPreview && invitationId && tier !== 'basic' && (
-            <RSVPModal invitationId={invitationId} />
+            <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
           )}
           <p className="mt-16 text-[10px] font-bold text-blue-400 uppercase tracking-[0.5em]">
             Arctic Series Collection

@@ -71,6 +71,7 @@ export default function SacredIvoryTemplate({
   inline,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const [goldLeaves, setGoldLeaves] = useState<React.CSSProperties[]>([])
 
@@ -533,7 +534,7 @@ export default function SacredIvoryTemplate({
             </p>
             {!isPreview && invitationId && (
               <div className="flex gap-4 justify-center flex-wrap">
-                {tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+                {tier !== 'basic' && <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />}
               </div>
             )}
           </motion.div>

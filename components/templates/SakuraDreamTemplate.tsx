@@ -31,6 +31,7 @@ export default function SakuraDreamTemplate({
   musicUrl,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([])
 
@@ -455,7 +456,7 @@ export default function SakuraDreamTemplate({
               {venue}
             </p>
             {!isPreview && invitationId && tier !== 'basic' && (
-              <RSVPModal invitationId={invitationId} />
+              <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
             )}
           </motion.div>
         </section>

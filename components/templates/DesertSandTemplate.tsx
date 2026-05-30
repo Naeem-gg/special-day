@@ -19,6 +19,7 @@ export default function DesertSandTemplate({
   invitationId,
   tier,
   ourStory,
+  rsvpButtonText,
 }: StyleProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -206,7 +207,7 @@ export default function DesertSandTemplate({
         <div className="max-w-lg mx-auto bg-white/20 p-16 rounded-sm border border-[#D2691E]/10 backdrop-blur-sm">
           <h2 className="text-5xl font-normal mb-10 italic">Be Part of our Oasis</h2>
           {!isPreview && invitationId && tier !== 'basic' && (
-            <RSVPModal invitationId={invitationId} />
+            <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
           )}
           <p className="mt-16 text-[10px] font-sans uppercase tracking-widest text-[#D2691E]/60">
             {venue}

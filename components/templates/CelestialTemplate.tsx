@@ -183,6 +183,7 @@ export default function CelestialTemplate({
   inline,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const fmt = date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -229,7 +230,7 @@ export default function CelestialTemplate({
               muted
               loop
               playsInline
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none hidden md:block"
               style={{ opacity: 0.18, mixBlendMode: 'screen' }}
             >
               <source
@@ -569,7 +570,7 @@ export default function CelestialTemplate({
               {venue}
             </p>
             {!isPreview && invitationId && tier !== 'basic' && (
-              <RSVPModal invitationId={invitationId} />
+              <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
             )}
           </motion.div>
         </section>

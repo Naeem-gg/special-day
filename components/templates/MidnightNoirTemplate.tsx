@@ -55,6 +55,7 @@ export default function MidnightNoirTemplate({
   inline,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   // Removed inline countdown logic
 
@@ -457,7 +458,7 @@ export default function MidnightNoirTemplate({
               {venue}
             </p>
             {!isPreview && invitationId && tier !== 'basic' && (
-              <RSVPModal invitationId={invitationId} />
+              <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
             )}
           </motion.div>
         </section>

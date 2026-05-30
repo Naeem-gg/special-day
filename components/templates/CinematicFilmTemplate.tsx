@@ -56,6 +56,7 @@ export default function CinematicFilmTemplate({
   musicUrl,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const [countdown, setCountdown] = useState(5)
   const [showContent, setShowContent] = useState(false)
@@ -384,7 +385,7 @@ export default function CinematicFilmTemplate({
               {venue}
             </p>
             {!isPreview && invitationId && tier !== 'basic' && (
-              <RSVPModal invitationId={invitationId} />
+              <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
             )}
           </motion.div>
         </section>

@@ -34,6 +34,7 @@ export default function RoseGoldTemplate({
   musicUrl,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const [petals, setPetals] = useState<React.CSSProperties[]>([])
 
@@ -98,7 +99,7 @@ export default function RoseGoldTemplate({
                 muted
                 loop
                 playsInline
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hidden md:block"
                 style={{ opacity: 0.15, mixBlendMode: 'multiply' }}
               >
                 <source src="/videos/rings-hand.mp4" type="video/mp4" />
@@ -488,7 +489,7 @@ export default function RoseGoldTemplate({
             </p>
             {!isPreview && invitationId && (
               <div className="flex gap-4 justify-center flex-wrap">
-                {tier !== 'basic' && <RSVPModal invitationId={invitationId} />}
+                {tier !== 'basic' && <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />}
                 <button
                   onClick={() =>
                     navigator.share?.({

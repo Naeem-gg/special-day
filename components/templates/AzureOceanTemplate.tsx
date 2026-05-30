@@ -70,6 +70,7 @@ export default function AzureOceanTemplate({
   musicUrl,
   ourStory,
   mapUrl,
+  rsvpButtonText,
 }: StyleProps) {
   const [bubbles, setBubbles] = useState<React.CSSProperties[]>([])
 
@@ -384,7 +385,7 @@ export default function AzureOceanTemplate({
             <h2 className="text-3xl font-light mb-2 text-white">Join Us Dockside</h2>
             <p className="font-sans text-sm mb-10 text-blue-300">{venue}</p>
             {!isPreview && invitationId && tier !== 'basic' && (
-              <RSVPModal invitationId={invitationId} />
+              <RSVPModal buttonText={rsvpButtonText || undefined} invitationId={invitationId} />
             )}
           </motion.div>
         </section>

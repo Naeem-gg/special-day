@@ -93,6 +93,8 @@ export const invitations = pgTable('invitations', {
   language: text('language').default('en').notNull(),
   ourStory: text('our_story'),
   mapUrl: text('map_url'),
+  editWindowOverride: boolean('edit_window_override').default(false).notNull(),
+  rsvpButtonText: text('rsvp_button_text').default('RSVP Now').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 

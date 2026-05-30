@@ -85,6 +85,7 @@ export function EditInvitationModal({
     gallery: [] as StylePhoto[],
     template: '',
     tier: '',
+    rsvpButtonText: '',
   })
 
   // Audio Upload States
@@ -94,6 +95,7 @@ export function EditInvitationModal({
   // Check 48h limit for users
   const isPast48Hours = (() => {
     if (!invitation) return false
+    if (invitation.editWindowOverride) return false
     const createdDate = new Date(invitation.createdAt)
     const now = new Date()
     const diffInHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60)
@@ -119,7 +121,11 @@ export function EditInvitationModal({
       setFormData({
         brideName: invitation.brideName || '',
         groomName: invitation.groomName || '',
-        date: invitation.date ? new Date(invitation.date).toISOString().substring(0, 16) : '',
+        date: invitation.date ? (() => {
+          const d = new Date(invitation.date)
+          const tzOffset = d.getTimezoneOffset() * 60000
+          return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16)
+        })() : '',
         venue: invitation.venue || '',
         musicUrl: invitation.musicUrl || '',
         ourStory: invitation.ourStory || '',
@@ -128,6 +134,7 @@ export function EditInvitationModal({
         gallery: invitation.gallery || [],
         template: invitation.template || 'rose-gold',
         tier: invitation.tier || 'basic',
+        rsvpButtonText: invitation.rsvpButtonText || 'RSVP Now',
       })
       setUploadedMusicName('')
     }
@@ -500,6 +507,17 @@ export function EditInvitationModal({
                   className="rounded-xl border-rose-200 focus:border-[#F43F8F] min-h-[80px]"
                 />
               </div>
+              <div className="space-y-1">
+                <Label htmlFor="rsvpButtonText">RSVP Button Text 🏷️ (Optional)</Label>
+                <Input
+                  id="rsvpButtonText"
+                  placeholder="e.g. RSVP Now, Will You Attend?"
+                  value={formData.rsvpButtonText}
+                  onChange={(e) => setFormData({ ...formData, rsvpButtonText: e.target.value })}
+                  disabled={!isAdmin && isPast48Hours}
+                  className="rounded-xl border-rose-200 focus:border-[#F43F8F]"
+                />
+              </div>
             </div>
 
             {/* Background Music */}
@@ -597,6 +615,16 @@ export function EditInvitationModal({
                           />
                         </div>
                         <div className="space-y-1">
+                          <Label className="text-xs font-semibold text-slate-500">Date (Optional) 📅</Label>
+                          <Input
+                            type="date"
+                            value={event.date || ''}
+                            onChange={(e) => updateEvent(index, 'date', e.target.value)}
+                            disabled={!isAdmin && isPast48Hours}
+                            className="h-10 rounded-xl border-rose-100 text-sm"
+                          />
+                        </div>
+                        <div className="space-y-1">
                           <Label className="text-xs font-semibold text-slate-500">Venue Location</Label>
                           <Input
                             placeholder="e.g. Grand Hall, Room A"
@@ -606,12 +634,22 @@ export function EditInvitationModal({
                             className="h-10 rounded-xl border-rose-100 text-sm"
                           />
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 md:col-span-2">
                           <Label className="text-xs font-semibold text-slate-500">Google Maps Link (Optional)</Label>
                           <Input
                             placeholder="https://maps.google.com/..."
                             value={event.googleMapsUrl || ''}
                             onChange={(e) => updateEvent(index, 'googleMapsUrl', e.target.value)}
+                            disabled={!isAdmin && isPast48Hours}
+                            className="h-10 rounded-xl border-rose-100 text-sm"
+                          />
+                        </div>
+                        <div className="space-y-1 md:col-span-2">
+                          <Label className="text-xs font-semibold text-slate-500">Description (Optional)</Label>
+                          <Input
+                            placeholder="Brief description of the event details..."
+                            value={event.description || ''}
+                            onChange={(e) => updateEvent(index, 'description', e.target.value)}
                             disabled={!isAdmin && isPast48Hours}
                             className="h-10 rounded-xl border-rose-100 text-sm"
                           />

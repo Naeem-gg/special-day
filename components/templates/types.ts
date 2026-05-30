@@ -28,6 +28,7 @@ export interface StyleProps {
   tier?: 'basic' | 'standard' | 'premium'
   autoOpen?: boolean
   inline?: boolean
+  rsvpButtonText?: string
 }
 
 export interface StyleMeta {

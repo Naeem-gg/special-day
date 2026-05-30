@@ -26,6 +26,7 @@ interface RSVPModalProps {
   inline?: boolean
   className?: string
   buttonClassName?: string
+  buttonText?: string
 }
 
 export default function RSVPModal({
@@ -33,6 +34,7 @@ export default function RSVPModal({
   inline = false,
   className,
   buttonClassName,
+  buttonText = 'RSVP Now',
 }: RSVPModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -93,7 +95,7 @@ export default function RSVPModal({
                 : "bg-gray-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-medium tracking-widest uppercase text-[10px] md:text-xs shadow-2xl hover:bg-gray-800 transition-colors"
             }
           >
-            RSVP Now
+            {buttonText}
           </motion.button>
         </div>
       </DialogTrigger>
