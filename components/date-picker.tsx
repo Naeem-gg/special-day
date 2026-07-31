@@ -105,7 +105,7 @@ export function DateTimePicker({ date, onSelect }: DateTimePickerProps) {
               handleSelect(date)
               setIsCalendarOpen(false)
             }}
-            initialFocus
+            autoFocus
             disabled={(date) => date < new Date()}
           />
         </PopoverContent>

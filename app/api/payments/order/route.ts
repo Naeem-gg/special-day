@@ -1,85 +1,79 @@
 import { db } from '@/lib/db'
-import { tiers } from '@/lib/db/schema'
+import { tiers, invitations } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 import { razorpay } from '@/lib/razorpay'
+import { applyCouponDiscount, validateCouponForCheckout } from '@/lib/coupons'
+import { assertCurrency, toRazorpayAmount } from '@/lib/currency'
 
 export async function POST(req: NextRequest) {
   try {
-    const { tierSlug, couponCode, currency = 'INR', invitationSlug } = await req.json()
-    const { getDisplayPrice } = await import('@/lib/currency')
+    const { tierSlug, couponCode, currency: rawCurrency = 'INR', invitationSlug } = await req.json()
+    const currency = assertCurrency(rawCurrency)
 
-    // 1. Fetch the tier from DB to get the true base price
     const [tier] = await db.select().from(tiers).where(eq(tiers.slug, tierSlug))
     if (!tier) {
       return NextResponse.json({ error: 'Invalid tier' }, { status: 400 })
     }
 
-    let baseAmount = tier.price
+    // Canonical pricing stays in INR
+    let baseAmountInr = tier.price
 
-    // 2. Fetch the existing invitation if upgrading
     if (invitationSlug) {
-      const { invitations } = await import('@/lib/db/schema')
       const existingInvite = await db.query.invitations.findFirst({
         where: eq(invitations.slug, invitationSlug),
       })
       if (existingInvite) {
-        // Calculate upgrade price (difference between new tier price and what they already paid)
-        baseAmount = Math.max(0, tier.price - (existingInvite.paidAmount || 0))
+        baseAmountInr = Math.max(0, tier.price - (existingInvite.paidAmount || 0))
       }
     }
 
-    // 3. If a coupon is provided, validate it strictly on the server
     if (couponCode) {
-      const { coupons } = await import('@/lib/db/schema')
-      const { and } = await import('drizzle-orm')
+      const result = await validateCouponForCheckout(
+        { code: couponCode },
+        (tierSlug || '').toLowerCase()
+      )
 
-      const coupon = await db.query.coupons.findFirst({
-        where: and(eq(coupons.code, couponCode.toUpperCase()), eq(coupons.active, true)),
-      })
-
-      if (coupon) {
-        // Check expiration
-        const isExpired = coupon.expiresAt && new Date(coupon.expiresAt) < new Date()
-        // Check usage limit
-        const isLimitReached = coupon.usageLimit && coupon.usedCount >= coupon.usageLimit
-
-        if (!isExpired && !isLimitReached) {
-          // Apply discount to baseAmount (which may be the upgrade difference)
-          if (coupon.discountType === 'percentage') {
-            baseAmount = Math.round(baseAmount * (1 - coupon.discountValue / 100))
-          } else {
-            baseAmount = Math.max(0, baseAmount - coupon.discountValue)
-          }
+      if ('error' in result) {
+        const messages: Record<string, string> = {
+          not_found: 'Invalid coupon code',
+          inactive: 'Invalid or inactive coupon',
+          expired: 'Coupon has expired',
+          usage_limit: 'Coupon usage limit reached',
+          tier_mismatch: 'This gift coupon is not valid for the selected plan',
         }
+        return NextResponse.json(
+          { error: messages[result.error] || 'Invalid coupon' },
+          { status: 400 }
+        )
       }
+
+      baseAmountInr = applyCouponDiscount(baseAmountInr, result.coupon)
     }
 
-    // 3. Get the final amount based on target currency
-    const pricing = getDisplayPrice(baseAmount, currency as any)
+    const razorpayAmount = toRazorpayAmount(baseAmountInr, currency)
 
-    // 4. Create the Razorpay order with the SECURELY calculated amount
-    const options = {
-      amount: Math.round(pricing.amount * 100), // Razorpay expects amount in smallest unit (paise/cents)
-      currency: pricing.code,
-      receipt: `receipt_${Date.now()}`,
-    }
-
-    if (options.amount === 0) {
+    if (razorpayAmount.amount === 0) {
       return NextResponse.json({
         orderId: 'FREE_' + Date.now(),
         amount: 0,
-        currency: pricing.code,
+        currency: razorpayAmount.currency,
+        amountInr: baseAmountInr,
         isFree: true,
       })
     }
 
-    const order = await razorpay.orders.create(options)
+    const order = await razorpay.orders.create({
+      amount: razorpayAmount.amount,
+      currency: razorpayAmount.currency,
+      receipt: `receipt_${Date.now()}`,
+    })
 
     return NextResponse.json({
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
+      amountInr: baseAmountInr,
     })
   } catch (error: any) {
     console.error('Razorpay Order Error:', error)

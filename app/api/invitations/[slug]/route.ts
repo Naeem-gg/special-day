@@ -2,8 +2,8 @@ import { db } from '@/lib/db'
 import { invitations } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
-
 import { getUserSession, getSession } from '@/lib/auth-utils'
+import { clampGallery, getGalleryLimit } from '@/lib/invitation-limits'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -14,6 +14,26 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
 
     if (!invitation) {
       return NextResponse.json({ error: 'Invitation not found' }, { status: 404 })
+    }
+
+    const session = await getUserSession()
+    const adminSession = await getSession()
+    const isOwner =
+      !!session?.email &&
+      !!invitation.userEmail &&
+      invitation.userEmail.toLowerCase() === String(session.email).toLowerCase()
+
+    if (!isOwner && !adminSession) {
+      const {
+        userEmail: _email,
+        razorpayOrderId: _order,
+        razorpayPaymentId: _pay,
+        couponId: _coupon,
+        paidAmount: _paid,
+        discountApplied: _disc,
+        ...publicData
+      } = invitation
+      return NextResponse.json(publicData)
     }
 
     return NextResponse.json(invitation)
@@ -51,7 +71,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       paidAmount,
     } = body
 
-    // Find invitation
     const invitation = await db.query.invitations.findFirst({
       where: eq(invitations.slug, slug),
     })
@@ -60,13 +79,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       return NextResponse.json({ error: 'Invitation not found' }, { status: 404 })
     }
 
-    // Security: Check ownership & 48h limit if NOT admin
     if (!adminSession) {
-      if (invitation.userEmail !== session.email) {
+      if (
+        !session?.email ||
+        !invitation.userEmail ||
+        invitation.userEmail.toLowerCase() !== String(session.email).toLowerCase()
+      ) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 })
       }
 
-      // Security: Check 48h limit
       if (!invitation.editWindowOverride) {
         const createdDate = new Date(invitation.createdAt)
         const now = new Date()
@@ -81,13 +102,23 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       }
     }
 
-    const updateData: any = {
+    const effectiveTier = adminSession && tier ? tier : invitation.tier
+    if (gallery && Array.isArray(gallery) && gallery.length > getGalleryLimit(effectiveTier)) {
+      return NextResponse.json(
+        {
+          error: `This plan allows up to ${getGalleryLimit(effectiveTier)} photo(s)`,
+        },
+        { status: 400 }
+      )
+    }
+
+    const updateData: Record<string, unknown> = {
       brideName,
       groomName,
       date: new Date(date),
       venue,
       events,
-      gallery,
+      gallery: gallery ? clampGallery(gallery, effectiveTier) : gallery,
       musicUrl,
       template,
       language: language || 'en',
@@ -96,17 +127,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       rsvpButtonText: rsvpButtonText || 'RSVP Now',
     }
 
-    // Admins can also update tier and paid amount
     if (adminSession) {
       if (tier !== undefined) updateData.tier = tier
       if (paidAmount !== undefined) updateData.paidAmount = paidAmount
     }
 
-    // Update
-    await db
-      .update(invitations)
-      .set(updateData)
-      .where(eq(invitations.id, invitation.id))
+    await db.update(invitations).set(updateData).where(eq(invitations.id, invitation.id))
 
     return NextResponse.json({ success: true, message: 'Invitation updated successfully' })
   } catch (error) {
@@ -114,4 +140,3 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

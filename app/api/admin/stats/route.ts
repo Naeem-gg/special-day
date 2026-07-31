@@ -2,21 +2,20 @@ import { db } from '@/lib/db'
 import { invitations, rsvps, coupons } from '@/lib/db/schema'
 import { count } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth-utils'
 
 export async function GET() {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
+
   try {
     const [invitationCount] = await db.select({ value: count() }).from(invitations)
     const [rsvpCount] = await db.select({ value: count() }).from(rsvps)
     const [couponCount] = await db.select({ value: count() }).from(coupons)
 
-    // Calculate estimated revenue
     const allInvitations = await db.query.invitations.findMany()
     const totalPotentialRevenue = allInvitations.reduce((acc, inv) => {
-      let price = 0
-      if (inv.tier === 'basic') price = 399
-      if (inv.tier === 'standard') price = 799
-      if (inv.tier === 'premium') price = 999
-      return acc + (inv.paidAmount || price)
+      return acc + (inv.paidAmount || 0)
     }, 0)
 
     return NextResponse.json({

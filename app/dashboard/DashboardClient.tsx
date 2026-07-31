@@ -30,7 +30,8 @@ import {
 } from 'lucide-react'
 import { STYLES, TIER_STYLES } from '@/components/templates/types'
 import { TestimonialForm } from '@/components/testimonials/TestimonialForm'
-import { detectCurrency, getDisplayPrice, Currency } from '@/lib/currency'
+import { detectCurrency, formatMoney, Currency } from '@/lib/currency'
+import { CurrencyToggle } from '@/components/CurrencyToggle'
 
 declare global {
   interface Window {
@@ -382,7 +383,7 @@ export default function DashboardClient({
       const res = await fetch('/api/coupons/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: couponCode }),
+        body: JSON.stringify({ code: couponCode, tier: formData.tier }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -481,6 +482,7 @@ export default function DashboardClient({
               couponId: couponData?.id,
               discountApplied: originalPrice,
               paidAmount: 0,
+              currency,
             },
           }),
         })
@@ -560,6 +562,7 @@ export default function DashboardClient({
                   couponId: couponData?.id,
                   discountApplied: originalPrice - finalPrice,
                   paidAmount: finalPrice,
+                  currency,
                 },
               }),
             })
@@ -664,6 +667,9 @@ export default function DashboardClient({
                         <p className="text-sm text-muted-foreground">
                           Almost there! Please check your details.
                         </p>
+                        <div className="flex justify-center pt-1">
+                          <CurrencyToggle currency={currency} onChange={setCurrency} />
+                        </div>
                       </div>
 
                       <div className="bg-rose-50/50 rounded-2xl p-5 space-y-4 border border-rose-100/50">
@@ -686,10 +692,12 @@ export default function DashboardClient({
                             <span className="text-gray-500">Plan Price</span>
                             <div className="flex flex-col items-end">
                               <div className="flex items-center gap-2">
-                                {/* Show Strike Price from DB if exists */}
                                 {tiers.find((t) => t.slug === formData.tier)?.strikePrice && (
                                   <span className="text-xs text-gray-400 line-through">
-                                    ₹{tiers.find((t) => t.slug === formData.tier)?.strikePrice}
+                                    {formatMoney(
+                                      tiers.find((t) => t.slug === formData.tier)?.strikePrice || 0,
+                                      currency
+                                    )}
                                   </span>
                                 )}
                                 <span
@@ -699,7 +707,10 @@ export default function DashboardClient({
                                       : 'text-gray-900 font-medium'
                                   }
                                 >
-                                  ₹{tiers.find((t) => t.slug === formData.tier)?.price || 0}
+                                  {formatMoney(
+                                    tiers.find((t) => t.slug === formData.tier)?.price || 0,
+                                    currency
+                                  )}
                                 </span>
                               </div>
                               {isPromoActive && formData.tier === 'basic' && (
@@ -774,24 +785,13 @@ export default function DashboardClient({
                               <span>Discount ({couponCode})</span>
                               <span>
                                 -
-                                {
-                                  getDisplayPrice(
-                                    (tiers.find((t) => t.slug === formData.tier)?.price || 0) -
+                                {formatMoney(
+                                  (tiers.find((t) => t.slug === formData.tier)?.price || 0) -
                                     calculateFinalPrice(
                                       tiers.find((t) => t.slug === formData.tier)?.price || 0
                                     ),
-                                    currency
-                                  ).symbol
-                                }
-                                {
-                                  getDisplayPrice(
-                                    (tiers.find((t) => t.slug === formData.tier)?.price || 0) -
-                                    calculateFinalPrice(
-                                      tiers.find((t) => t.slug === formData.tier)?.price || 0
-                                    ),
-                                    currency
-                                  ).amount
-                                }
+                                  currency
+                                )}
                               </span>
                             </div>
                           )}
@@ -801,38 +801,20 @@ export default function DashboardClient({
                               {calculateFinalPrice(
                                 tiers.find((t) => t.slug === formData.tier)?.price || 0
                               ) < (tiers.find((t) => t.slug === formData.tier)?.price || 0) && (
-                                  <span className="text-sm text-gray-400 line-through">
-                                    {
-                                      getDisplayPrice(
-                                        tiers.find((t) => t.slug === formData.tier)?.price || 0,
-                                        currency
-                                      ).symbol
-                                    }
-                                    {
-                                      getDisplayPrice(
-                                        tiers.find((t) => t.slug === formData.tier)?.price || 0,
-                                        currency
-                                      ).amount
-                                    }
-                                  </span>
-                                )}
+                                <span className="text-sm text-gray-400 line-through">
+                                  {formatMoney(
+                                    tiers.find((t) => t.slug === formData.tier)?.price || 0,
+                                    currency
+                                  )}
+                                </span>
+                              )}
                               <span className="text-2xl text-[#F43F8F]">
-                                {
-                                  getDisplayPrice(
-                                    calculateFinalPrice(
-                                      tiers.find((t) => t.slug === formData.tier)?.price || 0
-                                    ),
-                                    currency
-                                  ).symbol
-                                }
-                                {
-                                  getDisplayPrice(
-                                    calculateFinalPrice(
-                                      tiers.find((t) => t.slug === formData.tier)?.price || 0
-                                    ),
-                                    currency
-                                  ).amount
-                                }
+                                {formatMoney(
+                                  calculateFinalPrice(
+                                    tiers.find((t) => t.slug === formData.tier)?.price || 0
+                                  ),
+                                  currency
+                                )}
                               </span>
                             </div>
                           </div>
@@ -1763,29 +1745,36 @@ export default function DashboardClient({
                                 For the {formData.tier} plan (
                                 {STYLES.find((t) => t.slug === formData.style)?.name || 'Template'})
                               </p>
+                              <div className="mt-2">
+                                <CurrencyToggle currency={currency} onChange={setCurrency} />
+                              </div>
                             </div>
                             <div className="text-right flex flex-col items-end">
                               <div className="flex items-center gap-2">
-                                {/* Show Strike Price from DB if exists, otherwise show calculated Original Price if discounted */}
                                 {(selectedTier?.strikePrice ||
                                   (hasDiscount && originalPrice > finalPrice)) && (
-                                    <span className="text-xs text-gray-400 line-through">
-                                      ₹{selectedTier?.strikePrice || originalPrice}
-                                    </span>
-                                  )}
+                                  <span className="text-xs text-gray-400 line-through">
+                                    {formatMoney(
+                                      selectedTier?.strikePrice || originalPrice,
+                                      currency
+                                    )}
+                                  </span>
+                                )}
                                 {hasDiscount && finalPrice < originalPrice && (
                                   <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full border border-green-100">
                                     SAVE{' '}
                                     {Math.round(
                                       (((selectedTier?.strikePrice || originalPrice) - finalPrice) /
                                         (selectedTier?.strikePrice || originalPrice)) *
-                                      100
+                                        100
                                     )}
                                     %
                                   </span>
                                 )}
                               </div>
-                              <p className="text-3xl font-serif text-[#F43F8F]">₹{finalPrice}</p>
+                              <p className="text-3xl font-serif text-[#F43F8F]">
+                                {formatMoney(finalPrice, currency)}
+                              </p>
                             </div>
                           </div>
                         )
@@ -1863,7 +1852,7 @@ export default function DashboardClient({
                           Woohoo! Code applied — you get{' '}
                           {couponData.discountType === 'percentage'
                             ? `${couponData.discountValue}%`
-                            : `${getDisplayPrice(couponData.discountValue, currency).symbol}${getDisplayPrice(couponData.discountValue, currency).amount}`}{' '}
+                            : formatMoney(couponData.discountValue, currency)}{' '}
                           off! 🎉
                         </motion.p>
                       )}

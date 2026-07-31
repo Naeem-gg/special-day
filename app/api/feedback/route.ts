@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message is too short.' }, { status: 400 })
     }
 
-    // Save to DB
     const [newFeedback] = await db
       .insert(feedback)
       .values({
@@ -30,7 +29,6 @@ export async function POST(req: NextRequest) {
       })
       .returning()
 
-    // Send admin notification email asynchronously
     sendFeedbackNotification({
       name,
       email,
@@ -47,7 +45,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET /api/feedback — public list (only public, open+resolved)
+// GET /api/feedback — public list (emails stripped)
 export async function GET() {
   try {
     const items = await db.query.feedback.findMany({
@@ -59,7 +57,9 @@ export async function GET() {
         },
       },
     })
-    return NextResponse.json(items)
+
+    const sanitized = items.map(({ email: _email, ...rest }) => rest)
+    return NextResponse.json(sanitized)
   } catch (err) {
     console.error('Feedback list error:', err)
     return NextResponse.json({ error: 'Failed to load.' }, { status: 500 })

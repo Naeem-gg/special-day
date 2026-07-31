@@ -132,13 +132,18 @@ export default function StyleRouter({ style, ...props }: StyleProps & { style: s
   return (
     <>
       {renderIntro()}
-      <Component {...props} tier={meta?.tier} ourStory={props.ourStory} mapUrl={props.mapUrl} />
+      <Component
+        {...props}
+        tier={props.tier || meta?.tier}
+        ourStory={props.ourStory}
+        mapUrl={props.mapUrl}
+      />
       {props.musicUrl && !props.isThumbnail && <BackgroundMusic url={props.musicUrl} />}
 
       {/* ── Brand Promotional Footer ────────────── */}
       {!props.isThumbnail && (
         <>
-          {meta?.tier === 'basic' ? (
+          {(props.tier || meta?.tier) === 'basic' ? (
             <Watermark />
           ) : (
             <footer className="py-12 px-6 text-center bg-transparent relative z-10">

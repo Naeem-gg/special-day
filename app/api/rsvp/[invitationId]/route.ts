@@ -1,8 +1,21 @@
 import { db } from '@/lib/db'
 import { rsvps, invitations } from '@/lib/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, sql } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserSession } from '@/lib/auth-utils'
+
+async function getOwnedInvitation(invitationId: number, email: string) {
+  const [invitation] = await db
+    .select()
+    .from(invitations)
+    .where(
+      and(
+        eq(invitations.id, invitationId),
+        sql`lower(${invitations.userEmail}) = ${email.toLowerCase()}`
+      )
+    )
+  return invitation
+}
 
 export async function GET(
   req: NextRequest,
@@ -11,7 +24,7 @@ export async function GET(
   try {
     const { invitationId: rawInvitationId } = await params
     const session = await getUserSession()
-    if (!session) {
+    if (!session?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -20,11 +33,7 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid Invitation ID' }, { status: 400 })
     }
 
-    // Security: Verify the invitation belongs to the current user
-    const [invitation] = await db
-      .select()
-      .from(invitations)
-      .where(and(eq(invitations.id, invitationId), eq(invitations.userEmail, session.email)))
+    const invitation = await getOwnedInvitation(invitationId, session.email)
 
     if (!invitation) {
       return NextResponse.json({ error: 'Invitation not found or access denied' }, { status: 404 })
@@ -37,7 +46,6 @@ export async function GET(
       )
     }
 
-    // Fetch RSVPs
     const invitationRsvps = await db
       .select()
       .from(rsvps)
@@ -58,7 +66,7 @@ export async function DELETE(
   try {
     const { invitationId: rawInvitationId } = await params
     const session = await getUserSession()
-    if (!session) {
+    if (!session?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -68,12 +76,7 @@ export async function DELETE(
     }
 
     const invitationId = parseInt(rawInvitationId)
-
-    // Security: Verify the invitation belongs to the current user
-    const [invitation] = await db
-      .select()
-      .from(invitations)
-      .where(and(eq(invitations.id, invitationId), eq(invitations.userEmail, session.email)))
+    const invitation = await getOwnedInvitation(invitationId, session.email)
 
     if (!invitation) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
@@ -83,7 +86,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Action not allowed on this plan' }, { status: 403 })
     }
 
-    // Delete RSVP
     await db.delete(rsvps).where(and(eq(rsvps.id, rsvpId), eq(rsvps.invitationId, invitationId)))
 
     return NextResponse.json({ success: true })

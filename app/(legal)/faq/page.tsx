@@ -21,27 +21,27 @@ const faqs = [
   {
     question: 'Can I track RSVPs from my guests?',
     answer:
-      'Yes! Our Premium tiers include a fully integrated RSVP system. Guests can RSVP directly through your invitation link, and you can track all responses and guest counts in real-time through your personal dashboard.',
+      'Yes! Silver (Standard) and Gold (Premium) plans include an integrated RSVP system. Guests can RSVP directly through your invitation link, and you can track responses and guest counts in real time from your account dashboard.',
   },
   {
     question: 'Can I add my own background music?',
     answer:
-      'Absolutely! Our Silver and Gold plans allow you to provide a link to your favorite song (via YouTube, SoundCloud, or MP3), which will play automatically and set the mood when guests open your invitation.',
+      'Absolutely! Silver and Gold plans allow you to upload an MP3 or paste a direct audio URL, which can play when guests open your invitation.',
   },
   {
     question: 'Is there a limit on how many photos I can upload?',
     answer:
-      'The photo limit depends on your chosen tier. The Basic plan allows 1 feature photo, Silver allows up to 5 photos, and our Gold tier allows you to upload up to 10 photos to create a stunning, swipeable gallery.',
+      'Yes. Basic allows 1 photo, Silver (Standard) up to 5, and Gold (Premium) up to 10 photos for a swipeable gallery.',
   },
   {
     question: 'How long does the invitation stay active online?',
     answer:
-      'Every invitation is securely hosted and remains fully active for a full 1 year from the date of creation. Your family and friends can revisit your special moments anytime during this period.',
+      'Basic and Silver invitations remain fully active for 1 year from the date of creation. Gold (Premium) invitations include lifetime hosting.',
   },
   {
     question: 'Can I edit the invitation after paying?',
     answer:
-      'Yes! If you create a free account before checking out, you can log in to your dashboard anytime to update event timings, venue details, or swap out photos without any extra cost.',
+      'Yes — if your invitation is linked to an account email, you can edit details (venue, timings, photos, etc.) for up to 48 hours after creation. After that window closes, contact support if you need a temporary unlock.',
   },
 ]
 

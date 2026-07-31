@@ -6,7 +6,6 @@ export async function proxy(request: NextRequest) {
 
   // Protect /adminn routes
   if (pathname.startsWith('/adminn')) {
-    // Exclude login page from protection
     if (pathname === '/adminn/login') {
       return NextResponse.next()
     }
@@ -17,13 +16,14 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/adminn/login', request.url))
     }
 
-    try {
-      await decrypt(session)
-      return NextResponse.next()
-    } catch (error) {
-      console.error('Middleware Auth Error:', error)
-      return NextResponse.redirect(new URL('/adminn/login', request.url))
+    const payload = await decrypt(session)
+    if (!payload) {
+      const res = NextResponse.redirect(new URL('/adminn/login', request.url))
+      res.cookies.set('admin_session', '', { expires: new Date(0), path: '/' })
+      return res
     }
+
+    return NextResponse.next()
   }
 
   // Protect /api/admin routes
@@ -37,12 +37,12 @@ export async function proxy(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    try {
-      await decrypt(session)
-      return NextResponse.next()
-    } catch (error) {
+    const payload = await decrypt(session)
+    if (!payload) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    return NextResponse.next()
   }
 
   return NextResponse.next()

@@ -332,7 +332,8 @@ function ProgressBar() {
   )
 }
 
-import { detectCurrency, getDisplayPrice, Currency } from '@/lib/currency'
+import { detectCurrency, getDisplayPrice, formatMoney, Currency } from '@/lib/currency'
+import { CurrencyToggle } from '@/components/CurrencyToggle'
 
 /* ════════ MAIN HOME CLIENT ══════════════ */
 export default function HomeClient({
@@ -1021,8 +1022,9 @@ export default function HomeClient({
             {[
               {
                 feature: '💰 Cost',
-                paper: '₹8,000 – ₹40,000+',
-                digital: 'From ₹399 one-time',
+                paper:
+                  currency === 'USD' ? '$100 – $500+' : '₹8,000 – ₹40,000+',
+                digital: `From ${formatMoney(399, currency)} one-time`,
                 highlight: true,
               },
               {
@@ -1038,15 +1040,15 @@ export default function HomeClient({
                 highlight: true,
               },
               {
-                feature: '🌍 Languages',
-                paper: 'One per print run',
-                digital: 'Multiple languages',
+                feature: '🌍 Reach',
+                paper: 'Local delivery only',
+                digital: 'Share worldwide instantly',
                 highlight: false,
               },
               {
                 feature: '✏️ Updates & Changes',
                 paper: 'Reprint everything',
-                digital: 'Edit in real-time',
+                digital: 'Edit for 48 hours after create',
                 highlight: true,
               },
               {
@@ -1103,8 +1105,11 @@ export default function HomeClient({
             <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-8 py-5 rounded-full bg-linear-to-r from-[#D4AF37] to-[#8E6F3E] text-white shadow-2xl shadow-amber-300/50">
               <span className="text-2xl">💸</span>
               <span className="text-base md:text-lg font-bold">
-                Save up to <span className="text-2xl font-extrabold">₹39,000+</span> compared to
-                traditional paper invitations
+                Save up to{' '}
+                <span className="text-2xl font-extrabold">
+                  {currency === 'USD' ? '$450+' : '₹39,000+'}
+                </span>{' '}
+                compared to traditional paper invitations
               </span>
             </div>
           </motion.div>
@@ -1151,8 +1156,12 @@ export default function HomeClient({
             </h2>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Choose the perfect plan to share your love story. No hidden fees, no recurring
-              subscriptions. Just a one-time payment for a lifetime of memories.
+              subscriptions — one-time payment, with hosting included for every plan.
             </p>
+
+            <div className="flex justify-center">
+              <CurrencyToggle currency={currency} onChange={setCurrency} />
+            </div>
 
             {/* 🚀 Limited Launch Highlight */}
             <motion.div
@@ -1173,7 +1182,7 @@ export default function HomeClient({
                   <p className="text-[11px] text-gray-500 font-medium leading-tight">
                     Valid only for the{' '}
                     <span className="text-[#D4AF37] font-bold">first 20 customers</span>. Prices
-                    will increase by ₹300 soon!
+                    will increase by {formatMoney(300, currency)} soon!
                   </p>
                 </div>
                 <div className="ml-auto bg-amber-100 text-[#D4AF37] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest hidden sm:block">
@@ -1209,6 +1218,7 @@ export default function HomeClient({
                 'Integrated RSVP (Guest List)',
                 'Up to 5 photos',
                 'Your favourite background music',
+                '1 year of hosting included',
                 'Edit details for 48 hours',
                 'Download your guest names',
                 'Helping Hand (Priority Help)',
@@ -1272,7 +1282,7 @@ export default function HomeClient({
               },
               {
                 q: 'How long will my invitation stay online?',
-                a: 'All invitations stay live for at least one full year from the date of creation. Our Gold plan even offers lifetime access so you can revisit your digital memories forever.',
+                a: 'Basic and Silver invitations stay live for one full year from creation. Gold includes lifetime hosting so you can revisit your digital memories forever.',
               },
             ].map((faq, i) => (
               <motion.div

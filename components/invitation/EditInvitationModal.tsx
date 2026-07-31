@@ -35,6 +35,7 @@ import { STYLES, StyleEvent, StylePhoto } from '@/components/templates/types'
 import CloudinaryUpload from '@/components/dashboard/CloudinaryUpload'
 import { toast } from 'sonner'
 import confetti from 'canvas-confetti'
+import { detectCurrency, Currency } from '@/lib/currency'
 
 interface EditInvitationModalProps {
   isOpen: boolean
@@ -71,6 +72,11 @@ export function EditInvitationModal({
   const [step, setStep] = useState<'details' | 'template'>('details')
   const [isSaving, setIsSaving] = useState(false)
   const [tiers, setTiers] = useState<any[]>([])
+  const [currency, setCurrency] = useState<Currency>('INR')
+
+  useEffect(() => {
+    detectCurrency().then(setCurrency)
+  }, [])
 
   // Form Details States
   const [formData, setFormData] = useState({
@@ -227,6 +233,7 @@ export function EditInvitationModal({
         body: JSON.stringify({
           tierSlug: selectedTemplateTier,
           invitationSlug: invitation.slug,
+          currency,
         }),
       })
 
@@ -248,6 +255,7 @@ export function EditInvitationModal({
               isUpgrade: true,
               slug: invitation.slug,
               paidAmount: 0,
+              currency,
             },
           }),
         })
@@ -293,6 +301,7 @@ export function EditInvitationModal({
                   isUpgrade: true,
                   slug: invitation.slug,
                   paidAmount: upgradeCost,
+                  currency,
                 },
               }),
             })

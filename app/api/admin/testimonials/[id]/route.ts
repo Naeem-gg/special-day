@@ -1,15 +1,13 @@
 import { db } from '@/lib/db'
 import { testimonials } from '@/lib/db/schema'
-import { getSession } from '@/lib/auth-utils'
+import { requireAdmin } from '@/lib/auth-utils'
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 // PATCH update testimonial (isPublic)
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getSession()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
 
   const { id } = await params
   const body = await req.json()
@@ -35,10 +33,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
 // DELETE testimonial
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getSession()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
 
   const { id } = await params
 

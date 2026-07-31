@@ -3,8 +3,12 @@ import { admins } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import { sendEmail } from '@/lib/mail'
+import { requireAdmin } from '@/lib/auth-utils'
 
 export async function POST() {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
+
   try {
     const admin = await db.query.admins.findFirst()
     if (!admin) {
@@ -12,7 +16,7 @@ export async function POST() {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+    const expires = new Date(Date.now() + 10 * 60 * 1000)
 
     await db
       .update(admins)

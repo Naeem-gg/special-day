@@ -1,11 +1,18 @@
 import { db } from '@/lib/db'
-import { invitations, coupons } from '@/lib/db/schema'
-import { eq, sql } from 'drizzle-orm'
+import { invitations, coupons, tiers as tiersTable } from '@/lib/db/schema'
+import { and, eq, sql } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { sendPurchaseReceipt } from '@/lib/mail'
 import { razorpay } from '@/lib/razorpay'
-import { tiers as tiersTable } from '@/lib/db/schema'
+import { getUserSession } from '@/lib/auth-utils'
+import { applyCouponDiscount, validateCouponForCheckout } from '@/lib/coupons'
+import {
+  clampGallery,
+  getGalleryLimit,
+  MAX_FREE_BASIC_PER_EMAIL,
+} from '@/lib/invitation-limits'
+import { assertCurrency, toRazorpayAmount } from '@/lib/currency'
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,12 +24,82 @@ export async function POST(req: NextRequest) {
       bypassPayment,
     } = await req.json()
 
+    if (!invitationData || typeof invitationData !== 'object') {
+      return NextResponse.json({ error: 'Missing invitation data' }, { status: 400 })
+    }
+
+    const tierSlug = (invitationData.tier || 'basic').toLowerCase()
+    const session = await getUserSession()
+
+    // Prefer authenticated email over client-supplied when available
+    if (session?.email) {
+      invitationData.userEmail = session.email
+    }
+
+    const [dbTier] = await db.select().from(tiersTable).where(eq(tiersTable.slug, tierSlug))
+    if (!dbTier) {
+      return NextResponse.json({ error: 'Invalid tier in invitation data' }, { status: 400 })
+    }
+
+    let expectedAmount = dbTier.price
+    let validatedCouponId: number | null = invitationData.couponId || null
+
+    // Upgrade: deduct previously paid amount + verify ownership
+    let existingInvite: typeof invitations.$inferSelect | undefined
+    if (invitationData.isUpgrade && invitationData.slug) {
+      existingInvite = await db.query.invitations.findFirst({
+        where: eq(invitations.slug, invitationData.slug),
+      })
+      if (!existingInvite) {
+        return NextResponse.json({ error: 'Invitation to upgrade not found' }, { status: 404 })
+      }
+
+      const ownerEmail = existingInvite.userEmail?.toLowerCase()
+      const sessionEmail = session?.email ? String(session.email).toLowerCase() : ''
+      if (!ownerEmail || !sessionEmail || ownerEmail !== sessionEmail) {
+        return NextResponse.json(
+          { error: 'Please log in as the invitation owner to upgrade' },
+          { status: 403 }
+        )
+      }
+
+      expectedAmount = Math.max(0, expectedAmount - (existingInvite.paidAmount || 0))
+    }
+
+    if (validatedCouponId) {
+      const result = await validateCouponForCheckout({ id: validatedCouponId }, tierSlug)
+      if ('error' in result) {
+        const messages: Record<string, string> = {
+          not_found: 'Invalid coupon',
+          inactive: 'Invalid or inactive coupon',
+          expired: 'Coupon has expired',
+          usage_limit: 'Coupon usage limit reached',
+          tier_mismatch: 'This gift coupon is not valid for the selected plan',
+        }
+        return NextResponse.json({ error: messages[result.error] || 'Invalid coupon' }, { status: 403 })
+      }
+      expectedAmount = applyCouponDiscount(expectedAmount, result.coupon)
+    }
+
+    // Gallery limits
+    if (invitationData.gallery && Array.isArray(invitationData.gallery)) {
+      if (invitationData.gallery.length > getGalleryLimit(tierSlug)) {
+        return NextResponse.json(
+          { error: `This plan allows up to ${getGalleryLimit(tierSlug)} photo(s)` },
+          { status: 400 }
+        )
+      }
+      invitationData.gallery = clampGallery(invitationData.gallery, tierSlug)
+    }
+
+    // Server-authoritative amount charged this transaction
+    let chargeAmount = expectedAmount
+
     if (!bypassPayment) {
       if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
         return NextResponse.json({ error: 'Missing required payment parameters' }, { status: 400 })
       }
 
-      // Verify signature
       const secret = (process.env.RAZORPAY_KEY_SECRET || '').trim()
       const hmac = crypto.createHmac('sha256', secret)
       hmac.update(razorpay_order_id + '|' + razorpay_payment_id)
@@ -32,126 +109,77 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Payment verification failed' }, { status: 400 })
       }
 
-      // ─── ANTI-MANIPULATION CHECK ───
-      // Fetch the actual payment from Razorpay to verify the amount
       const payment = await razorpay.payments.fetch(razorpay_payment_id)
+      const paidCurrency = assertCurrency(payment.currency)
+      const expected = toRazorpayAmount(chargeAmount, paidCurrency)
 
-      // Re-calculate what the price SHOULD be based on the tier and coupon in the request
-      const { tier, couponId, isUpgrade, slug } = invitationData
-      const [dbTier] = await db
-        .select()
-        .from(tiersTable)
-        .where(eq(tiersTable.slug, tier || 'basic'))
-
-      if (!dbTier) {
-        return NextResponse.json({ error: 'Invalid tier in invitation data' }, { status: 400 })
-      }
-
-      let expectedAmount = dbTier.price
-      if (couponId) {
-        const coupon = await db.query.coupons.findFirst({
-          where: eq(coupons.id, couponId),
-        })
-        if (coupon && coupon.active) {
-          if (coupon.discountType === 'percentage') {
-            expectedAmount = Math.round(dbTier.price * (1 - coupon.discountValue / 100))
-          } else {
-            expectedAmount = Math.max(0, dbTier.price - coupon.discountValue)
-          }
-        }
-      }
-
-      // If it's an upgrade, deduct previously paid amount
-      if (isUpgrade && slug) {
-        const existingInvite = await db.query.invitations.findFirst({
-          where: eq(invitations.slug, slug),
-        })
-        if (existingInvite) {
-          expectedAmount = Math.max(0, expectedAmount - (existingInvite.paidAmount || 0))
-        }
-      }
-
-      // Check if the amount actually paid matches our server-side calculation
-      // Razorpay amount is in paise
-      if (payment.amount !== expectedAmount * 100) {
+      if (
+        String(payment.currency || '').toUpperCase() !== expected.currency ||
+        Number(payment.amount) !== expected.amount
+      ) {
         console.error('PRICE MANIPULATION DETECTED:', {
           paid: payment.amount,
-          expected: expectedAmount * 100,
+          paidCurrency: payment.currency,
+          expectedAmount: expected.amount,
+          expectedCurrency: expected.currency,
+          chargeAmountInr: chargeAmount,
           user: invitationData.userEmail,
         })
         return NextResponse.json({ error: 'Price mismatch. Payment rejected.' }, { status: 400 })
       }
-      // ──────────────────────────────
-    } else {
-      // If bypassPayment is true, we MUST verify the coupon actually results in 0 cost (or it is a free upgrade)
-      const { couponId, tier, isUpgrade, slug } = invitationData
+    } else if (chargeAmount > 0) {
+      // Free-basic promo only when no coupon fully covers the price
+      const isFreeBasicPromo =
+        tierSlug === 'basic' &&
+        !invitationData.isUpgrade &&
+        !invitationData.isGift &&
+        !validatedCouponId
 
-      let isUpgradeFree = false
-      if (isUpgrade && slug) {
-        const [dbTier] = await db
-          .select()
-          .from(tiersTable)
-          .where(eq(tiersTable.slug, tier || 'basic'))
-        const existingInvite = await db.query.invitations.findFirst({
-          where: eq(invitations.slug, slug),
-        })
-        if (dbTier && existingInvite && dbTier.price - (existingInvite.paidAmount || 0) <= 0) {
-          isUpgradeFree = true
-        }
+      if (!isFreeBasicPromo) {
+        return NextResponse.json(
+          { error: 'Payment required — coupon does not cover the full amount' },
+          { status: 403 }
+        )
       }
 
-      if (isUpgradeFree) {
-        // Safe! Upgrade does not require any additional payment.
-      } else if (!couponId) {
-        // ALLOW BASIC TIER TO BE FREE WITHOUT A COUPON DURING PROMO
-        if (tier === 'basic') {
-          // Success! Basic is free right now.
-        } else {
-          return NextResponse.json({ error: 'Bypass payment requires a coupon' }, { status: 403 })
-        }
-      } else {
-        // Fetch coupon from DB
-        const coupon = await db.query.coupons.findFirst({
-          where: eq(coupons.id, couponId),
-        })
+      const email = (invitationData.userEmail || '').trim().toLowerCase()
+      if (!email || !email.includes('@')) {
+        return NextResponse.json(
+          { error: 'Email is required for free invitations' },
+          { status: 400 }
+        )
+      }
 
-        if (!coupon || !coupon.active) {
-          return NextResponse.json({ error: 'Invalid or inactive coupon' }, { status: 403 })
-        }
-
-        // Check if it's a 100% discount
-        const isFullDiscount = coupon.discountType === 'percentage' && coupon.discountValue === 100
-
-        // If it's not a 100% discount, check if it's a fixed discount that covers the whole price
-        let isFixedFullDiscount = false
-        if (coupon.discountType === 'fixed') {
-          const { tiers } = await import('@/lib/db/schema')
-          const [tierData] = await db
-            .select()
-            .from(tiers)
-            .where(eq(tiers.slug, tier || 'basic'))
-          if (tierData && coupon.discountValue >= tierData.price) {
-            isFixedFullDiscount = true
-          }
-        }
-
-        if (!isFullDiscount && !isFixedFullDiscount) {
-          return NextResponse.json(
-            { error: 'This coupon does not cover the full amount. Payment is required.' },
-            { status: 403 }
+      const existingFree = await db
+        .select({ id: invitations.id })
+        .from(invitations)
+        .where(
+          and(
+            sql`lower(${invitations.userEmail}) = ${email}`,
+            eq(invitations.tier, 'basic'),
+            eq(invitations.paidAmount, 0)
           )
-        }
+        )
+
+      if (existingFree.length >= MAX_FREE_BASIC_PER_EMAIL) {
+        return NextResponse.json(
+          {
+            error: `Free basic limit reached (${MAX_FREE_BASIC_PER_EMAIL} per email). Please upgrade or use a different email.`,
+          },
+          { status: 403 }
+        )
       }
+
+      chargeAmount = 0
     }
+    // else chargeAmount === 0: coupon or free upgrade — already validated
 
-    // Payment is verified
+    // ── Gift flow ──
     if (invitationData.isGift) {
-      const { tier, userEmail, senderName } = invitationData
+      const { userEmail, senderName } = invitationData
 
-      // Generate a 100% discount coupon restricted to the tier
-      // Format: GIFT-[TIER]-[RANDOM]
       const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase()
-      const giftCode = `GIFT-${tier.toUpperCase()}-${randomSuffix}`
+      const giftCode = `GIFT-${tierSlug.toUpperCase()}-${randomSuffix}`
 
       const [newCoupon] = await db
         .insert(coupons)
@@ -164,20 +192,18 @@ export async function POST(req: NextRequest) {
         })
         .returning()
 
-      // Update coupon usage for the coupon USED to buy the gift
-      if (invitationData.couponId) {
+      if (validatedCouponId) {
         await db
           .update(coupons)
           .set({ usedCount: sql`${coupons.usedCount} + 1` })
-          .where(eq(coupons.id, invitationData.couponId))
+          .where(eq(coupons.id, validatedCouponId))
       }
 
-      // Send the gift code via email
       if (userEmail) {
         const { sendGiftCoupon } = await import('@/lib/mail')
         sendGiftCoupon({
           to: userEmail,
-          planName: tier,
+          planName: tierSlug,
           couponCode: giftCode,
           senderName: senderName || 'A friend',
         }).catch((err) => console.error('Failed to send gift email:', err))
@@ -186,11 +212,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         isGift: true,
-        giftCode: giftCode,
+        giftCode: newCoupon.code,
       })
     }
 
-    // Otherwise, save the invitation (original logic) or update if it's an upgrade
     const {
       slug,
       brideName,
@@ -201,48 +226,45 @@ export async function POST(req: NextRequest) {
       gallery,
       musicUrl,
       backgroundImage,
-      tier,
       template,
-      couponId,
-      discountApplied,
-      paidAmount,
       userEmail,
       isUpgrade,
       ourStory,
       mapUrl,
+      rsvpButtonText,
     } = invitationData
+
+    if (!slug || !brideName || !groomName || !date || !venue) {
+      return NextResponse.json({ error: 'Missing required invitation fields' }, { status: 400 })
+    }
 
     let resultInvitation
 
     if (isUpgrade) {
-      const existingInvite = await db.query.invitations.findFirst({
-        where: eq(invitations.slug, slug),
-      })
-      if (!existingInvite) {
-        return NextResponse.json({ error: 'Invitation to upgrade not found' }, { status: 404 })
-      }
-
-      const newPaidAmount = (existingInvite.paidAmount || 0) + (paidAmount || 0)
+      const newPaidAmount = (existingInvite!.paidAmount || 0) + chargeAmount
 
       const [updatedInvitation] = await db
         .update(invitations)
         .set({
-          tier: tier || existingInvite.tier,
-          template: template || existingInvite.template,
+          tier: tierSlug,
+          template: template || existingInvite!.template,
           paidAmount: newPaidAmount,
-          razorpayOrderId: razorpay_order_id || existingInvite.razorpayOrderId,
-          razorpayPaymentId: razorpay_payment_id || existingInvite.razorpayPaymentId,
-          brideName: brideName !== undefined ? brideName : existingInvite.brideName,
-          groomName: groomName !== undefined ? groomName : existingInvite.groomName,
-          date: date ? new Date(date) : existingInvite.date,
-          venue: venue !== undefined ? venue : existingInvite.venue,
-          events: events || existingInvite.events,
-          gallery: gallery || existingInvite.gallery,
-          musicUrl: musicUrl !== undefined ? musicUrl : existingInvite.musicUrl,
-          ourStory: ourStory !== undefined ? ourStory : existingInvite.ourStory,
-          mapUrl: mapUrl !== undefined ? mapUrl : existingInvite.mapUrl,
+          razorpayOrderId: razorpay_order_id || existingInvite!.razorpayOrderId,
+          razorpayPaymentId: razorpay_payment_id || existingInvite!.razorpayPaymentId,
+          brideName: brideName !== undefined ? brideName : existingInvite!.brideName,
+          groomName: groomName !== undefined ? groomName : existingInvite!.groomName,
+          date: date ? new Date(date) : existingInvite!.date,
+          venue: venue !== undefined ? venue : existingInvite!.venue,
+          events: events || existingInvite!.events,
+          gallery: gallery
+            ? clampGallery(gallery, tierSlug)
+            : existingInvite!.gallery,
+          musicUrl: musicUrl !== undefined ? musicUrl : existingInvite!.musicUrl,
+          ourStory: ourStory !== undefined ? ourStory : existingInvite!.ourStory,
+          mapUrl: mapUrl !== undefined ? mapUrl : existingInvite!.mapUrl,
+          couponId: validatedCouponId || existingInvite!.couponId,
         })
-        .where(eq(invitations.id, existingInvite.id))
+        .where(eq(invitations.id, existingInvite!.id))
         .returning()
 
       resultInvitation = updatedInvitation
@@ -257,37 +279,34 @@ export async function POST(req: NextRequest) {
           date: new Date(date),
           venue,
           events: events || [],
-          gallery: gallery || [],
+          gallery: clampGallery(gallery || [], tierSlug),
           musicUrl,
           backgroundImage,
-          tier: tier || 'basic',
+          tier: tierSlug,
           template: template || 'rose-gold',
-          couponId: couponId || null,
-          discountApplied: discountApplied || 0,
-          paidAmount: paidAmount || 0,
+          couponId: validatedCouponId,
+          discountApplied: Math.max(0, dbTier.price - chargeAmount),
+          paidAmount: chargeAmount,
           razorpayOrderId: razorpay_order_id || 'FREE',
           razorpayPaymentId: razorpay_payment_id || 'FREE',
           ourStory: ourStory || null,
           mapUrl: mapUrl || null,
+          rsvpButtonText: rsvpButtonText || 'RSVP Now',
         })
         .returning()
 
       resultInvitation = newInvitation
     }
 
-    // Update coupon usage if applicable
-    if (couponId) {
+    if (validatedCouponId) {
       await db
         .update(coupons)
         .set({ usedCount: sql`${coupons.usedCount} + 1` })
-        .where(eq(coupons.id, couponId))
+        .where(eq(coupons.id, validatedCouponId))
     }
 
-    // Send the email in the background if email is provided
     if (userEmail) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dnvites.com'
-      // Format a professional brand order ID: #DNV + first 8 chars of razorpay ID
-      // Fallback for FREE orders
       const orderSuffix = razorpay_order_id
         ? razorpay_order_id.replace('order_', '').substring(0, 8).toUpperCase()
         : Math.random().toString(36).substring(2, 10).toUpperCase()
@@ -297,8 +316,8 @@ export async function POST(req: NextRequest) {
         to: userEmail,
         brideName,
         groomName,
-        planName: tier || 'basic',
-        amountPaid: paidAmount || 0,
+        planName: tierSlug,
+        amountPaid: chargeAmount,
         orderId: displayOrderId,
         invitationLink: `${baseUrl}/invite/${slug}`,
       }).catch((err) => console.error('Failed to send receipt:', err))

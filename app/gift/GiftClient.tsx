@@ -23,6 +23,8 @@ import {
   X,
 } from 'lucide-react'
 import Link from 'next/link'
+import { detectCurrency, formatMoney, Currency } from '@/lib/currency'
+import { CurrencyToggle } from '@/components/CurrencyToggle'
 
 /* Shake animation for coupon errors */
 const shakeVariants = {
@@ -83,6 +85,11 @@ export default function GiftClient() {
   const [couponError, setCouponError] = useState('')
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
   const [shakeKey, setShakeKey] = useState(0)
+  const [currency, setCurrency] = useState<Currency>('INR')
+
+  useEffect(() => {
+    detectCurrency().then(setCurrency)
+  }, [])
 
   const validateCoupon = async () => {
     if (!couponCode) return
@@ -93,7 +100,7 @@ export default function GiftClient() {
       const res = await fetch('/api/coupons/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: couponCode }),
+        body: JSON.stringify({ code: couponCode, tier: selectedTier.id }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -145,6 +152,7 @@ export default function GiftClient() {
         body: JSON.stringify({
           tierSlug: selectedTier.id,
           couponCode: couponData ? couponCode : undefined,
+          currency,
         }),
       })
       const orderData = await res.json()
@@ -167,6 +175,7 @@ export default function GiftClient() {
               senderName: senderName,
               paidAmount: 0,
               couponId: couponData?.id,
+              currency,
             },
           }),
         })
@@ -201,6 +210,7 @@ export default function GiftClient() {
                 senderName: senderName,
                 paidAmount: finalPrice,
                 couponId: couponData?.id,
+                currency,
               },
             }),
           })
@@ -293,9 +303,11 @@ export default function GiftClient() {
                             {tier.name}
                           </h3>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-2xl font-bold text-slate-900">₹{tier.price}</span>
+                            <span className="text-2xl font-bold text-slate-900">
+                              {formatMoney(tier.price, currency)}
+                            </span>
                             <span className="text-sm text-slate-400 line-through">
-                              ₹{tier.originalPrice}
+                              {formatMoney(tier.originalPrice, currency)}
                             </span>
                           </div>
                         </div>
@@ -418,29 +430,36 @@ export default function GiftClient() {
                           Applied! You saved{' '}
                           {couponData.discountType === 'percentage'
                             ? `${couponData.discountValue}%`
-                            : `₹${couponData.discountValue}`}
+                            : formatMoney(couponData.discountValue, currency)}
                         </motion.p>
                       )}
                     </AnimatePresence>
                   </div>
 
                   <div className="pt-4 border-t border-slate-100">
+                    <div className="flex justify-end mb-3">
+                      <CurrencyToggle currency={currency} onChange={setCurrency} />
+                    </div>
                     <div className="flex flex-col gap-1 mb-6">
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-slate-500">Plan Price</span>
-                        <span className="text-slate-900 font-medium">₹{selectedTier.price}</span>
+                        <span className="text-slate-900 font-medium">
+                          {formatMoney(selectedTier.price, currency)}
+                        </span>
                       </div>
                       {couponData && (
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-green-600">Discount</span>
                           <span className="text-green-600 font-medium">
-                            -₹{selectedTier.price - finalPrice}
+                            -{formatMoney(selectedTier.price - finalPrice, currency)}
                           </span>
                         </div>
                       )}
                       <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-50">
                         <span className="text-slate-900 font-bold">Total to Pay</span>
-                        <span className="text-3xl font-bold text-slate-900">₹{finalPrice}</span>
+                        <span className="text-3xl font-bold text-slate-900">
+                          {formatMoney(finalPrice, currency)}
+                        </span>
                       </div>
                     </div>
                     <Button
